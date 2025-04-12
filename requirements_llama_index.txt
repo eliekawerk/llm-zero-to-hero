@@ -1,0 +1,11 @@
+llama-index
+llama-index-core
+llama-index-embeddings-openai
+llama-index-llms-openai
+gradio
+PyMuPDF
+datasette
+python-dotenv
+arize-phoenix
+openinference-instrumentation-llama-index
+opentelemetry-exporter-otlp
