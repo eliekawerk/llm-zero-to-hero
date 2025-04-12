@@ -19,7 +19,8 @@ These are my workshop notes and exercises for the course I'm currently taking - 
     ```
 2. Install dependencies:  
     ```bash
-    pip install -r requirements.txt
+    pip install -r requirements_llama_index.txt # LlamaIndex RAG
+    pip install -r requirements_vanilla.txt # Vanilla RAG
     ```  
 
 ## **Workshop 1**
@@ -64,10 +65,16 @@ This activity will help you understand the importance of owning the prompts in y
 - Write your own prompt instructions to the LLM
 - Use the OpenAI LLM to perform the synthesis
 
-**2. Log the prompts and user queries in the SSQLite database**
-- Use the SQLite database to store the user queries and the prompts that are being sent to the LLM
-- Use the SQLite database to store the results of the LLM
+**2. Log the prompts and user queries in the SQLite database**
+- Use the SQLite database to store the user queries and the prompts that are being sent to the LLM, as well as the chunk size and the response of the LLM
 
 **3. Play with different prompts and see how it affects the results**
 - Understand how the prompts affect the results of the LLM
 
+**My notes:**
+Now that we have ripped out LlamaIndex, we can see what is going on under the covers. We are using the OpenAI API directly, and we have full control over the prompts that are being sent to the LLM. We can also log the prompts and user queries in the SQLite database, which will help us understand how the prompts affect the results of the LLM.
+- We are explicitly using the **OpenAI embedding model** to create the embeddings of both the user query and the document.
+- We are explicitly using the **OpenAI LLM** to perform the synthesis.
+- We have also logged additional information in the SQLite database, such as the user query, the prompts that was sent to the LLM, chunk size, and the response of the LLM. This will help us understand how the prompts affect the results of the LLM. 
+- Before, with LlamaIndex, the steps that took for the whole RAG process was hidden under the covers. Now we can see exactly what is going on, and we have full control over the prompts that are being sent to the LLM. 
+- Now we are ready to play and experiment and iterate on the prompts.
