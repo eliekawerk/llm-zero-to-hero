@@ -96,4 +96,5 @@ with gr.Blocks() as app:
     query_button = gr.Button("Submit")
     query_button.click(query_pdf, inputs=[pdf_upload, query_input], outputs=output)
 
-app.launch()
+if __name__ == "__main__":
+    app.launch()

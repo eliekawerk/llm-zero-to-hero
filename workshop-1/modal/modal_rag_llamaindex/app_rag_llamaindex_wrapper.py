@@ -70,14 +70,15 @@ def serve() -> FastAPI:
         print("Persisting db on sync")
         persist()
         return {"status": "synced"}
+    
     return mount_gradio_app(app=api, blocks=blocks, path="/")  # Mount Gradio app at root path
 
 
-# @app.local_entrypoint()
-# def main():
-#     """
-#     Local development entry point:
-#     - Allows running the app locally for testing
-#     - Prints the type of Gradio app to confirm readiness
-#     """
-#     print(f"{type(blocks)} is ready to go!")
+@app.local_entrypoint()
+def main():
+    """
+    Local development entry point:
+    - Allows running the app locally for testing
+    - Prints the type of Gradio app to confirm readiness
+    """
+    print(f"{type(blocks)} is ready to go!")
