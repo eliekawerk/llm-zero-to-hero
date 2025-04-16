@@ -78,3 +78,11 @@ Now that we have ripped out LlamaIndex, we can see what is going on under the co
 - We have also logged additional information in the SQLite database, such as the user query, the prompts that was sent to the LLM, chunk size, and the response of the LLM. This will help us understand how the prompts affect the results of the LLM. 
 - Before, with LlamaIndex, the steps that took for the whole RAG process was hidden under the covers. Now we can see exactly what is going on, and we have full control over the prompts that are being sent to the LLM. 
 - Now we are ready to play and experiment and iterate on the prompts.
+
+## Deploying to Modal
+
+### **A) LlamaIndex RAG**
+See [Llama Index RAG in Modal](./workshop-1/modal/modal_rag_llamaindex/README.md)
+
+### **B) Vanilla RAG**
+See [Vanilla RAG in Modal](./workshop-1/modal/modal_rag_vanilla/README.md)
