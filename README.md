@@ -4,85 +4,202 @@ These are my workshop notes and exercises for the course I'm currently taking - 
 
 ---
 
-## **Working Locally :**  
-1. Clone the repository:  
-    ```bash
-    git clone https://github.com/jaeyow/llm-zero-to-hero.git
-    ```  
+## **Working Locally**
 
-    ```bash
-    pyenv versions
-    pyenv install 3.12.8
-    pyenv local 3.12.8
-    python -m venv .venv
-    source .venv/bin/activate
-    ```
-2. Install dependencies:  
-    ```bash
-    pip install -r requirements_llama_index.txt # LlamaIndex RAG
-    pip install -r requirements_vanilla.txt # Vanilla RAG
-    ```  
+### **1. Clone the Repository**
+```bash
+git clone https://github.com/jaeyow/llm-zero-to-hero.git
+```
+
+### **2. Set Up Python Environment**
+```bash
+pyenv versions
+pyenv install 3.12.8
+pyenv local 3.12.8
+python -m venv .venv
+source .venv/bin/activate
+```
+
+### **3. Install Dependencies**
+```bash
+pip install -r requirements_llama_index.txt  # LlamaIndex RAG
+pip install -r requirements_vanilla.txt     # Vanilla RAG
+```
+
+---
 
 ## **Workshop 1**
 
 ### **A) RAG with LlamaIndex**
-```
+Run the following command:
+```bash
 python 01-rag-llamaindex.py
 ```
-**My notes:**
 
-- The **VectorStoreIndex** creates a vector store in-memory, and uses **LlamaIndex's (LI)** default embedding model which is whatever **OpenAI's default embedding model** is.
-- the resulting query engine is basically LlamaIndex's implementation of a simple RAG system
-- we don't see it, but what is happening under the covers is the LI converts the user query to an embedding vector, and searches the most similar chunks from this in-memory vector store.
-- These similar chunks are then sent to the LLM, in this case it is using the **OpenAI's default LLM** for synthesis, and the LLM replies with the nice natural language response. LI has default embedding models and LLMs, if you don't specify.
-- LI just assumes that you always want to use OpenAI. But of course these can be overridden if required.
-- so it is indeed a **RAG**, just for a single document and using many defaults, (**even the prompts are default prompts**), and it does many things under the covers that we don't see.
-- as an experiment, try unsetting OpenAI's API key and run the app. You'll see that it will ask for an OpenAI API key... As it needs an embedding model and LLM to do the RAG.
-- to be able to interact with the application this app uses a simple Gradio wrapper
-- I tried to extract the actual prompt that LI uses, with a call to `query_engine.get_prompts()`, and even though I can see the prompts being used, it lists several prompts and its not clear which one is being used.
-- Yes, I catch myself saying "Fuck you, show me the prompts", [Hamel's article](https://hamel.dev/blog/posts/prompt/) captures exactly what I'm thinking. 
+#### **My Notes**
+- **VectorStoreIndex**: Creates an in-memory vector store using **LlamaIndex's (LI)** default embedding model (defaults to **OpenAI's embedding model**).
+- **Query Engine**: Converts user queries into embedding vectors, retrieves similar chunks, and synthesizes responses using **OpenAI's LLM**.
+- **Default Behavior**: LI uses default embedding models, LLMs, and prompts unless explicitly overridden.
+- **Experiment**: Unset the OpenAI API key to observe app behavior—it prompts for the key since it relies on OpenAI for embeddings and synthesis.
+- **Interaction**: Uses a simple **Gradio wrapper** for user interaction.
+- **Prompt Analysis**: `query_engine.get_prompts()` reveals multiple prompts, making it unclear which one is used.
 
-**What's the problem here?**
+#### **Issues with LlamaIndex**
+- Defaults to OpenAI models without transparency.
+- Unclear prompts sent to the LLM.
+- Difficult to understand internal workings, making improvements challenging.
 
-LlamaIndex is a great LLM abstraction, don't get me wrong. In fact, it is one of my favourite LLM Libraries and often use it my applications. However, this abstraction has a few issues I can see:
-- Defaults to using OpenAI embedding model and LLM under the covers. It is not clear until you look at the errors and logs. 
-- Unclear what prompts its sending to the LLM. It can be updated, but unclear how.
-- Difficult to understand exactly what is happening in the app, so it is difficult to improve it.
+**Summary**: LlamaIndex simplifies RAG creation but introduces too much abstraction, obscuring the process.
 
-Basically, we were able to create a RAG system, that works, but with little understanding what it actually does. Too much magic is going on. I don't like it. 
-
-### **B) Vanilla RAG** 
-```
-python 02-rag-vanilla.py
-```
-The homework for the first workshop is to remove the abstractions that is added by these libraries with the purpose of fully understanding what is going on.
-
-This activity will help you understand the importance of owning the prompts in your system. Have full control over the prompts and the data that is being sent to the LLM. This will enable you to improve the results of your system, and also understand what is going on under the covers.
-
-**1. Remove LlamaIndex and perform the RAG manually**
-- Use the OpenAI API directly
-- Use the OpenAI embedding model to create the embeddings of both the user query and the document
-- Write your own prompt instructions to the LLM
-- Use the OpenAI LLM to perform the synthesis
-
-**2. Log the prompts and user queries in the SQLite database**
-- Use the SQLite database to store the user queries and the prompts that are being sent to the LLM, as well as the chunk size and the response of the LLM
-
-**3. Play with different prompts and see how it affects the results**
-- Understand how the prompts affect the results of the LLM
-
-**My notes:**
-Now that we have ripped out LlamaIndex, we can see what is going on under the covers. We are using the OpenAI API directly, and we have full control over the prompts that are being sent to the LLM. We can also log the prompts and user queries in the SQLite database, which will help us understand how the prompts affect the results of the LLM.
-- We are explicitly using the **OpenAI embedding model** to create the embeddings of both the user query and the document.
-- We are explicitly using the **OpenAI LLM** to perform the synthesis.
-- We have also logged additional information in the SQLite database, such as the user query, the prompts that was sent to the LLM, chunk size, and the response of the LLM. This will help us understand how the prompts affect the results of the LLM. 
-- Before, with LlamaIndex, the steps that took for the whole RAG process was hidden under the covers. Now we can see exactly what is going on, and we have full control over the prompts that are being sent to the LLM. 
-- Now we are ready to play and experiment and iterate on the prompts.
-
-## Deploying to Modal
-
-### **A) LlamaIndex RAG**
-See [Llama Index RAG in Modal](./workshop-1/modal/modal_rag_llamaindex/README.md)
+---
 
 ### **B) Vanilla RAG**
-See [Vanilla RAG in Modal](./workshop-1/modal/modal_rag_vanilla/README.md)
+Run the following command:
+```bash
+python 02-rag-vanilla.py
+```
+
+#### **Homework**
+Remove abstractions introduced by libraries like LlamaIndex to fully understand the RAG process.
+
+#### **Steps**
+1. **Manual RAG Implementation**:
+    - Use the OpenAI API directly.
+    - Generate embeddings for user queries and documents.
+    - Write custom prompt instructions for the LLM.
+    - Use the OpenAI LLM for synthesis.
+
+2. **Log Prompts and Queries in SQLite**:
+    - Store user queries, prompts, chunk sizes, and LLM responses in a SQLite database.
+
+3. **Experiment with Prompts**:
+    - Analyze how different prompts affect LLM results.
+
+#### **My Notes**
+- Removing LlamaIndex provides full control over the RAG process and prompts.
+- Explicitly use the **OpenAI embedding model** and **OpenAI LLM**.
+- Log additional details (e.g., queries, prompts, chunk sizes) in SQLite for better analysis.
+- Enables experimentation and iteration on prompts for improved results.
+
+---
+
+## **Deploying to Modal**
+
+### **A) LlamaIndex RAG**
+See [Llama Index RAG in Modal](./workshop_1/modal/modal_rag_llamaindex/README.md).
+
+### **B) Vanilla RAG**
+See [Vanilla RAG in Modal](./workshop_1/modal/modal_rag_vanilla/README.md).
+
+---
+
+## **Workshop 2**
+
+Workshop 2 focuses on **LLM APIs and Prompt Engineering**, exploring parameters like **Temperature** and **Top-p (nucleus sampling)** and their impact on LLM results. It also involves iterating on the application from Workshop 1 by removing LlamaIndex and using the OpenAI API directly, providing full control over prompts and RAG orchestration.
+
+---
+
+## **Workshop 3**
+
+Workshop 3 introduces **evaluations** for the application, now free from LlamaIndex. The goal is to perform error analysis and improve the system.
+
+### **Synthetic Data for Evaluation**
+
+#### **Exercise**
+1. **Create a Gold Set**:
+    - Use `data/questions.json` to generate a list of questions.
+    - Run `01_generate_gold_set.py` to create `data/gold_set.jsonl`.
+    - Review and curate the answers for accuracy.
+
+2. **Generate Predictions**:
+    - Run `02_run_predictions.py` to create `data/predictions.jsonl`.
+
+3. **Evaluate Predictions**:
+    - Run `03_run_evals.py` to compare predictions against the Gold Set.
+    - Generate `data/evaluation_report.json`.
+
+4. **Display Metrics**:
+    - Metrics are displayed in STDIO and saved as CSV and HTML reports.
+
+#### **Sample Metrics**
+```plaintext
+===== Overall Evaluation Metrics =====
++-----------+---------+
+| Metric    |   Value |
++===========+=========+
+| Accuracy  |  0.7333 |
++-----------+---------+
+| Precision |  1      |
++-----------+---------+
+| Recall    |  0.7333 |
++-----------+---------+
+| F1 Score  |  0.8462 |
++-----------+---------+
+```
+- Metrics saved to:  
+  - `/Users/josereyes/Dev/llm-zero-to-hero/workshop_3/outputs/overall_metrics.csv`
+  - `/Users/josereyes/Dev/llm-zero-to-hero/workshop_3/outputs/overall_metrics.html`
+
+```plaintext
+===== Metrics by Question Type =====
++---------------------------------------------------------------------+------------+---------+
+| Question                                                            |   Accuracy |   Count |
++=====================================================================+============+=========+
+| What degrees or academic qualifications does the candidate hold?    |     1      |       6 |
++---------------------------------------------------------------------+------------+---------+
+| List any certifications or professional training mentioned.         |     1      |       6 |
++---------------------------------------------------------------------+------------+---------+
+| What is the candidate's most recent job title?                      |     0.8333 |       6 |
++---------------------------------------------------------------------+------------+---------+
+| Does the candidate have any leadership or management experience?    |     0.8333 |       6 |
++---------------------------------------------------------------------+------------+---------+
+| Does the candidate have experience working with cloud technologies? |     0.8333 |       6 |
++---------------------------------------------------------------------+------------+---------+
+| List the programming languages mentioned in the resume.             |     0.6667 |       6 |
++---------------------------------------------------------------------+------------+---------+
+| What is the total number of years of professional experience?       |     0.6667 |       6 |
++---------------------------------------------------------------------+------------+---------+
+| Has the candidate worked in any Fortune 500 companies?              |     0.6667 |       6 |
++---------------------------------------------------------------------+------------+---------+
+| What industries has the candidate worked in?                        |     0.5    |       6 |
++---------------------------------------------------------------------+------------+---------+
+| What projects or achievements are highlighted in the resume?        |     0.3333 |       6 |
++---------------------------------------------------------------------+------------+---------+
+```
+- Question metrics saved to:  
+  - `/Users/josereyes/Dev/llm-zero-to-hero/workshop_3/outputs/question_metrics.csv`
+
+- Plots saved to:  
+  - `/Users/josereyes/Dev/llm-zero-to-hero/workshop_3/outputs/question_accuracy.png`  
+  - `/Users/josereyes/Dev/llm-zero-to-hero/workshop_3/outputs/correct_vs_incorrect.png`
+
+---
+
+## **Using Evaluation Metrics to Improve Your RAG System**
+
+### **Analyzing Current Results**
+- **Overall Accuracy**: 73.33%
+- **Precision**: 1.0
+- **F1 Score**: 84.62%
+- **Performance Variation**: Significant differences across question types.
+
+### **Improvement Strategy**
+1. **Focus on Low-Performing Question Types**:
+    - **Projects/Achievements**: 33.33% (complex information extraction).
+    - **Industries Worked In**: 50% (categorization/inference).
+    - **Years of Experience**: 66.67% (timeline extraction).
+    - **Programming Languages**: 66.67% (list extraction).
+
+2. **Error Analysis and System Improvements**:
+    - **Chunking Strategy**:
+        - Optimize chunk sizes or use semantic chunking.
+        - Avoid splitting related information.
+    - **Prompt Engineering**:
+        - Customize prompts for specific question types.
+        - Add explicit instructions for calculations or list extractions.
+    - **Retrieval Improvements**:
+        - Increase retrieved chunks for complex questions.
+        - Implement hybrid retrieval (keyword + semantic).
+    - **Post-Processing Enhancements**:
+        - Add structured extraction for lists.
+        - Validate numerical answers with rule-based checks.

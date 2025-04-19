@@ -1,0 +1,33 @@
+[
+    {
+      "question": "What is the candidate's most recent job title?"
+    },
+    {
+      "question": "List the programming languages mentioned in the resume."
+    },
+    {
+      "question": "Does the candidate have any leadership or management experience?"
+    },
+    {
+      "question": "What degrees or academic qualifications does the candidate hold?"
+    },
+    {
+      "question": "What is the total number of years of professional experience?"
+    },
+    {
+      "question": "Has the candidate worked in any Fortune 500 companies?"
+    },
+    {
+      "question": "What industries has the candidate worked in?"
+    },
+    {
+      "question": "Does the candidate have experience working with cloud technologies?"
+    },
+    {
+      "question": "List any certifications or professional training mentioned."
+    },
+    {
+      "question": "What projects or achievements are highlighted in the resume?"
+    }
+  ]
+  
