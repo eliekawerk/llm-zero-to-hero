@@ -13,7 +13,6 @@ git clone https://github.com/jaeyow/llm-zero-to-hero.git
 
 ### **2. Set Up Python Environment**
 ```bash
-pyenv versions
 pyenv install 3.12.8
 pyenv local 3.12.8
 python -m venv .venv
@@ -37,9 +36,9 @@ python 01-rag-llamaindex.py
 ```
 
 #### **My Notes**
-- **VectorStoreIndex**: Creates an in-memory vector store using **LlamaIndex's (LI)** default embedding model (defaults to **OpenAI's embedding model**).
-- **Query Engine**: Converts user queries into embedding vectors, retrieves similar chunks, and synthesizes responses using **OpenAI's LLM**.
-- **Default Behavior**: LI uses default embedding models, LLMs, and prompts unless explicitly overridden.
+- **VectorStoreIndex**: Creates an in-memory vector store using **LlamaIndex's** default embedding model (defaults to **OpenAI's embedding model**).
+- **Query Engine**: Converts user queries into embedding vectors, retrieves similar chunks, and synthesises responses using **OpenAI's LLM**.
+- **Default Behavior**: LlamaIndex uses default embedding models, LLMs, and prompts unless explicitly overridden.
 - **Experiment**: Unset the OpenAI API key to observe app behavior—it prompts for the key since it relies on OpenAI for embeddings and synthesis.
 - **Interaction**: Uses a simple **Gradio wrapper** for user interaction.
 - **Prompt Analysis**: `query_engine.get_prompts()` reveals multiple prompts, making it unclear which one is used.
@@ -73,7 +72,7 @@ Remove abstractions introduced by libraries like LlamaIndex to fully understand 
     - Store user queries, prompts, chunk sizes, and LLM responses in a SQLite database.
 
 3. **Experiment with Prompts**:
-    - Analyze how different prompts affect LLM results.
+    - Analyse how different prompts affect LLM results.
 
 #### **My Notes**
 - Removing LlamaIndex provides full control over the RAG process and prompts.
@@ -108,36 +107,41 @@ Workshop 3 introduces **evaluations** for the application, now free from LlamaIn
 #### **Exercise**
 1. **Create a Gold Set**:
     - Use `data/questions.json` as the list of questions for this exercise.
-    - I vibe-coded most of the scripts in this workshop, however I had to guide Github Copilot every step of the way.
     - Run `01_generate_gold_set.py` to create `data/gold_set.jsonl`. This script asks the LLM to generate answers to the questions in `data/questions.json`.
-    - Review and curate the answers for accuracy. Creating a gold set is supposed to be a manual process, but in this case, I did a short-cut, and used the LLM to generate the answers. I then reviewed the answers and made some changes to ensure accuracy.
+    - Review and curate the answers for accuracy.
 
 2. **Generate Predictions**:
-    - Next, we then used the functionality that we created in `Workshop 1` when we removed LlamaIndex and used the OpenAI API directly to generate predictions. We had built a RAG system without using any libraries, the function is called `rag_pipeline`.
+    - Use the `rag_pipeline` function from Workshop 1 to generate predictions.
     - Run `02_run_predictions.py` to create `data/predictions.jsonl`.
 
 3. **Evaluate Predictions**:
-    - We merge the predictions and the gold set, and uses [Instructor](https://python.useinstructor.com/) to take advantage of robust structured outputs, which makes it easier to evaluate the predictions.
+    - Merge predictions and the gold set, and use [Instructor](https://python.useinstructor.com/) for structured evaluation.
     - Run `03_run_evals.py` to compare predictions against the Gold Set.
     - Generate `data/evaluation_report.json`.
-    - we used the usual metrics functions from SKlearn to calculate the accuracy, precision, recall, and F1 score of the predictions.
+    - Use metrics from SKlearn to calculate accuracy, precision, recall, and F1 score.
+    - run `04_display_metrics.py` to visualize the evaluation report.
 
 4. **Cost and Latency Evaluation**:
-    - In addition to accuracy metrics, we track token usage for cost analysis:
+    - Finally , run `05_cost_latency_analysis.py` to run the script to evaluate cost and latency.
+    - Track token usage for cost analysis:
         - Input tokens (prompt + context)
         - Output tokens (generated response)
         - Total tokens used per query
-    - We also measure latency metrics:
-        - Retrieval time (time to find relevant chunks)
-        - LLM inference time (time to generate response)
+    - Measure latency metrics:
+        - Retrieval time
+        - LLM inference time
         - Total request-to-response time
     - Generate cost efficiency metrics:
         - Cost per correct answer
         - Token efficiency (accuracy per 1K tokens)
-    - These metrics help optimize the system for both performance and cost-effectiveness.
 
 #### **Eval Metrics Output**
-```plaintext
+- **Overall Accuracy**: 71.67%
+- **Precision**: 1.0
+- **Recall**: 71.67%
+- **F1 Score**: 83.5%
+
+```
 ===== Overall Evaluation Metrics =====
 +-----------+---------+
 | Metric    |   Value |
@@ -154,7 +158,7 @@ Overall metrics saved to /Users/josereyes/Dev/llm-zero-to-hero/workshop_3/output
 Overall metrics HTML report saved to /Users/josereyes/Dev/llm-zero-to-hero/workshop_3/outputs/overall_metrics.html
 ```
 
-```plaintext
+```
 ===== Metrics by Question Type =====
 +---------------------------------------------------------------------+------------+---------+
 | Question                                                            |   Accuracy |   Count |
@@ -249,33 +253,49 @@ Detailed error analysis HTML report saved to /Users/josereyes/Dev/llm-zero-to-he
 
 Metrics display completed successfully.
 ```
+
+#### **Error Analysis Key Insights**
+- **Most Common Error Type**: Hallucination
+- **Most Problematic Question**: 'What projects or achievements are highlighted in the resume?'
+
 ---
 
 ## **Using Evaluation Metrics to Improve Your RAG System**
 
-### **Analyzing Current Results**
+### **Analysing Current Results**
 - **Overall Accuracy**: 73.33%
 - **Precision**: 1.0
 - **F1 Score**: 84.62%
 - **Performance Variation**: Significant differences across question types.
 
 ### **Improvement Strategy**
-1. **Focus on Low-Performing Question Types**:
-    - **Projects/Achievements**: 33.33% (complex information extraction).
-    - **Industries Worked In**: 50% (categorization/inference).
-    - **Years of Experience**: 66.67% (timeline extraction).
-    - **Programming Languages**: 66.67% (list extraction).
 
-2. **Error Analysis and System Improvements**:
+1. **Target Low-Performing Question Types**:
+    - **Projects/Achievements**: 33.33% accuracy (requires advanced information extraction).
+    - **Industries Worked In**: 50% accuracy (involves categorization and inference).
+    - **Years of Experience**: 66.67% accuracy (timeline-based extraction).
+    - **Programming Languages**: 66.67% accuracy (list-based extraction).
+
+2. **Refine System Components**:
     - **Chunking Strategy**:
-        - Optimize chunk sizes or use semantic chunking.
-        - Avoid splitting related information.
+        - Experiment with dynamic chunk sizes based on semantic boundaries.
+        - Ensure related information remains within the same chunk to improve context.
     - **Prompt Engineering**:
-        - Customize prompts for specific question types.
-        - Add explicit instructions for calculations or list extractions.
-    - **Retrieval Improvements**:
-        - Increase retrieved chunks for complex questions.
-        - Implement hybrid retrieval (keyword + semantic).
-    - **Post-Processing Enhancements**:
-        - Add structured extraction for lists.
-        - Validate numerical answers with rule-based checks.
+        - Design tailored prompts for each question type, emphasizing clarity and specificity.
+        - Include explicit instructions for tasks like calculations, list generation, or timeline extraction.
+    - **Retrieval Enhancements**:
+        - Increase the number of retrieved chunks for questions requiring detailed context.
+        - Combine keyword-based and semantic retrieval methods for better coverage.
+    - **Post-Processing Improvements**:
+        - Implement structured extraction techniques for lists and categorical data.
+        - Validate numerical outputs using rule-based or heuristic checks to ensure consistency.
+
+3. **Iterative Testing and Evaluation**:
+    - Continuously test changes against the evaluation metrics (accuracy, precision, recall, F1 score).
+    - Use error analysis insights to guide further refinements and prioritize impactful adjustments.
+
+4. **Cost and Latency Optimization**:
+    - Monitor token usage and latency metrics to balance performance with efficiency.
+    - Focus on reducing retrieval and inference times without compromising accuracy.
+
+By addressing these areas systematically, the RAG system can achieve higher accuracy and reliability across all question types.
