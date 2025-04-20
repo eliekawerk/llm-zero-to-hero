@@ -121,24 +121,23 @@ Workshop 3 introduces **evaluations** for the application, now free from LlamaIn
 4. **Display Metrics**:
     - Metrics are displayed in STDIO and saved as CSV and HTML reports.
 
-#### **Sample Metrics**
+#### **Eval Metrics Output**
 ```plaintext
 ===== Overall Evaluation Metrics =====
 +-----------+---------+
 | Metric    |   Value |
 +===========+=========+
-| Accuracy  |  0.7333 |
+| Accuracy  |  0.7167 |
 +-----------+---------+
 | Precision |  1      |
 +-----------+---------+
-| Recall    |  0.7333 |
+| Recall    |  0.7167 |
 +-----------+---------+
-| F1 Score  |  0.8462 |
+| F1 Score  |  0.835  |
 +-----------+---------+
+Overall metrics saved to /Users/josereyes/Dev/llm-zero-to-hero/workshop_3/outputs/overall_metrics.csv
+Overall metrics HTML report saved to /Users/josereyes/Dev/llm-zero-to-hero/workshop_3/outputs/overall_metrics.html
 ```
-- Metrics saved to:  
-  - `/Users/josereyes/Dev/llm-zero-to-hero/workshop_3/outputs/overall_metrics.csv`
-  - `/Users/josereyes/Dev/llm-zero-to-hero/workshop_3/outputs/overall_metrics.html`
 
 ```plaintext
 ===== Metrics by Question Type =====
@@ -153,26 +152,88 @@ Workshop 3 introduces **evaluations** for the application, now free from LlamaIn
 +---------------------------------------------------------------------+------------+---------+
 | Does the candidate have any leadership or management experience?    |     0.8333 |       6 |
 +---------------------------------------------------------------------+------------+---------+
+| Has the candidate worked in any Fortune 500 companies?              |     0.8333 |       6 |
++---------------------------------------------------------------------+------------+---------+
 | Does the candidate have experience working with cloud technologies? |     0.8333 |       6 |
 +---------------------------------------------------------------------+------------+---------+
-| List the programming languages mentioned in the resume.             |     0.6667 |       6 |
+| List the programming languages mentioned in the resume.             |     0.5    |       6 |
 +---------------------------------------------------------------------+------------+---------+
-| What is the total number of years of professional experience?       |     0.6667 |       6 |
-+---------------------------------------------------------------------+------------+---------+
-| Has the candidate worked in any Fortune 500 companies?              |     0.6667 |       6 |
+| What is the total number of years of professional experience?       |     0.5    |       6 |
 +---------------------------------------------------------------------+------------+---------+
 | What industries has the candidate worked in?                        |     0.5    |       6 |
 +---------------------------------------------------------------------+------------+---------+
 | What projects or achievements are highlighted in the resume?        |     0.3333 |       6 |
 +---------------------------------------------------------------------+------------+---------+
+Question metrics saved to /Users/josereyes/Dev/llm-zero-to-hero/workshop_3/outputs/question_metrics.csv
 ```
-- Question metrics saved to:  
-  - `/Users/josereyes/Dev/llm-zero-to-hero/workshop_3/outputs/question_metrics.csv`
 
-- Plots saved to:  
-  - `/Users/josereyes/Dev/llm-zero-to-hero/workshop_3/outputs/question_accuracy.png`  
-  - `/Users/josereyes/Dev/llm-zero-to-hero/workshop_3/outputs/correct_vs_incorrect.png`
+```
+===== Detailed Evaluation Results =====
++---------------------------------------------------------------------+----------------------------+-------------------------------------------------------+-------------------------------------------------------+-----------+
+| Question                                                            | Resume                     | Gold Answer                                           | Predicted                                             | Correct   |
++=====================================================================+============================+=======================================================+=======================================================+===========+
+| What is the candidate's most recent job title?                      | emma-roberts.pdf           | Platform Developer                                    | The candidate's most recent job title is "Platform... | ✓         |
++---------------------------------------------------------------------+----------------------------+-------------------------------------------------------+-------------------------------------------------------+-----------+
+| List the programming languages mentioned in the resume.             | emma-roberts.pdf           | Python, Java, JavaScript                              | The programming languages mentioned in the resume ... | ✗         |
++---------------------------------------------------------------------+----------------------------+-------------------------------------------------------+-------------------------------------------------------+-----------+
+| What is the candidate's most recent job title?                      | jane-smith.pdf             | Senior Full Stack Developer                           | The candidate's most recent job title is "Senior F... | ✓         |
++---------------------------------------------------------------------+----------------------------+-------------------------------------------------------+-------------------------------------------------------+-----------+
+| List the programming languages mentioned in the resume.             | jane-smith.pdf             | JavaScript, TypeScript, Python, Java.                 | The programming languages mentioned in the resume ... | ✗         |
++---------------------------------------------------------------------+----------------------------+-------------------------------------------------------+-------------------------------------------------------+-----------+
+| What is the candidate's most recent job title?                      | john-doe.pdf               | Frontend Developer at XYZ Tech Solutions, January ... | The candidate's most recent job title is Frontend ... | ✗         |
++---------------------------------------------------------------------+----------------------------+-------------------------------------------------------+-------------------------------------------------------+-----------+
+| List the programming languages mentioned in the resume.             | john-doe.pdf               | HTML, CSS, JavaScript, TypeScript                     | The programming languages mentioned in the resume ... | ✓         |
++---------------------------------------------------------------------+----------------------------+-------------------------------------------------------+-------------------------------------------------------+-----------+
+| What is the candidate's most recent job title?                      | alex-thompson.pdf          | Backend Developer at Tech Innovations Ltd.            | The candidate's most recent job title is "Backend ... | ✓         |
++---------------------------------------------------------------------+----------------------------+-------------------------------------------------------+-------------------------------------------------------+-----------+
+| List the programming languages mentioned in the resume.             | alex-thompson.pdf          | Python, Java, JavaScript, SQL                         | The programming languages mentioned in the resume ... | ✓         |
++---------------------------------------------------------------------+----------------------------+-------------------------------------------------------+-------------------------------------------------------+-----------+
+| What is the candidate's most recent job title?                      | michael-johnson.pdf        | Principal Full Stack Developer                        | The candidate's most recent job title is Principal... | ✓         |
++---------------------------------------------------------------------+----------------------------+-------------------------------------------------------+-------------------------------------------------------+-----------+
+| List the programming languages mentioned in the resume.             | michael-johnson.pdf        | JavaScript, TypeScript, Python, Java                  | The programming languages mentioned in the resume ... | ✗         |
++---------------------------------------------------------------------+----------------------------+-------------------------------------------------------+-------------------------------------------------------+-----------+
+| What is the candidate's most recent job title?                      | JO Reyes CV April 2025.pdf | AI/ML Technical Specialist                            | The candidate's most recent job title is "AI/ML Te... | ✓         |
++---------------------------------------------------------------------+----------------------------+-------------------------------------------------------+-------------------------------------------------------+-----------+
+| List the programming languages mentioned in the resume.             | JO Reyes CV April 2025.pdf | Python, TypeScript                                    | The programming languages mentioned in the resume ... | ✓         |
++---------------------------------------------------------------------+----------------------------+-------------------------------------------------------+-------------------------------------------------------+-----------+
 
+Plot saved to /Users/josereyes/Dev/llm-zero-to-hero/workshop_3/outputs/question_accuracy.png
+Plot saved to /Users/josereyes/Dev/llm-zero-to-hero/workshop_3/outputs/correct_vs_incorrect.png
+```
+
+```
+===== Error Analysis Key Insights =====
+- Most common error type: hallucination (6 occurrences)
+- Most common cause: retrieval_failure (9 occurrences)
+- Most problematic question: 'What projects or achievements are highlighted in the resume?' (4 failures)
+- Critical errors: 2 (11.8% of all errors)
+
+===== Error Types =====
++-----------------------+---------+
+| Error Type            |   Count |
++=======================+=========+
+| hallucination         |       6 |
++-----------------------+---------+
+| missing_information   |       6 |
++-----------------------+---------+
+| incorrect_information |       5 |
++-----------------------+---------+
+
+===== Error Causes =====
++---------------------+---------+
+| Likely Cause        |   Count |
++=====================+=========+
+| retrieval_failure   |       9 |
++---------------------+---------+
+| llm_reasoning_error |       7 |
++---------------------+---------+
+| chunking_issue      |       1 |
++---------------------+---------+
+Error analysis data saved to /Users/josereyes/Dev/llm-zero-to-hero/workshop_3/outputs
+Detailed error analysis HTML report saved to /Users/josereyes/Dev/llm-zero-to-hero/workshop_3/outputs/error_analysis.html
+
+Metrics display completed successfully.
+```
 ---
 
 ## **Using Evaluation Metrics to Improve Your RAG System**

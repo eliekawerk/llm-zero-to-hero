@@ -1,0 +1,4 @@
+Likely Cause,Count
+llm_reasoning_error,7
+retrieval_failure,9
+chunking_issue,1
