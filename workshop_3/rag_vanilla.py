@@ -6,6 +6,7 @@ from datetime import datetime
 import uuid
 from openai import OpenAI
 import requests
+import time
 from sklearn.metrics.pairwise import cosine_similarity
 from dotenv import load_dotenv
 
@@ -26,7 +27,13 @@ def init_db():
                  chunk_size INTEGER,
                  user_prompt TEXT,
                  query TEXT,
-                 response TEXT)''')
+                 response TEXT,
+                 input_tokens INTEGER,
+                 output_tokens INTEGER,
+                 total_tokens INTEGER,
+                 retrieval_time REAL,
+                 llm_time REAL,
+                 total_time REAL)''')
     conn.commit()
     conn.close()
 
@@ -58,13 +65,17 @@ def chunk_text(text, chunk_size=1000, overlap=20):
     return chunks, chunk_size
 
 # Log to SQLite
-def log_interaction(pdf_name, query, response, system_prompt, chunk_size, user_prompt):
+def log_interaction(pdf_name, query, response, system_prompt, chunk_size, user_prompt, 
+                    input_tokens=0, output_tokens=0, total_tokens=0, 
+                    retrieval_time=0, llm_time=0, total_time=0):
     conn = sqlite3.connect(DB_FILE)
     c = conn.cursor()
     interaction_id = str(uuid.uuid4())
     timestamp = datetime.now().isoformat()
-    c.execute("INSERT INTO interactions VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-              (interaction_id, timestamp, pdf_name, system_prompt, chunk_size, user_prompt, query, response)) 
+    c.execute("INSERT INTO interactions VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+              (interaction_id, timestamp, pdf_name, system_prompt, chunk_size, user_prompt, 
+               query, response, input_tokens, output_tokens, total_tokens, 
+               retrieval_time, llm_time, total_time)) 
     conn.commit()
     conn.close()
     
@@ -72,15 +83,17 @@ def get_text_embedding(text_chunks):
     """Gets text embeddings using the OpenAI API.""" 
     try:
         client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+        start_time = time.time()
         response = client.embeddings.create(
             model="text-embedding-ada-002",
             input=text_chunks,
             encoding_format="float"
         )
         embeddings = [record.embedding for record in response.data]
-        return embeddings
+        embedding_time = time.time() - start_time
+        return embeddings, embedding_time
     except requests.exceptions.RequestException as e:
-        return {"error": str(e)}    
+        return {"error": str(e)}, 0
     
 def find_relevant_chunks(query_embedding, chunk_embeddings, chunks, top_k=10):
     """Finds the most relevant text chunks based on cosine similarity."""
@@ -120,6 +133,7 @@ Be concise, factual, and avoid speculation.
         api_key=os.getenv("OPENAI_API_KEY")
     )
 
+    start_time = time.time()
     completion = client.chat.completions.create(
         model="gpt-4o",
         messages=[
@@ -133,23 +147,72 @@ Be concise, factual, and avoid speculation.
             }
         ]
     )
+    llm_time = time.time() - start_time
+    
+    # Extract token usage information
+    input_tokens = completion.usage.prompt_tokens
+    output_tokens = completion.usage.completion_tokens
+    total_tokens = completion.usage.total_tokens
+    
     return {
       "response": completion.choices[0].message.content,
       "system_prompt": V2_SYSTEM_PROMPT,
-      "user_prompt": V2_PROMPT
-      }
+      "user_prompt": V2_PROMPT,
+      "input_tokens": input_tokens,
+      "output_tokens": output_tokens,
+      "total_tokens": total_tokens,
+      "llm_time": llm_time
+    }
 
 def rag_pipeline(pdf_upload, query_input):
     """Main RAG pipeline."""
+    total_start_time = time.time()
+    
+    # Extraction and embedding phase
     pdf_text = extract_text_from_pdf(pdf_upload)
     text_chunks, chunk_size = chunk_text(pdf_text, 0)
-    chunk_embeddings = get_text_embedding(text_chunks)
-    query_embedding = get_text_embedding([query_input])[0]
+    
+    retrieval_start_time = time.time()
+    chunk_embeddings, chunk_embedding_time = get_text_embedding(text_chunks)
+    query_embedding, query_embedding_time = get_text_embedding([query_input])
+    query_embedding = query_embedding[0]
+    
     relevant_chunks = find_relevant_chunks(query_embedding, chunk_embeddings, text_chunks)
+    retrieval_time = time.time() - retrieval_start_time
+    
+    # Generation phase
     response = generate_response(query_input, relevant_chunks)
+    
+    # Calculate total time
+    total_time = time.time() - total_start_time
+    
+    # Get PDF name
     pdf_name = pdf_upload.name if hasattr(pdf_upload, 'name') else "Uploaded PDF"
-    log_interaction(pdf_name, query_input, response["response"], response["system_prompt"], chunk_size, response["user_prompt"])
+    
+    # Log interaction with metrics
+    log_interaction(
+        pdf_name=pdf_name, 
+        query=query_input, 
+        response=response["response"], 
+        system_prompt=response["system_prompt"], 
+        chunk_size=chunk_size, 
+        user_prompt=response["user_prompt"],
+        input_tokens=response.get("input_tokens", 0),
+        output_tokens=response.get("output_tokens", 0),
+        total_tokens=response.get("total_tokens", 0),
+        retrieval_time=retrieval_time,
+        llm_time=response.get("llm_time", 0),
+        total_time=total_time
+    )
+    
     print(f"Response: {response['response']}")  # Print response for debugging
+    print(f"Tokens: {response.get('total_tokens', 0)} (input: {response.get('input_tokens', 0)}, output: {response.get('output_tokens', 0)})")
+    print(f"Times: total={total_time:.2f}s, retrieval={retrieval_time:.2f}s, llm={response.get('llm_time', 0):.2f}s")
+    
+    # Add metrics to the response
+    response["retrieval_time"] = retrieval_time
+    response["total_time"] = total_time
+    
     return response
 
 # Gradio app

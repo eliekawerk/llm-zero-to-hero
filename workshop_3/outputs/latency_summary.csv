@@ -1,0 +1,4 @@
+Metric,Average
+Total response time,2.23
+Retrieval time,1.22
+LLM inference time,0.92
