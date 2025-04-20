@@ -2,99 +2,86 @@
   "error_summary": {
     "error_count": 17,
     "by_type": {
-      "hallucination": 6,
-      "incorrect_information": 5,
-      "missing_information": 6
+      "hallucination": 4,
+      "missing_information": 9,
+      "incorrect_information": 4
     },
     "by_severity": {
-      "major": 12,
-      "minor": 3,
-      "critical": 2
+      "major": 15,
+      "minor": 2
     },
     "by_cause": {
-      "llm_reasoning_error": 7,
-      "retrieval_failure": 9,
-      "chunking_issue": 1
+      "llm_reasoning_error": 4,
+      "retrieval_failure": 12,
+      "other": 1
     },
     "by_question": {
-      "List the programming languages mentioned in the resume.": 3,
-      "What is the total number of years of professional experience?": 3,
-      "What projects or achievements are highlighted in the resume?": 4,
+      "List the programming languages mentioned in the resume.": 2,
+      "Does the candidate have experience working with cloud technologies?": 2,
+      "What projects or achievements are highlighted in the resume?": 3,
       "What is the candidate's most recent job title?": 1,
-      "Does the candidate have any leadership or management experience?": 1,
-      "What industries has the candidate worked in?": 3,
-      "Has the candidate worked in any Fortune 500 companies?": 1,
-      "Does the candidate have experience working with cloud technologies?": 1
+      "Does the candidate have any leadership or management experience?": 3,
+      "What degrees or academic qualifications does the candidate hold?": 2,
+      "What industries has the candidate worked in?": 2,
+      "What is the total number of years of professional experience?": 2
     },
     "key_insights": [
-      "Most common error type: hallucination (6 occurrences)",
-      "Most common cause: retrieval_failure (9 occurrences)",
-      "Most problematic question: 'What projects or achievements are highlighted in the resume?' (4 failures)",
-      "Critical errors: 2 (11.8% of all errors)"
+      "Most common error type: missing_information (9 occurrences)",
+      "Most common cause: retrieval_failure (12 occurrences)",
+      "Most problematic question: 'What projects or achievements are highlighted in the resume?' (3 failures)"
     ]
   },
   "detailed_error_analyses": [
     {
       "error_type": "hallucination",
       "severity": "major",
-      "details": "The predicted answer includes SQL which is not present in the resume as per the gold standard answer. This suggests that the model generated information that was not supported by the source content.",
+      "details": "The predicted answer includes SQL as a programming language listed in the resume, which is not mentioned in the gold standard answer. This is an instance of hallucination, where the model adds information that is not present in the source material.",
       "likely_cause": "llm_reasoning_error",
-      "fix_recommendation": "Review the process by which the model generates answers based on context. Implement stricter verification steps to ensure that all parts of the answer match the retrieved content.",
+      "fix_recommendation": "Improve the model's ability to cross-verify the extracted information with retrieved documents to ensure accuracy. Fine-tuning the language model with more accurate data or implementing a stricter post-processing verification step could help mitigate such errors.",
       "resume": "emma-roberts.pdf",
       "question": "List the programming languages mentioned in the resume.",
       "gold_answer": "Python, Java, JavaScript",
       "predicted_answer": "The programming languages mentioned in the resume are Python, Java, JavaScript, and SQL."
     },
     {
+      "error_type": "missing_information",
+      "severity": "major",
+      "details": "The predicted answer does not mention Azure and GCP, which are explicitly listed in the gold standard response. While it elaborates on AWS with specific services and tools, it omits important information about other cloud technologies that the candidate is experienced with according to the gold standard answer.",
+      "likely_cause": "retrieval_failure",
+      "fix_recommendation": "Improve the retrieval mechanism to ensure it captures all relevant parts of the candidate's experience, particularly mentioning all cloud technologies they have worked with, including Azure and GCP.",
+      "resume": "jane-smith.pdf",
+      "question": "Does the candidate have experience working with cloud technologies?",
+      "gold_answer": "Yes, the candidate has experience working with cloud technologies, specifically AWS, Azure, and GCP.",
+      "predicted_answer": "Yes, the candidate has experience working with cloud technologies, as mentioned in the context. She has deployed applications to AWS, utilizing services like EC2, S3, RDS, and Lambda, and has automated deployment processes using Docker and Kubernetes."
+    },
+    {
       "error_type": "hallucination",
       "severity": "major",
-      "details": "The predicted answer provides additional and potentially incorrect information ('Emma Roberts has a total of over 1.5 years of professional experience in platform development.') that was not present in the gold standard answer which simply states '1.5 years'. This suggests a likely addition or modification of details that do not adhere to the source information.",
-      "likely_cause": "llm_reasoning_error",
-      "fix_recommendation": "Ensure the model focuses strictly on extracting the exact numerical information needed without adding unverified or extra context. This might involve adjusting prompt instructions to emphasize the importance of factually correct and context-specific responses.",
-      "resume": "emma-roberts.pdf",
-      "question": "What is the total number of years of professional experience?",
-      "gold_answer": "1.5 years",
-      "predicted_answer": "Emma Roberts has a total of over 1.5 years of professional experience in platform development."
-    },
-    {
-      "error_type": "incorrect_information",
-      "severity": "minor",
-      "details": "The predicted answer incorrectly included HTML5, CSS3, and SQL as programming languages, which do not fit the typical definition of programming languages. The gold standard answer, on the other hand, correctly limits the answer to traditional programming languages.",
-      "likely_cause": "llm_reasoning_error",
-      "fix_recommendation": "Refine the prompt or LLM training data to help the model distinguish between programming languages and other types of languages or technologies, such as markup languages and query languages.",
-      "resume": "jane-smith.pdf",
-      "question": "List the programming languages mentioned in the resume.",
-      "gold_answer": "JavaScript, TypeScript, Python, Java.",
-      "predicted_answer": "The programming languages mentioned in the resume are:\n\n- JavaScript (ES6+)\n- TypeScript\n- Python\n- Java\n- HTML5\n- CSS3\n- SQL"
-    },
-    {
-      "error_type": "incorrect_information",
-      "severity": "major",
-      "details": "The predicted answer introduces new sections and achievements not mentioned in the gold standard answer, such as 'Achievements in Professional Roles.' Additionally, it provides metrics like 'Increased user engagement by 25%' and 'Reduced deployment time by 40%' which are not present in the gold standard answer.",
-      "likely_cause": "retrieval_failure",
-      "fix_recommendation": "Ensure that the retrieval system accurately retrieves relevant sections of the resume without introducing unrelated content or inferred data not present in the source document.",
+      "details": "The predicted answer introduces additional achievements that are not present in the gold standard response, such as implementing CI/CD pipelines, reducing deployment time by 40%, and improving database query execution time by 30%. These details appear to be fabricated or sourced from incorrect parts of the input, leading to a mismatch with the actual content of the resume as highlighted in the gold standard.",
+      "likely_cause": "other",
+      "fix_recommendation": "Re-evaluate the content extraction method to ensure that only relevant and accurate information is extracted from the resume. Verify the alignment of retrieved content with the expected gold standard to avoid introducing fabricated details.",
       "resume": "jane-smith.pdf",
       "question": "What projects or achievements are highlighted in the resume?",
       "gold_answer": "The resume highlights the following projects and achievements:\n\n1. **E-Commerce Platform**: Spearheaded development, integrating third-party payment gateways and ensuring PCI compliance.\n2. **Real-Time Analytics Dashboard**: Built using React, Redux, and WebSocket to provide live data and visualizations.\n3. **Inventory Management System**: Led development to streamline warehouse operations and reduce manual errors.\n4. **Customer Relationship Management (CRM) Tool**: Created a tool with advanced search and filtering to improve data management and sales processes.\n5. **Social Networking Site**: Contributed to developing features like user profiles, messaging, and news feeds.\n6. **Online Learning Platform**: Assisted in building a platform with interactive courses, quizzes, and progress tracking.\n7. **Personal Blog Platform**: Developed using Gatsby and Node.js with features like markdown support and user authentication.\n8. **Real-Time Chat Application**: Built using React, Node.js, and Socket.io with features such as private messaging and group chats.\n9. **Expense Tracker App**: Created using React Native for managing finances on iOS and Android, integrating with Firebase.",
-      "predicted_answer": "The resume highlights the following projects and achievements:\n\n1. **Professional Experience Key Projects:**\n   - **E-Commerce Platform:** Development of a scalable platform with third-party payment integration and PCI compliance.\n   - **Real-Time Analytics Dashboard:** Creation of a dashboard with live data visualization using React, Redux, and WebSocket.\n   - **Inventory Management System:** Led the development to streamline warehouse operations.\n   - **Customer Relationship Management Tool:** Created a CRM with advanced search capabilities.\n   - **Social Networking Site:** Contributed features such as profiles, messaging, and news feeds.\n   - **Online Learning Platform:** Assisted in building a platform with courses, quizzes, and tracking.\n\n2. **Highlighted Personal Projects:**\n   - **Personal Blog Platform:** Developed a blog platform with Gatsby, Node.js, markdown support, and custom CMS.\n   - **Real-Time Chat Application:** Built with React, Node.js, and Socket.io, featuring private/group messaging.\n   - **Expense Tracker App:** Created using React Native and integrated with Firebase for cross-platform use.\n\n3. **Achievements in Professional Roles:**\n   - Increased user engagement by 25% through web applications.\n   - Reduced deployment time by 40% with CI/CD pipelines.\n   - Achieved a 30% reduction in query execution time by optimizing database queries."
+      "predicted_answer": "Jane Smith's resume highlights the following projects and achievements:\n\n1. **E-Commerce Platform**: Led the development of a scalable platform integrating third-party payment gateways and ensuring PCI compliance.\n\n2. **Real-Time Analytics Dashboard**: Created using React, Redux, and WebSocket, providing live data and visualizations.\n\n3. **Inventory Management System**: Developed a system that streamlined warehouse operations and reduced manual errors.\n\n4. **Customer Relationship Management (CRM) Tool**: Built with advanced search and filtering capabilities for improved customer data management and sales processes.\n\n5. **Social Networking Site**: Contributed to developing features like user profiles, messaging, and news feeds.\n\n6. **Online Learning Platform**: Assisted in building a platform with interactive courses, quizzes, and progress tracking.\n\n7. **Personal Blog Platform**: Developed using Gatsby and Node.js, featuring markdown support, user authentication, and a custom CMS.\n\n8. **Real-Time Chat Application**: Built with React, Node.js, and Socket.io, featuring private messaging, group chats, and message notifications.\n\n9. **Expense Tracker App**: Created using React Native for managing finances on iOS and Android, integrated with Firebase.\n\nAdditional achievements include implementing CI/CD pipelines, reducing deployment time by 40%, and improving database query execution time by 30%."
     },
     {
       "error_type": "missing_information",
       "severity": "minor",
-      "details": "The predicted answer provides the job title and company name but omits the specific date range 'January 2023 - Present' that is included in the gold standard answer. This missing time frame results in an incomplete response.",
-      "likely_cause": "chunking_issue",
-      "fix_recommendation": "Ensure that the chunks fed into the model include complete and relevant sections of text, especially those containing date ranges or other temporal information that are often crucial to context.",
+      "details": "The predicted answer correctly identifies the most recent job title and the company, but it omits the time frame 'January 2023 - Present', which is present in the gold standard answer.",
+      "likely_cause": "retrieval_failure",
+      "fix_recommendation": "Enhance the retrieval component to ensure it captures complete information, especially temporal details, associated with entities like job titles.",
       "resume": "john-doe.pdf",
       "question": "What is the candidate's most recent job title?",
       "gold_answer": "Frontend Developer at XYZ Tech Solutions, January 2023 - Present.",
-      "predicted_answer": "The candidate's most recent job title is Frontend Developer at XYZ Tech Solutions."
+      "predicted_answer": "The candidate's most recent job title is \"Frontend Developer\" at XYZ Tech Solutions."
     },
     {
       "error_type": "missing_information",
       "severity": "major",
-      "details": "The predicted answer states a lack of sufficient information, failing to extract relevant management experience from the candidate's resume, which was present in the gold standard answer.",
+      "details": "The predicted answer fails to provide any details about the candidate's leadership experience, even though the gold standard answer indicates that the candidate led a project. This suggests that there was relevant information that the system did not capture or communicate.",
       "likely_cause": "retrieval_failure",
-      "fix_recommendation": "Improve the retrieval mechanism to ensure that key phrases related to leadership and management experience are correctly identified and extracted from the candidate's resume data.",
+      "fix_recommendation": "Improve the retrieval mechanism to ensure that relevant information about leadership experience, such as leading projects or teams, is captured and provided for generating the answer.",
       "resume": "john-doe.pdf",
       "question": "Does the candidate have any leadership or management experience?",
       "gold_answer": "The candidate has led the frontend development of an e-commerce platform using React but has no explicit leadership or management positions mentioned in the resume.",
@@ -103,86 +90,97 @@
     {
       "error_type": "missing_information",
       "severity": "major",
-      "details": "The system was unable to retrieve and provide information about the candidate's work experience despite it being present in the reference data. The gold standard clearly lists industries like technology and digital agency, but the model responded with a lack of information.",
+      "details": "The predicted answer omits the graduation date, which is specified in the gold standard answer. While the majority of the information is accurate, the absence of the graduation date may lead to misunderstandings regarding the candidate's academic timeline, making this a significant oversight.",
       "likely_cause": "retrieval_failure",
-      "fix_recommendation": "Improve the retrieval component of the RAG system to ensure that relevant information is effectively retrieved from the data. This might involve enhancing the search query formulation or refining the indexing strategy to make sure pertinent data can be captured and used in the response.",
+      "fix_recommendation": "Ensure that all relevant data, especially specific details like dates, are properly retrieved and incorporated into the generated answer. This may involve checking the retrieval system for completeness and accuracy of the extracted information.",
+      "resume": "john-doe.pdf",
+      "question": "What degrees or academic qualifications does the candidate hold?",
+      "gold_answer": "Bachelor of Science in Computer Science from University of Technology, graduated May 2022.",
+      "predicted_answer": "John Doe holds a Bachelor of Science in Computer Science from the University of Technology."
+    },
+    {
+      "error_type": "missing_information",
+      "severity": "major",
+      "details": "The predicted answer incorrectly states that there is not enough information, which indicates a failure to retrieve or recognize relevant context that was indeed present about the candidate's industry experience in technology and digital agency sectors.",
+      "likely_cause": "retrieval_failure",
+      "fix_recommendation": "Improve the retrieval component of the RAG system to better extract relevant information related to industry experience from the source documents. This may include tuning the retrieval model or adjusting the indexing process to ensure these specifics are not overlooked.",
       "resume": "john-doe.pdf",
       "question": "What industries has the candidate worked in?",
       "gold_answer": "The candidate has worked in the technology and digital agency industries, specifically in web development and digital projects.",
       "predicted_answer": "I don't have enough information to answer that based on the provided context."
     },
     {
-      "error_type": "hallucination",
-      "severity": "major",
-      "details": "The predicted answer includes an additional section on 'Volunteer Experience' which is not present in the gold standard answer. This introduces information that wasn't required or present in the resume, specifically about mentoring web developers and conducting workshops as a Web Development Mentor at CodeForGood.",
-      "likely_cause": "retrieval_failure",
-      "fix_recommendation": "Ensure the retrieval mechanism correctly fetches relevant sections of the source document, and refine the processing step to eliminate unrelated or extraneous information not present in the source for this context.",
-      "resume": "john-doe.pdf",
-      "question": "What projects or achievements are highlighted in the resume?",
-      "gold_answer": "The resume highlights the following projects and achievements: \n\n1. E-Commerce Platform: Led frontend development using React, integrating payment gateways and third-party services.\n2. Employee Portal: Developed a responsive portal with Vue.js for company resources and self-service tools.\n3. Marketing Website: Collaborated on a responsive design for a major client's website, improving user retention and lead generation.\n4. Event Management System: Assisted in creating a system with Vue.js for organizing events.\n5. Personal Portfolio Website: Built with React and Tailwind CSS, featuring smooth scrolling and animations.\n6. Task Manager App: Developed with Vue.js and Vuex for managing tasks with persistent data storage.\n7. Weather Dashboard: Created with JavaScript, integrating OpenWeatherMap API for real-time data.\n\nAdditionally, achievements include:\n- 30% improvement in website load times through optimization.\n- Contribution to code reviews and management in an Agile team.",
-      "predicted_answer": "The resume highlights the following projects and achievements:\n\n1. **Professional Experience Projects:**\n   - **E-Commerce Platform:** Led the frontend development using React, integrating payment gateways and third-party services.\n   - **Employee Portal:** Developed a responsive portal with Vue.js for employees to access resources and tools.\n   - **Marketing Website:** Collaborated on a responsive design for a major client, enhancing user retention and lead generation.\n   - **Event Management System:** Assisted in creating a system with Vue.js for organizing and managing events.\n\n2. **Personal Projects:**\n   - **Personal Portfolio Website:** Built with React and Tailwind CSS, featuring smooth scrolling, animations, and responsive design.\n   - **Task Manager App:** Developed with Vue.js and Vuex, enabling task management and data persistence through local storage.\n   - **Weather Dashboard:** Created using HTML, CSS, and JavaScript, integrating real-time weather data from the OpenWeatherMap API.\n\n3. **Volunteer Experience:**\n   - Mentored web developers and conducted workshops as a Web Development Mentor at CodeForGood.\n\nThese projects and roles demonstrate proficiency in frontend development, collaboration, and mentoring."
-    },
-    {
       "error_type": "incorrect_information",
       "severity": "minor",
-      "details": "The predicted answer suggests a lack of information in the provided context, implying that the retrieval or context did not contain enough details to affirmatively answer the question. However, the correct answer should have been based on the absence of information indicating work in Fortune 500 companies, as highlighted in the gold standard response.",
+      "details": "The predicted answer states that there is not enough information in the context, whereas the gold standard explicitly states that the information is not mentioned in the resume. The prediction fails to accurately convey the certainty provided by the gold standard and introduces unnecessary ambiguity.",
       "likely_cause": "llm_reasoning_error",
-      "fix_recommendation": "Ensure that the LLM is better aligned to interpret 'not mentioned' scenarios as a valid and correct answer instead of attributing it to insufficient information.",
+      "fix_recommendation": "Adjust the model's response generation logic to recognize and express instances where information is explicitly absent, as opposed to being uncertain or lacking context.",
       "resume": "alex-thompson.pdf",
-      "question": "Has the candidate worked in any Fortune 500 companies?",
+      "question": "Does the candidate have any leadership or management experience?",
       "gold_answer": "Not mentioned in the resume.",
       "predicted_answer": "I don't have enough information to answer that based on the provided context."
     },
     {
-      "error_type": "hallucination",
+      "error_type": "missing_information",
       "severity": "major",
-      "details": "The predicted answer includes misinformation not present in the gold standard answer. It incorrectly added that 'Alex has certifications in Python, Java, and AWS, and has volunteered as a coding mentor,' which was not mentioned in the original resume. The gold standard mentions mentoring as a Coding Mentor at Code4Good, conducting workshops, and organizing hackathons, but does not mention specific certifications.",
-      "likely_cause": "llm_reasoning_error",
-      "fix_recommendation": "Ensure that the LLM is better aligned to extract and summarize information strictly from the retrieved documents, avoiding adding information that wasn't retrieved or verified. It may involve adjusting prompting strategies to emphasize reliance on retrieved evidence.",
+      "details": "The predicted answer did not include the achievements related to mentoring and organizing workshops and hackathons at Code4Good, which are explicitly mentioned in the gold standard answer. This omission overlooks some key parts of the resume that are mentioned as achievements.",
+      "likely_cause": "retrieval_failure",
+      "fix_recommendation": "Enhance the retrieval component to ensure it captures all relevant sections of the resume, including those detailing achievements and non-technical contributions.",
       "resume": "alex-thompson.pdf",
       "question": "What projects or achievements are highlighted in the resume?",
       "gold_answer": "Highlighted projects and achievements in the resume include:\n\n1. **E-Commerce API**: Developed a comprehensive API for an e-commerce platform, handling user authentication, product management, and order processing.\n2. **Data Processing Pipeline**: Designed and implemented a data processing pipeline using Python and AWS Lambda for real-time data analysis and reporting.\n3. **Customer Relationship Management (CRM) System**: Assisted in the development, implementing features like customer data management and interaction tracking.\n4. **Inventory Management System**: Contributed to streamlining warehouse operations and reducing manual errors.\n5. **Personal Blog API**: Developed using Django and Django REST Framework, handling user registration, authentication, and content management.\n6. **Chat Application Backend**: Created backend using Node.js and Express.js, implementing real-time communication with WebSocket.\n7. **Expense Tracker API**: Built with Flask, allowing users to manage finances, implemented JWT-based authentication, and deployed on Heroku.\n\nAchievements include mentoring as a Coding Mentor at Code4Good, conducting workshops, and organizing hackathons.",
-      "predicted_answer": "The resume highlights the following projects and achievements:\n\n1. **E-Commerce API**: Developed a comprehensive API for an e-commerce platform, handling user authentication, product management, and order processing.\n\n2. **Data Processing Pipeline**: Designed and implemented a data processing pipeline using Python and AWS Lambda, enabling real-time data analysis and reporting.\n\n3. **Customer Relationship Management (CRM) System**: Assisted in the development of a CRM system, implementing features such as customer data management, interaction tracking, and reporting.\n\n4. **Inventory Management System**: Contributed to the creation of an inventory management system, streamlining warehouse operations and reducing manual errors.\n\n5. **Personal Blog API**: Developed a personal blog API using Django and Django REST Framework, handling user registration, authentication, and content management.\n\n6. **Chat Application Backend**: Created the backend for a real-time chat application using Node.js and Express.js, and implemented WebSocket for real-time communication.\n\n7. **Expense Tracker API**: Built an expense tracker API with Flask, including JWT-based authentication for secure user access, and deployed it on Heroku.\n\nAdditionally, Alex has certifications in Python, Java, and AWS, and has volunteered as a coding mentor."
+      "predicted_answer": "The projects and achievements highlighted in the resume are:\n\n1. **E-Commerce API**: Developed a comprehensive API for an e-commerce platform, handling user authentication, product management, and order processing.\n\n2. **Data Processing Pipeline**: Designed and implemented a data processing pipeline using Python and AWS Lambda, enabling real-time data analysis and reporting.\n\n3. **Customer Relationship Management (CRM) System**: Assisted in the development of a CRM system, implementing features such as customer data management, interaction tracking, and reporting.\n\n4. **Inventory Management System**: Contributed to the creation of an inventory management system, streamlining warehouse operations and reducing manual errors.\n\n5. **Personal Blog API**: Developed a personal blog API using Django and Django REST Framework, with features for user registration, authentication, and content management.\n\n6. **Chat Application Backend**: Created the backend for a real-time chat application using Node.js and Express.js, implementing real-time communication with WebSocket.\n\n7. **Expense Tracker API**: Built an expense tracker API with Flask, providing features for tracking income and expenses, with secure JWT-based authentication."
     },
     {
       "error_type": "hallucination",
       "severity": "major",
-      "details": "The incorrect predicted answer includes 'HTML', 'CSS', and 'Ruby' which were not part of the gold standard answer. This indicates that the system added languages that were not originally mentioned in the resume.",
+      "details": "The predicted answer includes programming languages like HTML, CSS, and Ruby, which are not present in the gold standard answer. This indicates that the model added information that was not actually in the source data.",
       "likely_cause": "llm_reasoning_error",
-      "fix_recommendation": "Review the processing and filtering steps that extract programming languages from the retrieved text to ensure only verified mentions from the resume are included.",
+      "fix_recommendation": "Enhance the LLM's ability to differentiate between actual programming languages listed in the provided document and additional languages it might incorrectly assume should be included. Fine-tuning the model with more examples of this specific task may help correct this tendency.",
       "resume": "michael-johnson.pdf",
       "question": "List the programming languages mentioned in the resume.",
       "gold_answer": "JavaScript, TypeScript, Python, Java",
       "predicted_answer": "The programming languages mentioned in the resume are:\n\n- JavaScript\n- TypeScript\n- Python\n- Java\n- HTML\n- CSS\n- Ruby"
     },
     {
+      "error_type": "hallucination",
+      "severity": "major",
+      "details": "The predicted answer incorrectly includes the name \"Michael Johnson,\" which is not present in the question or the gold standard answer. This extra detail is unnecessary and alters the perception of the candidate's academic qualifications by introducing an unverified identity.",
+      "likely_cause": "llm_reasoning_error",
+      "fix_recommendation": "Adjust the language model's handling of contextual information to avoid introducing names or specific details that are not grounded in the source data. This may involve fine-tuning the model's capacity to recognize and retain focus on relevant entities only.",
+      "resume": "michael-johnson.pdf",
+      "question": "What degrees or academic qualifications does the candidate hold?",
+      "gold_answer": "The candidate holds a Master of Science in Computer Science from the University of Technology and a Bachelor of Science in Information Technology from Tech University.",
+      "predicted_answer": "Michael Johnson holds a Master of Science in Computer Science from the University of Technology and a Bachelor of Science in Information Technology from Tech University."
+    },
+    {
       "error_type": "incorrect_information",
-      "severity": "critical",
-      "details": "The predicted answer incorrectly states that Michael Johnson has 'over 12 years of professional experience,' while the gold standard indicates 'over 16 years.' This discrepancy affects the accuracy of the information provided, leading to a critical misunderstanding about the level of experience.",
+      "severity": "major",
+      "details": "The predicted answer states 'over 12 years', which is incorrect as the correct duration is 'over 16 years'. The prediction fails to match the gold standard answer and provides a lower value than the actual experience.",
       "likely_cause": "retrieval_failure",
-      "fix_recommendation": "Improve the retrieval system to ensure that the most accurate and up-to-date documents are retrieved. This may involve refining the search query, improving ranking algorithms, or regularly updating the knowledge base to reflect the latest information.",
+      "fix_recommendation": "Ensure that the correct context containing the accurate number of years is retrieved and prioritized in the generation phase. This may involve refining the retrieval process or adjusting the importance weights of context snippets that have numerical data or utilize precise language about experience.",
       "resume": "michael-johnson.pdf",
       "question": "What is the total number of years of professional experience?",
       "gold_answer": "Over 16 years.",
-      "predicted_answer": "Michael Johnson has over 12 years of professional experience."
-    },
-    {
-      "error_type": "missing_information",
-      "severity": "critical",
-      "details": "The predicted answer indicates a lack of information, while the gold standard answer provides specific industries the candidate has worked in. This suggests the model failed to retrieve or access the necessary information from the sources available to it.",
-      "likely_cause": "retrieval_failure",
-      "fix_recommendation": "Improve the retrieval system to ensure the relevant documents containing information about the industries the candidate worked in are fetched and considered in the response generation.",
-      "resume": "michael-johnson.pdf",
-      "question": "What industries has the candidate worked in?",
-      "gold_answer": "The candidate has worked in the Financial, Healthcare, E-Commerce, and Real-Time Collaboration industries.",
-      "predicted_answer": "I don't have enough information to answer that based on the provided context."
+      "predicted_answer": "The total number of years of professional experience is over 12 years, as mentioned in the summary of the context provided."
     },
     {
       "error_type": "missing_information",
       "severity": "major",
-      "details": "The predicted answer indicates a lack of information to provide a response, while the gold standard answer clearly states 'Over 10 years.' This discrepancy implies that the information could have been available but was not retrieved or utilized correctly, leading to a critical missing answer.",
+      "details": "The predicted answer lacks specific information about the candidate's leadership role in the Intelligent Document Processing Project at Cevo Australia, which is mentioned in the gold standard answer.",
       "likely_cause": "retrieval_failure",
-      "fix_recommendation": "Improve the retrieval process to ensure that critical data about professional experience is being fetched thoroughly. This could involve better indexing, expanding the data source, or using more effective retrieval algorithms.",
+      "fix_recommendation": "Enhance the retrieval component of the RAG pipeline to ensure all relevant documents are retrieved, possibly by improving the coverage or tuning the ranker to prioritize diverse aspects of the candidate's experiences.",
+      "resume": "JO Reyes CV April 2025.pdf",
+      "question": "Does the candidate have any leadership or management experience?",
+      "gold_answer": "Yes, the candidate has leadership and management experience as a team leader and Technical Lead for a distributed international team at Inchcape Australia - Subaru, and has led a team in an Intelligent Document Processing Project at Cevo Australia.",
+      "predicted_answer": "Yes, the candidate has leadership and management experience. They have led cross-functional teams and delivered comprehensive systems, as well as held the position of Technical Lead at Inchcape Australia - Subaru, where they were responsible for the direction of technical strategy and development, and led a distributed international team."
+    },
+    {
+      "error_type": "missing_information",
+      "severity": "major",
+      "details": "The predicted answer indicates a lack of information, suggesting that the information needed to answer the question was not present or not retrieved properly. However, the gold standard answer indicates that the information should have been available to accurately respond to the question.",
+      "likely_cause": "retrieval_failure",
+      "fix_recommendation": "Improve the retrieval process to ensure that relevant documents or information containing the total years of professional experience are included in the retrieved context that the language model uses. This might involve refining the search queries or enhancing the indexing of the database.",
       "resume": "JO Reyes CV April 2025.pdf",
       "question": "What is the total number of years of professional experience?",
       "gold_answer": "Over 10 years.",
@@ -191,35 +189,35 @@
     {
       "error_type": "incorrect_information",
       "severity": "major",
-      "details": "The predicted answer includes industries that are not part of the gold standard, specifically 'mergers and acquisitions (M&A)', 'strata management', and 'timber manufacturing'. This introduces inaccuracies in the candidate's industry experience. Additionally, it misses 'IT consultancy', as noted in the gold standard, though it correctly includes other industries such as digital twins and industrial automation.",
+      "details": "The predicted answer contains incorrect industries such as 'mergers and acquisitions', 'strata management', 'timber manufacturing', and 'building and infrastructure management' that were not in the gold standard answer. It also has a slightly incorrect phrase with 'automotive distribution and retail' instead of 'automotive distribution and services'.",
       "likely_cause": "retrieval_failure",
-      "fix_recommendation": "Improve the retrieval process to ensure more relevant documents are retrieved, focusing on extracting precise and accurate information directly matching the candidate's industry experience. Cross-referencing retrieved data with the gold standard can help in identifying discrepancies.",
+      "fix_recommendation": "Improve the retrieval step to ensure that more relevant documents containing the correct industries are fetched. This might include refining the search query or expanding the context used for the retrieval.",
       "resume": "JO Reyes CV April 2025.pdf",
       "question": "What industries has the candidate worked in?",
       "gold_answer": "The candidate has worked in the industries of digital twins, industrial automation, e-commerce, cloud computing consultancy, mining, automotive distribution and services, and IT consultancy.",
-      "predicted_answer": "The candidate has worked in the following industries: digital twins, industrial automation, e-commerce, cloud computing consultancy, mergers and acquisitions (M&A), strata management, timber manufacturing, mining, and automotive distribution."
+      "predicted_answer": "The candidate has worked in the following industries: digital twins, industrial automation, e-commerce, mergers and acquisitions, strata management, timber manufacturing, building and infrastructure management, automotive distribution and retail, and IT consultancy."
     },
     {
       "error_type": "missing_information",
       "severity": "major",
-      "details": "The predicted answer lacks specific details provided in the gold standard answer, such as the duration of experience ('over a decade'), and the current role at 'Cevo Australia.' These details are crucial as they emphasize the candidate's extensive experience and current engagement with cloud technologies.",
+      "details": "The predicted answer omits key details present in the gold standard answer, such as the candidate's decade-long experience, the specific mention of cloud-native development, and their current role at Cevo Australia. This missing information is crucial for evaluating the depth and relevance of the candidate's cloud technology experience.",
       "likely_cause": "retrieval_failure",
-      "fix_recommendation": "Improve the retrieval component to ensure it captures and returns more comprehensive data snippets, particularly those that contain detailed information about the candidate's experience, roles, and duration.",
+      "fix_recommendation": "Improve the retrieval step to ensure that all relevant details, such as specific years of experience and relevant roles, are captured and included in the response. This might involve refining the search queries or enhancing the indexing of candidate profiles to highlight key experience segments.",
       "resume": "JO Reyes CV April 2025.pdf",
       "question": "Does the candidate have experience working with cloud technologies?",
       "gold_answer": "Yes, the candidate has over a decade of cloud-native development experience, particularly on AWS, and has worked with cloud technologies in their current role at Cevo Australia and previous roles utilizing AWS and Azure platforms.",
-      "predicted_answer": "Yes, the candidate has experience working with cloud technologies, specifically with AWS and Azure."
+      "predicted_answer": "Yes, the candidate has experience working with cloud technologies, specifically in AWS and Azure."
     },
     {
-      "error_type": "hallucination",
+      "error_type": "incorrect_information",
       "severity": "major",
-      "details": "The predicted answer includes several projects and achievements not present in the gold standard answer, such as delivering a tutorial series on Generative AI and RAG techniques and projects related to Metaflow, MLFlow, and Amazon services. These additions do not align with the resume details specified in the gold standard answer.",
-      "likely_cause": "llm_reasoning_error",
-      "fix_recommendation": "Improve the alignment between the retrieved documents and the generated response by enhancing the LLM's training data or utilizing prompt engineering techniques to ensure that only relevant extracted information is included in the final output.",
+      "details": "The predicted answer introduces content that is not present in the gold standard response, specifically the addition of an 'Enterprise Web/Mobile Solutions at Readify' project and mentions of personal projects, community involvement, and blog articles, which are not highlighted in the provided resume. Furthermore, it inaccurately describes the 'RAG-based Internal Project' and the 'E-commerce CMS for Subaru', diverging from the intended highlights.",
+      "likely_cause": "retrieval_failure",
+      "fix_recommendation": "Ensure that the retrieval component accurately identifies and extracts the most relevant information from the source documents. Further, validate that no extraneous or irrelevant information is being introduced by possibly cross-checking with the gold standard during model fine-tuning or evaluation.",
       "resume": "JO Reyes CV April 2025.pdf",
       "question": "What projects or achievements are highlighted in the resume?",
       "gold_answer": "The resume highlights the following projects and achievements:\n\n1. Productionisation of a Generative AI Project for a large Australian company in the mergers and acquisitions space.\n2. RAG-based Internal Project for Cevo Australia, allowing users to upload and analyze past Statements of Work (SOWs).\n3. Intelligent Document Processing Project for a leading Australian strata management company.\n4. Image Similarity Search Engine for a large Australian manufacturer of timber mouldings.\n5. Full-stack web applications for Willow's Digital Twin platform in the mining industry.\n6. Technical strategy and development for Subaru\u2019s e-commerce CMS at Inchcape Australia.",
-      "predicted_answer": "The resume highlights the following projects and achievements:\n\n1. **Productionisation of a Generative AI Project**: Assisted a large Australian company in the mergers and acquisitions space by transitioning their data scientists' code to a production-ready state to improve application reliability and user experience.\n\n2. **RAG-based Internal Project**: Developed a project using Amazon Bedrock Knowledge Bases to enable Cevo users to upload and analyze past Statements of Work for creating new proposals.\n\n3. **Intelligent Document Processing Project**: Led a team to build a proof of concept for automatic document classification, data extraction, and handling for an Australian strata management company, improving efficiency and business scalability.\n\n4. **Image Similarity Search Engine**: Built a system for a large Australian timber mouldings manufacturer to expedite design searches using a custom machine learning project, significantly reducing search time.\n\n5. **Full-stack Web Applications for Willow Digital Twin**: Developed web applications for the mining industry, facilitating faster, data-driven decisions, and maintained data pipelines using Azure technologies.\n\n6. **Technical Strategy for Subaru\u2019s E-Commerce CMS**: Led a team to ensure a resilient and high-performance web experience for Subaru\u2019s content management system on AWS.\n\n7. **Retrieval Augmented Generation Tutorial Sessions**: Delivered a 7-part series on Generative AI and RAG techniques.\n\n8. **Projects Related to Generative AI and MLOps**: Various projects demonstrating the use of Metaflow, MLFlow, Amazon Personalize, and Amazon Rekognition in machine learning and MLOps contexts, including recommender systems and image classification."
+      "predicted_answer": "The resume highlights several projects and achievements, including:\n\n1. **Productionisation of a Generative AI Project**: Transitioning a large Australian company's data scientists' code to a production-ready state, improving reliability and user experience.\n\n2. **RAG-based Internal Project**: Enabling Cevo users to review past proposals and identify patterns using AWS services for faster development and cost reduction.\n\n3. **Intelligent Document Processing Project**: Building a system for automatic classification and data extraction for a leading strata management company, allowing scalability.\n\n4. **Image Similarity Search Engine**: Developing an image similarity search system for a large Australian timber manufacturer, significantly reducing manual search time.\n\n5. **Full-Stack Web Applications for Willow**: Developing intuitively designed web applications for a digital twin platform in the mining industry, enabling faster decision-making.\n\n6. **E-commerce CMS for Subaru**: Leading technical strategy and development for Subaru's e-commerce CMS, ensuring a resilient and high-performance web experience.\n\n7. **Enterprise Web/Mobile Solutions at Readify**: Specializing in full-stack and cross-platform development on Azure, tailoring solutions to client business goals.\n\nAdditionally, personal projects, community involvement, and blog articles on topics like MLOps, Generative AI, recommender systems, and race prediction systems are mentioned."
     }
   ]
 }

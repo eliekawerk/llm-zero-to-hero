@@ -107,19 +107,34 @@ Workshop 3 introduces **evaluations** for the application, now free from LlamaIn
 
 #### **Exercise**
 1. **Create a Gold Set**:
-    - Use `data/questions.json` to generate a list of questions.
-    - Run `01_generate_gold_set.py` to create `data/gold_set.jsonl`.
-    - Review and curate the answers for accuracy.
+    - Use `data/questions.json` as the list of questions for this exercise.
+    - I vibe-coded most of the scripts in this workshop, however I had to guide Github Copilot every step of the way.
+    - Run `01_generate_gold_set.py` to create `data/gold_set.jsonl`. This script asks the LLM to generate answers to the questions in `data/questions.json`.
+    - Review and curate the answers for accuracy. Creating a gold set is supposed to be a manual process, but in this case, I did a short-cut, and used the LLM to generate the answers. I then reviewed the answers and made some changes to ensure accuracy.
 
 2. **Generate Predictions**:
+    - Next, we then used the functionality that we created in `Workshop 1` when we removed LlamaIndex and used the OpenAI API directly to generate predictions. We had built a RAG system without using any libraries, the function is called `rag_pipeline`.
     - Run `02_run_predictions.py` to create `data/predictions.jsonl`.
 
 3. **Evaluate Predictions**:
+    - We merge the predictions and the gold set, and uses [Instructor](https://python.useinstructor.com/) to take advantage of robust structured outputs, which makes it easier to evaluate the predictions.
     - Run `03_run_evals.py` to compare predictions against the Gold Set.
     - Generate `data/evaluation_report.json`.
+    - we used the usual metrics functions from SKlearn to calculate the accuracy, precision, recall, and F1 score of the predictions.
 
-4. **Display Metrics**:
-    - Metrics are displayed in STDIO and saved as CSV and HTML reports.
+4. **Cost and Latency Evaluation**:
+    - In addition to accuracy metrics, we track token usage for cost analysis:
+        - Input tokens (prompt + context)
+        - Output tokens (generated response)
+        - Total tokens used per query
+    - We also measure latency metrics:
+        - Retrieval time (time to find relevant chunks)
+        - LLM inference time (time to generate response)
+        - Total request-to-response time
+    - Generate cost efficiency metrics:
+        - Cost per correct answer
+        - Token efficiency (accuracy per 1K tokens)
+    - These metrics help optimize the system for both performance and cost-effectiveness.
 
 #### **Eval Metrics Output**
 ```plaintext
