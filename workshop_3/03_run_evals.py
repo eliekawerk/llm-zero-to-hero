@@ -3,11 +3,15 @@ import os
 import pandas as pd
 from tqdm import tqdm
 import instructor
+from collections import Counter
+import matplotlib.pyplot as plt
+import seaborn as sns
 from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_score
 from pydantic import BaseModel, Field
-from typing import List, Optional
+from typing import List, Optional, Literal, Dict
 from openai import OpenAI
 from dotenv import load_dotenv
+from pathlib import Path
 
 # Load environment variables from .env file
 load_dotenv()
@@ -23,6 +27,11 @@ client = instructor.patch(OpenAI())
 GOLD_SET_PATH = "data/gold_set.jsonl"
 PREDICTIONS_PATH = "data/your_predictions.jsonl"
 OUTPUT_REPORT_PATH = "data/evaluation_report.json"
+ERROR_ANALYSIS_PATH = "data/error_analysis.json"
+OUTPUT_DIR = Path(__file__).parent / "outputs"
+
+# Create output directory if it doesn't exist
+OUTPUT_DIR.mkdir(exist_ok=True)
 
 # Pydantic model for evaluation
 class AnswerEvaluation(BaseModel):
@@ -31,6 +40,36 @@ class AnswerEvaluation(BaseModel):
   reasoning: str = Field(..., description="Reasoning behind the evaluation decision")
   missing_info: Optional[List[str]] = Field(None, description="Important information missing from the prediction")
   incorrect_info: Optional[List[str]] = Field(None, description="Incorrect information in the prediction")
+
+# Pydantic model for error analysis
+class ErrorAnalysis(BaseModel):
+  """Detailed error analysis of an incorrect prediction"""
+  error_type: Literal[
+    "missing_information", 
+    "incorrect_information", 
+    "hallucination",
+    "ambiguity",
+    "formatting_issue",
+    "other"
+  ] = Field(..., description="The primary type of error")
+  
+  severity: Literal["critical", "major", "minor"] = Field(
+    ..., description="How severely this error impacts the usefulness of the response"
+  )
+  
+  details: str = Field(..., description="Detailed explanation of the error")
+  
+  likely_cause: Literal[
+    "retrieval_failure", 
+    "chunking_issue", 
+    "context_window_limitation",
+    "prompt_misalignment",
+    "embedding_similarity_failure",
+    "llm_reasoning_error",
+    "other"
+  ] = Field(..., description="The most likely cause of this error")
+  
+  fix_recommendation: str = Field(..., description="Recommendation on how to fix this error")
 
 def load_jsonl(file_path):
   """Load data from a JSONL file."""
@@ -74,6 +113,161 @@ def evaluate_answer(gold_answer, predicted_answer):
       missing_info=None,
       incorrect_info=None
     )
+
+def analyze_error(gold_answer, predicted_answer, question):
+  """Perform detailed error analysis on incorrect predictions."""
+  try:
+    prompt = f"""
+    Question: "{question}"
+    Gold standard answer: "{gold_answer}"
+    Incorrect predicted answer: "{predicted_answer}"
+    
+    Analyze why this prediction is incorrect and categorize the error.
+    Identify:
+    1. The primary type of error (missing information, incorrect information, hallucination, etc.)
+    2. How severe this error is (critical, major, minor)
+    3. Detailed explanation of what went wrong
+    4. The likely cause of this error in the RAG pipeline (retrieval failure, chunking issue, etc.)
+    5. Recommendation on how to fix this error
+    """
+    
+    analysis = client.chat.completions.create(
+      model="gpt-4o",
+      response_model=ErrorAnalysis,
+      messages=[
+        {"role": "system", "content": "You are an expert evaluator of RAG systems who specializes in error analysis."},
+        {"role": "user", "content": prompt}
+      ]
+    )
+    return analysis
+  except Exception as e:
+    print(f"Error in analysis: {e}")
+    return ErrorAnalysis(
+      error_type="other",
+      severity="major",
+      details=f"Error analysis failed: {str(e)}",
+      likely_cause="other",
+      fix_recommendation="Retry the error analysis"
+    )
+
+def analyze_errors(results, merged_df):
+  """Analyze all errors and categorize them."""
+  error_analyses = []
+  
+  # Find all incorrect predictions
+  incorrect_results = [(i, r) for i, r in enumerate(results) if not r['is_correct']]
+  
+  if incorrect_results:
+    print(f"\nAnalyzing {len(incorrect_results)} incorrect predictions...")
+    
+    for i, result in tqdm(incorrect_results, desc="Analyzing errors"):
+      row_index = merged_df.index[i]
+      question = merged_df.loc[row_index, 'question']
+      gold_answer = result['gold_answer']
+      pred_answer = result['predicted_answer']
+      
+      # Perform detailed error analysis
+      error_analysis = analyze_error(gold_answer, pred_answer, question)
+      
+      # Add to results
+      analysis_dict = error_analysis.model_dump()
+      analysis_dict['resume'] = result['resume']
+      analysis_dict['question'] = result['question']
+      analysis_dict['gold_answer'] = gold_answer
+      analysis_dict['predicted_answer'] = pred_answer
+      error_analyses.append(analysis_dict)
+  
+  return error_analyses
+
+def generate_error_summary(error_analyses):
+  """Generate summary statistics from error analyses."""
+  if not error_analyses:
+    return {"message": "No errors to analyze"}
+  
+  # Count errors by type
+  error_types = Counter([e['error_type'] for e in error_analyses])
+  
+  # Count errors by severity
+  error_severity = Counter([e['severity'] for e in error_analyses])
+  
+  # Count likely causes
+  error_causes = Counter([e['likely_cause'] for e in error_analyses])
+  
+  # Count errors by question
+  error_questions = Counter([e['question'] for e in error_analyses])
+  
+  # Generate key insights
+  key_insights = []
+  
+  # Most common error type
+  if error_types:
+    most_common_type = max(error_types.items(), key=lambda x: x[1])
+    key_insights.append(f"Most common error type: {most_common_type[0]} ({most_common_type[1]} occurrences)")
+  
+  # Most common cause
+  if error_causes:
+    most_common_cause = max(error_causes.items(), key=lambda x: x[1])
+    key_insights.append(f"Most common cause: {most_common_cause[0]} ({most_common_cause[1]} occurrences)")
+  
+  # Most problematic question
+  if error_questions:
+    most_problematic = max(error_questions.items(), key=lambda x: x[1])
+    key_insights.append(f"Most problematic question: '{most_problematic[0]}' ({most_problematic[1]} failures)")
+  
+  # Critical errors
+  critical_count = error_severity.get('critical', 0)
+  if critical_count > 0:
+    critical_pct = critical_count / len(error_analyses) * 100
+    key_insights.append(f"Critical errors: {critical_count} ({critical_pct:.1f}% of all errors)")
+  
+  return {
+    "error_count": len(error_analyses),
+    "by_type": dict(error_types),
+    "by_severity": dict(error_severity),
+    "by_cause": dict(error_causes),
+    "by_question": dict(error_questions),
+    "key_insights": key_insights
+  }
+
+def plot_error_analysis(error_summary, output_dir):
+  """Create visualizations of error analysis."""
+  if "message" in error_summary:
+    return  # No errors to plot
+  
+  # Set the style
+  sns.set_style("whitegrid")
+  
+  # Plot error types
+  plt.figure(figsize=(10, 6))
+  sns.barplot(x=list(error_summary["by_type"].keys()), 
+              y=list(error_summary["by_type"].values()),
+              palette="viridis")
+  plt.title("Errors by Type")
+  plt.xticks(rotation=45, ha='right')
+  plt.tight_layout()
+  plt.savefig(output_dir / "error_types.png")
+  
+  # Plot error causes
+  plt.figure(figsize=(12, 6))
+  sns.barplot(x=list(error_summary["by_cause"].keys()), 
+              y=list(error_summary["by_cause"].values()),
+              palette="mako")
+  plt.title("Errors by Likely Cause")
+  plt.xticks(rotation=45, ha='right')
+  plt.tight_layout()
+  plt.savefig(output_dir / "error_causes.png")
+  
+  # Plot error severity
+  plt.figure(figsize=(8, 6))
+  sizes = list(error_summary["by_severity"].values())
+  labels = list(error_summary["by_severity"].keys())
+  colors = {"critical": "darkred", "major": "orangered", "minor": "gold"}
+  plt.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=90,
+          colors=[colors[sev] for sev in error_summary["by_severity"].keys()])
+  plt.axis('equal')
+  plt.title("Error Severity Distribution")
+  plt.tight_layout()
+  plt.savefig(output_dir / "error_severity.png")
 
 def main():
   # Load gold standard and predictions
@@ -142,16 +336,37 @@ def main():
       'count': len(question_results)
     }
   
+  # Analyze errors in detail
+  error_analyses = analyze_errors(results, merged_df)
+  
+  # Generate error summary
+  error_summary = generate_error_summary(error_analyses)
+  
+  # Plot error analysis visualizations
+  plot_error_analysis(error_summary, OUTPUT_DIR)
+  
   # Compile full report
   report = {
     'overall_metrics': metrics,
     'question_metrics': question_metrics,
-    'detailed_results': results
+    'detailed_results': results,
+    'error_summary': error_summary
   }
   
-  # Save report
+  # Save reports
   with open(OUTPUT_REPORT_PATH, 'w') as f:
     json.dump(report, f, indent=2)
+  
+  if error_analyses:
+    with open(ERROR_ANALYSIS_PATH, 'w') as f:
+      json.dump({
+        "error_summary": error_summary,
+        "detailed_error_analyses": error_analyses
+      }, f, indent=2)
+    print(f"\nError analysis saved to {ERROR_ANALYSIS_PATH}")
+    print("\nError Analysis Summary:")
+    for insight in error_summary["key_insights"]:
+      print(f"- {insight}")
   
   # Print summary
   print("\nEvaluation Summary:")
@@ -163,6 +378,7 @@ def main():
   print(f"Recall: {metrics['recall']:.4f}")
   print(f"F1 Score: {metrics['f1']:.4f}")
   print(f"\nDetailed report saved to {OUTPUT_REPORT_PATH}")
+  print(f"Error visualizations saved to {OUTPUT_DIR}")
 
 if __name__ == "__main__":
   main()
