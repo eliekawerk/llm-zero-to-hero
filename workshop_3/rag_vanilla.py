@@ -128,6 +128,24 @@ Be concise, factual, and avoid speculation.
   ### Context:
   {'\n'.join(context).strip()}
   """
+  
+    V3_PROMPT = f"""
+Context information is below.
+---------------------
+{context}
+---------------------
+Given the context information and not prior knowledge, answer the question:
+{query}
+If the answer is not in the context, respond with: Not mentioned in the resume.
+
+Ensure that all relevant data, especially specific details like dates and durations, are properly retrieved 
+and incorporated into the generated answer. When providing answers that include qualification, certification, something like that,
+ensure that dates and durations are included, if available, in the answer. When asked about industries the person has worked in,
+you can glean that from their work experience descriptions. Make sure to not miss any important details.
+"""
+
+    system_prompt = V2_SYSTEM_PROMPT
+    user_prompt = V3_PROMPT
 
     client = OpenAI(
         api_key=os.getenv("OPENAI_API_KEY")
@@ -139,11 +157,11 @@ Be concise, factual, and avoid speculation.
         messages=[
             {
                 "role": "system",
-                "content": V2_SYSTEM_PROMPT
+                "content": system_prompt
             },
             {
                 "role": "user",
-                "content": V2_PROMPT
+                "content": user_prompt
             }
         ]
     )
@@ -154,10 +172,11 @@ Be concise, factual, and avoid speculation.
     output_tokens = completion.usage.completion_tokens
     total_tokens = completion.usage.total_tokens
     
+    
     return {
       "response": completion.choices[0].message.content,
-      "system_prompt": V2_SYSTEM_PROMPT,
-      "user_prompt": V2_PROMPT,
+      "system_prompt": system_prompt,
+      "user_prompt": user_prompt,
       "input_tokens": input_tokens,
       "output_tokens": output_tokens,
       "total_tokens": total_tokens,
