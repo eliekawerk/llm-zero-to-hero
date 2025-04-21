@@ -107,22 +107,22 @@ Workshop 3 introduces **evaluations** for the application, now free from LlamaIn
 #### **Exercise**
 1. **Create a Gold Set**:
     - Use `data/questions.json` as the list of questions for this exercise.
-    - Run `01_generate_gold_set.py` to create `data/gold_set.jsonl`. This script asks the LLM to generate answers to the questions in `data/questions.json`.
+    - Run [01_generate_gold_set.py](./workshop_3/01_generate_gold_set.py) to create `data/gold_set.jsonl`. This script asks the LLM to generate answers to the questions in `data/questions.json`.
     - Review and curate the answers for accuracy.
 
 2. **Generate Predictions**:
     - Use the `rag_pipeline` function from Workshop 1 to generate predictions.
-    - Run `02_run_predictions.py` to create `data/predictions.jsonl`.
+    - Run [02_run_predictions.py](./workshop_3/02_run_predictions.py) to create `data/predictions.jsonl`.
 
 3. **Evaluate Predictions**:
     - Merge predictions and the gold set, and use [Instructor](https://python.useinstructor.com/) for structured evaluation.
-    - Run `03_run_evals.py` to compare predictions against the Gold Set.
+    - Run [03_run_evals.py](./workshop_3/03_run_evals.py) to compare predictions against the Gold Set.
     - Generate `data/evaluation_report.json`.
-    - Use metrics from SKlearn to calculate accuracy, precision, recall, and F1 score.
-    - run `04_display_metrics.py` to visualise the evaluation report.
+    - Use metrics from SKLearn to calculate accuracy, precision, recall, and F1 score.
+    - run [04_display_metrics.py](./workshop_3/04_display_metrics.py) to visualise the evaluation report.
 
 4. **Cost and Latency Evaluation**:
-    - Finally , run `05_cost_latency_analysis.py` to run the script to evaluate cost and latency.
+    - Finally , run [05_cost_latency_analysis.py](./workshop_3/05_cost_latency_analysis.py) to run the script to evaluate cost and latency.
     - Track token usage for cost analysis:
         - Input tokens (prompt + context)
         - Output tokens (generated response)
