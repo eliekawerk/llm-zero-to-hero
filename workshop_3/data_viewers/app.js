@@ -256,6 +256,9 @@ const Header = ({ exportToJSON, exportToCSV, jsonFile, availableFiles, onFileCha
   return (
     <header>
       <h1>Evaluation Results Annotator</h1>
+      <nav className="main-nav">
+        <a href="error_analysis.html" className="nav-link">Error Analysis Dashboard</a>
+      </nav>
       <div className="export-btns">
         <button className="btn" onClick={exportToJSON}>Export to JSON</button>
         <button className="btn btn-secondary" onClick={exportToCSV}>Export to CSV</button>

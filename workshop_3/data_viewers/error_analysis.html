@@ -16,6 +16,34 @@
       background-color: #f5f7fa;
       padding: 20px;
     }
+    /* Header styling to match main page */
+    .header-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #e6e9ed;
+      flex-wrap: wrap;
+    }
+    .header-container h1 {
+      color: #166088; /* This is var(--secondary-color) from the main page */
+      font-size: 24px;
+      margin-right: 20px;
+    }
+    .nav-back-btn {
+      padding: 8px 16px;
+      background-color: #4a6fa5; /* var(--primary-color) */
+      color: white;
+      border: none;
+      border-radius: 4px;
+      text-decoration: none;
+      font-size: 14px;
+      transition: background-color 0.2s;
+    }
+    .nav-back-btn:hover {
+      background-color: #166088; /* var(--secondary-color) */
+    }
     .card {
       margin-bottom: 20px;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -102,7 +130,10 @@
 </head>
 <body>
   <div class="container-fluid">
-    <h1 class="mb-4 text-center">Error Analysis Dashboard</h1>
+    <div class="header-container">
+      <h1 class="mb-0 text-center flex-grow-1">Error Analysis Dashboard</h1>
+      <a href="index.html" class="btn btn-primary nav-back-btn">Back to Evaluation Results</a>
+    </div>
     
     <div class="row mb-4">
       <div class="col-md-6">
@@ -376,10 +407,21 @@
       });
       
       // Add event listeners to update the collapsed class for proper arrow direction
-      document.querySelectorAll('.collapse-toggle').forEach(button => {
-        button.addEventListener('click', () => {
-          button.classList.toggle('collapsed');
-        });
+      // Instead of toggling on click, Bootstrap's events will handle this properly
+      document.addEventListener('shown.bs.collapse', function(e) {
+        // When a collapse is shown (expanded), remove the collapsed class
+        const button = document.querySelector(`[data-bs-target="#${e.target.id}"]`);
+        if (button) {
+          button.classList.remove('collapsed');
+        }
+      });
+
+      document.addEventListener('hidden.bs.collapse', function(e) {
+        // When a collapse is hidden (collapsed), add the collapsed class
+        const button = document.querySelector(`[data-bs-target="#${e.target.id}"]`);
+        if (button) {
+          button.classList.add('collapsed');
+        }
       });
     }
 

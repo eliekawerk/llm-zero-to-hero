@@ -40,11 +40,38 @@ header {
   margin-bottom: 20px;
   padding-bottom: 20px;
   border-bottom: 1px solid var(--border-color);
+  flex-wrap: wrap;
 }
 
 header h1 {
   color: var(--secondary-color);
   font-size: 24px;
+  margin-right: 20px;
+}
+
+/* Navigation styles */
+.main-nav {
+  margin-right: auto;
+  display: flex;
+  align-items: center;
+}
+
+.nav-link {
+  display: inline-block;
+  padding: 8px 16px;
+  color: white;
+  background-color: var(--secondary-color);
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  margin-right: 10px;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+.nav-link:hover {
+  background-color: var(--accent-color);
+  transform: translateY(-2px);
 }
 
 .export-btns {

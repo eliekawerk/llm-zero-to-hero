@@ -119,7 +119,7 @@ Workshop 3 introduces **evaluations** for the application, now free from LlamaIn
     - Run [03_run_evals.py](./workshop_3/03_run_evals.py) to compare predictions against the Gold Set.
     - Generate `data/evaluation_report.json`.
     - Use metrics from SKLearn to calculate accuracy, precision, recall, and F1 score.
-    - run [04_display_metrics.py](./workshop_3/04_display_metrics.py) to visualise the evaluation report.
+    - run [04_error_metrics.py](./workshop_3/04_error_metrics.py) to generate the evaluation report.
 
 4. **Review and Annotate**:
     - Review the evaluation report and annotate the results.
@@ -128,8 +128,11 @@ Workshop 3 introduces **evaluations** for the application, now free from LlamaIn
     cd data_viewers
     python serve.py
     ```
-    - This allows you to go through the evaluation report and annotate the results. Take special care in adding some critique, for both the correct and incorrect answers. This will help you understand the model's performance and identify areas for improvement. Also, this will help us with the [critique shadowing method](https://hamel.dev/blog/posts/llm-judge/#step-3-direct-the-domain-expert-to-make-passfail-judgments-with-critiques) as explained by Hamel, to help improve the model's performance when we start iterating on the prompts.
-5. **Cost and Latency Evaluation**:
+    - This allows you to go through the evaluation report and annotate the results. Take special care in adding some critique, for both the correct and incorrect answers. This will help you understand the model's performance and identify areas for improvement. Here: [http://localhost:8000](http://localhost:8000)
+    - Also, this will help us with the [critique shadowing method](https://hamel.dev/blog/posts/llm-judge/#step-3-direct-the-domain-expert-to-make-passfail-judgments-with-critiques) as explained by Hamel, to help improve the model's performance when we start iterating on the prompts.
+    - This will also return the error analysis report for more detailed analysis.
+5. **Cost and Latency Evaluation (to be completed...)**:
+    - Note: the switch to Gemini from OpenAI broke the token counting since Gemini does not return the token count in the same way as OpenAI.
     - Finally , run [05_cost_latency_analysis.py](./workshop_3/05_cost_latency_analysis.py) to run the script to evaluate cost and latency.
     - Track token usage for cost analysis:
         - Input tokens (prompt + context)
