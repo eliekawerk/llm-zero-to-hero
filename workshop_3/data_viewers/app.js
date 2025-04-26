@@ -256,6 +256,9 @@ const Header = ({ exportToJSON, exportToCSV, jsonFile, availableFiles, onFileCha
   return (
     <header>
       <h1>Evaluation Results Annotator</h1>
+      <nav className="main-nav">
+        <a href="error_analysis.html" className="nav-link">Error Analysis Dashboard</a>
+      </nav>
       <div className="export-btns">
         <button className="btn" onClick={exportToJSON}>Export to JSON</button>
         <button className="btn btn-secondary" onClick={exportToCSV}>Export to CSV</button>
@@ -299,6 +302,11 @@ const ResultCard = ({ result, critique, onCritiqueChange }) => {
     }
   }, [result, critique, onCritiqueChange]);
 
+  // Format percentage_correct as a percentage if it exists
+  const formattedPercentage = result.percentage_correct !== undefined 
+    ? `${Math.round(result.percentage_correct * 100)}%` 
+    : 'N/A';
+
   return (
     <div className="record-card">
       <div className="record-details">
@@ -325,9 +333,19 @@ const ResultCard = ({ result, critique, onCritiqueChange }) => {
         </div>
       </div>
 
-      <div>
+      <div className="result-metrics">
         <span className={`result-status ${result.is_correct ? 'correct' : 'incorrect'}`}>
           {result.is_correct ? 'CORRECT' : 'INCORRECT'}
+        </span>
+        
+        <span className="percentage-correct">
+          <span className="percentage-label">Correctness:</span>
+          <span className={`percentage-value ${
+            result.percentage_correct >= 0.8 ? 'high' : 
+            result.percentage_correct >= 0.5 ? 'medium' : 'low'
+          }`}>
+            {formattedPercentage}
+          </span>
         </span>
       </div>
 

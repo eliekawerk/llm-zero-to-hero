@@ -10,7 +10,7 @@ import google.generativeai as genai
 load_dotenv(verbose=True, dotenv_path=".env")
 
 google_api_key = os.getenv("GOOGLE_API_KEY")
-print(f"Google API Key: {google_api_key}")
+# print(f"Google API Key: {google_api_key}")
 genai.configure(api_key=google_api_key)
 
 client = instructor.from_gemini(

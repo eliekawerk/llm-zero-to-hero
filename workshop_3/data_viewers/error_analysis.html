@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Error Analysis Dashboard</title>
+  <!-- Include Chart.js for visualizations -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Include Bootstrap for styling -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      background-color: #f5f7fa;
+      padding: 20px;
+    }
+    /* Header styling to match main page */
+    .header-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #e6e9ed;
+      flex-wrap: wrap;
+    }
+    .header-container h1 {
+      color: #166088; /* This is var(--secondary-color) from the main page */
+      font-size: 24px;
+      margin-right: 20px;
+    }
+    .nav-back-btn {
+      padding: 8px 16px;
+      background-color: #4a6fa5; /* var(--primary-color) */
+      color: white;
+      border: none;
+      border-radius: 4px;
+      text-decoration: none;
+      font-size: 14px;
+      transition: background-color 0.2s;
+    }
+    .nav-back-btn:hover {
+      background-color: #166088; /* var(--secondary-color) */
+    }
+    .card {
+      margin-bottom: 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+    }
+    .card-header {
+      background-color: #4a6fa5;
+      color: white;
+      font-weight: bold;
+      border-radius: 8px 8px 0 0 !important;
+    }
+    .chart-container {
+      position: relative;
+      height: 300px;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+    .summary-item {
+      margin-bottom: 10px;
+      padding: 10px;
+      border-radius: 4px;
+      background-color: #f8f9fa;
+      border-left: 4px solid #4a6fa5;
+    }
+    .severity-major {
+      color: #d9534f;
+      font-weight: bold;
+    }
+    .severity-minor {
+      color: #f0ad4e;
+      font-weight: bold;
+    }
+    .table-hover tbody tr:hover {
+      background-color: rgba(74, 111, 165, 0.1);
+    }
+    .key-insight {
+      padding: 12px;
+      margin: 5px 0;
+      border-radius: 5px;
+      background-color: #e7f3fe;
+      border-left: 5px solid #2196F3;
+    }
+    #detailedErrors {
+      max-height: 600px;
+      overflow-y: auto;
+    }
+    .error-card {
+      margin-bottom: 15px;
+      border-left: 4px solid #d9534f;
+    }
+    .error-card.minor {
+      border-left: 4px solid #f0ad4e;
+    }
+    /* Improved expand/collapse controls */
+    .collapse-toggle {
+      width: 100%;
+      text-align: left;
+      position: relative;
+      padding-right: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .collapse-toggle::after {
+      content: "▼"; /* Down arrow for expanded state */
+      position: absolute;
+      right: 0px;
+      transition: transform 0.3s;
+      font-size: 12px;
+      color: white;
+    }
+    .collapse-toggle.collapsed::after {
+      content: "▶"; /* Right arrow for collapsed state */
+      transform: none; /* Remove rotation - using different symbols instead */
+    }
+    .card-header {
+      padding: 10;
+    }
+    .card-header button {
+      width: 98%;
+      color: white !important;
+    }
+  </style>
+</head>
+<body>
+  <div class="container-fluid">
+    <div class="header-container">
+      <h1 class="mb-0 text-center flex-grow-1">Error Analysis Dashboard</h1>
+      <a href="index.html" class="btn btn-primary nav-back-btn">Back to Evaluation Results</a>
+    </div>
+    
+    <div class="row mb-4">
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header">Error Summary</div>
+          <div class="card-body">
+            <h5>Overall Error Statistics</h5>
+            <div id="summaryInfo" class="summary-item"></div>
+            
+            <h5 class="mt-4">Key Insights</h5>
+            <div id="keyInsights"></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header">Error Distribution</div>
+          <div class="card-body">
+            <div class="chart-container">
+              <canvas id="errorTypesChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="row mb-4">
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header">Error Causes</div>
+          <div class="card-body">
+            <div class="chart-container">
+              <canvas id="errorCausesChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header">Error by Question Type</div>
+          <div class="card-body">
+            <div class="chart-container">
+              <canvas id="questionErrorsChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <span>Detailed Error Analysis</span>
+            <div class="form-inline">
+              <select id="errorFilterType" class="form-select form-select-sm" style="width: 150px; display: inline-block; margin-right: 10px;">
+                <option value="all">All Error Types</option>
+                <!-- Will be populated dynamically -->
+              </select>
+              <select id="errorFilterSeverity" class="form-select form-select-sm" style="width: 150px; display: inline-block;">
+                <option value="all">All Severities</option>
+                <!-- Will be populated dynamically -->
+              </select>
+            </div>
+          </div>
+          <div class="card-body">
+            <div id="detailedErrors" class="accordion"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Fetch error analysis data
+      fetch('./data/error_analysis.json')
+        .then(response => response.json())
+        .then(data => {
+          renderErrorSummary(data.error_summary);
+          renderKeyInsights(data.error_summary.key_insights);
+          renderErrorTypeChart(data.error_summary.by_type);
+          renderErrorCauseChart(data.error_summary.by_cause);
+          renderQuestionErrorsChart(data.error_summary.by_question);
+          renderDetailedErrors(data.detailed_error_analyses);
+          populateFilterDropdowns(data);
+          setupFilterListeners(data);
+        })
+        .catch(error => console.error('Error loading data:', error));
+    });
+
+    function renderErrorSummary(summary) {
+      const summaryInfo = document.getElementById('summaryInfo');
+      summaryInfo.innerHTML = `
+        <p><strong>Total Errors:</strong> ${summary.error_count}</p>
+        <p><strong>Major Errors:</strong> ${summary.by_severity.major} (${Math.round(summary.by_severity.major / summary.error_count * 100)}%)</p>
+        <p><strong>Minor Errors:</strong> ${summary.by_severity.minor} (${Math.round(summary.by_severity.minor / summary.error_count * 100)}%)</p>
+      `;
+    }
+
+    function renderKeyInsights(insights) {
+      const insightsContainer = document.getElementById('keyInsights');
+      insights.forEach(insight => {
+        const div = document.createElement('div');
+        div.className = 'key-insight';
+        div.textContent = insight;
+        insightsContainer.appendChild(div);
+      });
+    }
+
+    function renderErrorTypeChart(byType) {
+      const ctx = document.getElementById('errorTypesChart').getContext('2d');
+      new Chart(ctx, {
+        type: 'pie',
+        data: {
+          labels: Object.keys(byType),
+          datasets: [{
+            data: Object.values(byType),
+            backgroundColor: [
+              '#FF6384',
+              '#36A2EB',
+              '#FFCE56',
+              '#4BC0C0',
+              '#9966FF'
+            ]
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            title: {
+              display: true,
+              text: 'Errors by Type'
+            },
+            legend: {
+              position: 'bottom',
+            }
+          }
+        }
+      });
+    }
+
+    function renderErrorCauseChart(byCause) {
+      const ctx = document.getElementById('errorCausesChart').getContext('2d');
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: Object.keys(byCause),
+          datasets: [{
+            label: 'Count',
+            data: Object.values(byCause),
+            backgroundColor: ['#FF6384', '#36A2EB']
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            title: {
+              display: true,
+              text: 'Errors by Cause'
+            },
+            legend: {
+              display: false
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                precision: 0
+              }
+            }
+          }
+        }
+      });
+    }
+
+    function renderQuestionErrorsChart(byQuestion) {
+      const ctx = document.getElementById('questionErrorsChart').getContext('2d');
+      // Shorten the question text for display
+      const shortLabels = Object.keys(byQuestion).map(q => {
+        const words = q.split(' ');
+        return words.length > 5 ? words.slice(0, 5).join(' ') + '...' : q;
+      });
+      
+      new Chart(ctx, {
+        type: 'bar', // Changed from 'horizontalBar' to 'bar'
+        data: {
+          labels: shortLabels,
+          datasets: [{
+            label: 'Error Count',
+            data: Object.values(byQuestion),
+            backgroundColor: '#4a6fa5'
+          }]
+        },
+        options: {
+          indexAxis: 'y', // This makes it a horizontal bar chart in Chart.js v3+
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            title: {
+              display: true,
+              text: 'Errors by Question'
+            },
+            legend: {
+              display: false
+            },
+            tooltip: {
+              callbacks: {
+                title: function(tooltipItems) {
+                  // Return the full question text in tooltip
+                  return Object.keys(byQuestion)[tooltipItems[0].dataIndex];
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              beginAtZero: true,
+              ticks: {
+                precision: 0
+              }
+            }
+          }
+        }
+      });
+    }
+
+    function renderDetailedErrors(errors) {
+      const container = document.getElementById('detailedErrors');
+      container.innerHTML = '';
+      
+      errors.forEach((error, index) => {
+        const card = document.createElement('div');
+        card.className = `card error-card ${error.severity === 'minor' ? 'minor' : ''}`;
+        card.setAttribute('data-error-type', error.error_type);
+        card.setAttribute('data-severity', error.severity);
+        
+        // First item is expanded by default, others are collapsed
+        const isExpanded = index === 0;
+        
+        card.innerHTML = `
+          <div class="card-header" id="heading${index}">
+            <h5 class="mb-0">
+              <button class="btn btn-link text-decoration-none text-reset collapse-toggle ${!isExpanded ? 'collapsed' : ''}" 
+                      data-bs-toggle="collapse" 
+                      data-bs-target="#collapse${index}" 
+                      aria-expanded="${isExpanded ? 'true' : 'false'}" 
+                      aria-controls="collapse${index}">
+                <span class="severity-${error.severity}">${error.severity.toUpperCase()}:</span> ${error.error_type} - ${error.resume}
+              </button>
+            </h5>
+          </div>
+          <div id="collapse${index}" class="collapse ${isExpanded ? 'show' : ''}" aria-labelledby="heading${index}" data-parent="#detailedErrors">
+            <div class="card-body">
+              <p><strong>Question:</strong> ${error.question}</p>
+              <p><strong>Gold Answer:</strong> ${error.gold_answer}</p>
+              <p><strong>Predicted Answer:</strong> ${error.predicted_answer}</p>
+              <p><strong>Percentage Correct:</strong> ${Math.round(error.percentage_correct * 100)}%</p>
+              <p><strong>Details:</strong> ${error.details}</p>
+              <p><strong>Likely Cause:</strong> ${error.likely_cause}</p>
+              <p><strong>Fix Recommendation:</strong> ${error.fix_recommendation}</p>
+              <p><strong>Reasoning:</strong> ${error.reasoning}</p>
+            </div>
+          </div>
+        `;
+        
+        container.appendChild(card);
+      });
+      
+      // Add event listeners to update the collapsed class for proper arrow direction
+      // Instead of toggling on click, Bootstrap's events will handle this properly
+      document.addEventListener('shown.bs.collapse', function(e) {
+        // When a collapse is shown (expanded), remove the collapsed class
+        const button = document.querySelector(`[data-bs-target="#${e.target.id}"]`);
+        if (button) {
+          button.classList.remove('collapsed');
+        }
+      });
+
+      document.addEventListener('hidden.bs.collapse', function(e) {
+        // When a collapse is hidden (collapsed), add the collapsed class
+        const button = document.querySelector(`[data-bs-target="#${e.target.id}"]`);
+        if (button) {
+          button.classList.add('collapsed');
+        }
+      });
+    }
+
+    function populateFilterDropdowns(data) {
+      // Get unique error types
+      const errorTypes = [...new Set(data.detailed_error_analyses.map(e => e.error_type))];
+      const errorTypeSelect = document.getElementById('errorFilterType');
+      
+      errorTypes.forEach(type => {
+        const option = document.createElement('option');
+        option.value = type;
+        option.textContent = type;
+        errorTypeSelect.appendChild(option);
+      });
+      
+      // Get unique severities
+      const severities = [...new Set(data.detailed_error_analyses.map(e => e.severity))];
+      const severitySelect = document.getElementById('errorFilterSeverity');
+      
+      severities.forEach(severity => {
+        const option = document.createElement('option');
+        option.value = severity;
+        option.textContent = severity;
+        severitySelect.appendChild(option);
+      });
+    }
+
+    function setupFilterListeners(data) {
+      const typeFilter = document.getElementById('errorFilterType');
+      const severityFilter = document.getElementById('errorFilterSeverity');
+      
+      function applyFilters() {
+        const selectedType = typeFilter.value;
+        const selectedSeverity = severityFilter.value;
+        
+        const filteredErrors = data.detailed_error_analyses.filter(error => {
+          const typeMatch = selectedType === 'all' || error.error_type === selectedType;
+          const severityMatch = selectedSeverity === 'all' || error.severity === selectedSeverity;
+          return typeMatch && severityMatch;
+        });
+        
+        renderDetailedErrors(filteredErrors);
+      }
+      
+      typeFilter.addEventListener('change', applyFilters);
+      severityFilter.addEventListener('change', applyFilters);
+    }
+  </script>
+  
+  <!-- Bootstrap JS for accordion functionality -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
