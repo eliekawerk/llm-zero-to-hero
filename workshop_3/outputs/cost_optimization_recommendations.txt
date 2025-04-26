@@ -1,28 +1,21 @@
 Token Efficiency Improvements:
-- Overall token efficiency is low (0.4712 accuracy per 1K tokens)
+- Overall token efficiency is low (0.0000 accuracy per 1K tokens)
   Consider optimizing prompts to reduce token usage while maintaining accuracy
-- Most token-efficient question: 'Has the candidate worked in any Fortune 500 companies?'
-  Efficiency: 0.6899 accuracy per 1K tokens
-- Least token-efficient question: 'What projects or achievements are highlighted in the resume?'
-  Efficiency: 0.3040 accuracy per 1K tokens
+- Most token-efficient question: 'Does the candidate have experience working with cloud technologies?'
+  Efficiency: 0.0000 accuracy per 1K tokens
+- Least token-efficient question: 'Does the candidate have experience working with cloud technologies?'
+  Efficiency: 0.0000 accuracy per 1K tokens
   Consider revising the retrieval or prompt approach for this question type
 
 Cost Optimization Strategies:
-- Input tokens account for a high percentage of token usage
-  Consider:
-  1. Reducing context size by improving chunk relevance
-  2. Using more efficient chunking strategies
-  3. Implementing a filtering step to remove less relevant chunks
-- Most expensive question type: 'What projects or achievements are highlighted in the resume?'
-  Average cost: $0.0222 per query
-  Note: This question type also has relatively low accuracy (50.00%)
-  Focus optimization efforts here for maximum cost-benefit impact
+- Most expensive question type: 'Does the candidate have experience working with cloud technologies?'
+  Average cost: $0.0000 per query
 
 Performance Optimization Opportunities:
-- Focus on improving: 'Does the candidate have any leadership or management experience?'
-  Current accuracy: 50.00%
+- Focus on improving: 'What is the total number of years of professional experience?'
+  Current accuracy: 16.67%
 
 Potential Impact:
-- Current cost per correct answer: $0.0226
-- By improving accuracy to 86.00%, cost could reduce to $0.0189 per correct answer
-- Potential savings: $0.0038 per correct answer (16.7% reduction)
+- Current cost per correct answer: $0.0000
+- By improving accuracy to 90.00%, cost could reduce to $0.0000 per correct answer
+- Potential savings: $0.0000 per correct answer (nan% reduction)

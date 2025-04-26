@@ -299,6 +299,11 @@ const ResultCard = ({ result, critique, onCritiqueChange }) => {
     }
   }, [result, critique, onCritiqueChange]);
 
+  // Format percentage_correct as a percentage if it exists
+  const formattedPercentage = result.percentage_correct !== undefined 
+    ? `${Math.round(result.percentage_correct * 100)}%` 
+    : 'N/A';
+
   return (
     <div className="record-card">
       <div className="record-details">
@@ -325,9 +330,19 @@ const ResultCard = ({ result, critique, onCritiqueChange }) => {
         </div>
       </div>
 
-      <div>
+      <div className="result-metrics">
         <span className={`result-status ${result.is_correct ? 'correct' : 'incorrect'}`}>
           {result.is_correct ? 'CORRECT' : 'INCORRECT'}
+        </span>
+        
+        <span className="percentage-correct">
+          <span className="percentage-label">Correctness:</span>
+          <span className={`percentage-value ${
+            result.percentage_correct >= 0.8 ? 'high' : 
+            result.percentage_correct >= 0.5 ? 'medium' : 'low'
+          }`}>
+            {formattedPercentage}
+          </span>
         </span>
       </div>
 

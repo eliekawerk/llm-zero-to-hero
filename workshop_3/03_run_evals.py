@@ -21,7 +21,7 @@ if not os.getenv("GOOGLE_API_KEY"):
   raise ValueError("Please set GOOGLE_API_KEY environment variable")
 
 google_api_key = os.getenv("GOOGLE_API_KEY")
-print(f"Google API Key: {google_api_key}")
+# print(f"Google API Key: {google_api_key}")
 genai.configure(api_key=google_api_key)
 
 # Initialize the Gemini client with Instructor
@@ -45,6 +45,7 @@ OUTPUT_DIR.mkdir(exist_ok=True)
 class AnswerEvaluation(BaseModel):
   """Evaluation of an answer against a gold standard."""
   is_correct: bool = Field(..., description="Whether the predicted answer is correct based on the gold standard")
+  percentage_correct: float = Field(..., ge=0, le=1, description="Percentage of correctness in the prediction")
   reasoning: str = Field(..., description="Reasoning behind the evaluation decision")
   missing_info: Optional[List[str]] = Field(None, description="Important information missing from the prediction")
   incorrect_info: Optional[List[str]] = Field(None, description="Incorrect information in the prediction")
@@ -94,18 +95,27 @@ def evaluate_answer(gold_answer, predicted_answer):
     Gold standard answer: "{gold_answer}"
     Predicted answer: "{predicted_answer}"
     
-    Evaluate if the predicted answer is semantically equivalent to the gold standard answer.
-    Consider:
+    Evaluate if the predicted answer is semantically equivalent to the gold standard answer,
+    and base your evaluation on the following criteria:
     1. The predicted answer must contain the same key information as the gold standard
     2. Minor differences in wording are acceptable as long as the meaning is preserved
-    3. The predicted answer should not contain significant incorrect information
-    4. If the gold standard states "Not mentioned in the resume", the prediction should indicate the information is not available
+    3. The percentage correct conveys the estimate of correctness for the prediction. It is a float
+    between 0.0 and 1.0, and the following explains the scale:
+    - 0.76 to 1.0 means the prediction is 76% to 100% correct
+    - 0.51 to 0.75 means the prediction is 51% to 75% correct
+    - 0.26 to 0.5 means the prediction is 26% to 50% correct
+    - 0.01 to 0.25 means the prediction is 1% to 25% correct
+    - 0.0 means the prediction is completely incorrect
+    4. **Set is_correct to True if the percentage correct is 0.5 to 1.0**, else set it to False. This is the threshold for correctness.
+    5. The predicted answer should not contain significant incorrect information
+    6. If the gold standard states "Not mentioned in the resume", the prediction should indicate the information is not available
+    7. The predicted answer should not contain hallucinations or irrelevant information
+    8. Lastly, remeber that value in is_correct will depend on the value of the threshold for correctness.
     
     Provide your evaluation with clear reasoning.
     """
     
     evaluation = client.chat.completions.create(
-      # model="gpt-4o",
       response_model=AnswerEvaluation,
       messages=[
         {"role": "system", "content": "You are an expert evaluator of question answering systems."},
@@ -117,6 +127,7 @@ def evaluate_answer(gold_answer, predicted_answer):
     print(f"Error in evaluation: {e}")
     return AnswerEvaluation(
       is_correct=False,
+      percentage_correct=0.0,
       reasoning=f"Evaluation failed: {str(e)}",
       missing_info=None,
       incorrect_info=None
@@ -183,6 +194,9 @@ def analyze_errors(results, merged_df):
       analysis_dict['question'] = result['question']
       analysis_dict['gold_answer'] = gold_answer
       analysis_dict['predicted_answer'] = pred_answer
+      analysis_dict['is_correct'] = result['is_correct']
+      analysis_dict['percentage_correct'] = result['percentage_correct']
+      analysis_dict['reasoning'] = result['reasoning']
       error_analyses.append(analysis_dict)
   
   return error_analyses
@@ -276,6 +290,10 @@ def plot_error_analysis(error_summary, output_dir):
   plt.title("Error Severity Distribution")
   plt.tight_layout()
   plt.savefig(output_dir / "error_severity.png")
+  
+def adjust_by_threshold(result, threshold=0.5):
+    result.is_correct = result.percentage_correct >= threshold
+    return result
 
 def main():
   # Load gold standard and predictions
@@ -303,8 +321,9 @@ def main():
     gold_answer = row['expected_answer']
     pred_answer = row['predicted_answer']
     
-    # Evaluate using Instructor
-    evaluation = evaluate_answer(gold_answer, pred_answer)
+    # Evaluate using Instructor and adjust by threshold
+    evaluation = adjust_by_threshold(evaluate_answer(gold_answer, pred_answer))
+    # print(f"Evaluation: {evaluation}")
     
     # Store results
     result = {
@@ -313,6 +332,7 @@ def main():
       'gold_answer': gold_answer,
       'predicted_answer': pred_answer,
       'is_correct': evaluation.is_correct,
+      'percentage_correct': evaluation.percentage_correct,
       'reasoning': evaluation.reasoning
     }
     

@@ -323,6 +323,50 @@ header h1 {
   color: var(--incorrect-color);
 }
 
+/* Result metrics display */
+.result-metrics {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.percentage-correct {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  background-color: var(--background-color);
+  padding: 6px 10px;
+  border-radius: 4px;
+}
+
+.percentage-label {
+  margin-right: 5px;
+  font-weight: 500;
+  color: var(--secondary-color);
+}
+
+.percentage-value {
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+.percentage-value.high {
+  background-color: var(--correct-color);
+  color: #fff;
+}
+
+.percentage-value.medium {
+  background-color: #ffce54; /* Amber color */
+  color: #555;
+}
+
+.percentage-value.low {
+  background-color: var(--incorrect-color);
+  color: #fff;
+}
+
 /* Existing User Critique styling */
 .existing-critique {
   background-color: #f8f9fa;

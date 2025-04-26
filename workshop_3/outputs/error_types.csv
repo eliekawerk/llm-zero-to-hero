@@ -1,4 +1,4 @@
 Error Type,Count
-hallucination,4
-missing_information,9
-incorrect_information,4
+missing_information,1
+incorrect_information,8
+hallucination,1
