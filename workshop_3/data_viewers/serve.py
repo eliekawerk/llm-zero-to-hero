@@ -85,6 +85,18 @@ class CustomHandler(SimpleHTTPRequestHandler):
                 self.end_headers()
                 self.wfile.write(f"File not found: {file_name}".encode())
                 return
+
+        # Handle request for error_analysis.html specifically
+        elif self.path == "/error_analysis" or self.path == "/error_analysis.html":
+            file_path = Path(__file__).parent / "error_analysis.html"
+            if file_path.exists():
+                self.send_response(200)
+                self.send_header("Content-type", "text/html")
+                self.end_headers()
+                
+                with open(file_path, "rb") as f:
+                    self.wfile.write(f.read())
+                return
                 
         # For all other paths, use the default handler
         return super().do_GET()
@@ -93,6 +105,7 @@ def run(server_class=HTTPServer, handler_class=CustomHandler, port=8000):
     server_address = ('', port)
     httpd = server_class(server_address, handler_class)
     print(f"Starting server at http://localhost:{port}")
+    print(f"Error Analysis Dashboard available at http://localhost:{port}/error_analysis")
     httpd.serve_forever()
 
 if __name__ == "__main__":
