@@ -3,12 +3,19 @@ import os
 import sys
 from pathlib import Path
 import time
-from openai import OpenAI
 
 from rag_vanilla import extract_text_from_pdf
 
 # Add the parent directory to the system path
 sys.path.append(str(Path(__file__).parent.parent))
+
+import instructor
+
+# Replace OpenAI with Instructor for Google Gemini
+from instructor import GeminiClient
+
+# Initialize Gemini client
+client = GeminiClient(api_key=os.getenv("GEMINI_API_KEY"))
 
 def load_questions(file_path):
     """Load questions from a JSON file."""
@@ -30,15 +37,13 @@ def extract_text_from_resume(pdf_path):
     return extract_text_from_pdf(pdf_data)
 
 def generate_expected_answer(resume_text, question):
-    """Generate an expected answer for a question about a resume using OpenAI API."""
-    client = OpenAI()
-    
+    """Generate an expected answer for a question about a resume using Google Gemini."""
     system_prompt = """You are a resume analysis expert. 
 Generate a concise, factual answer to the question based only on the resume content provided.
 Your answer should be specific and accurate, focusing only on information explicitly stated in the resume.
 If the information is not present in the resume, respond with "Not mentioned in the resume."
 """
-    
+
     user_prompt = f"""Based on the following resume content, answer this question:
 
 Question: {question}
@@ -48,10 +53,10 @@ Resume Content:
 
 Provide a brief, factual answer without additional commentary.
 """
-    
+
     try:
         completion = client.chat.completions.create(
-            model="gpt-4o",
+            model="gemini-1.5-flash",
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt}

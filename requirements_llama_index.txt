@@ -9,3 +9,4 @@ python-dotenv
 arize-phoenix
 openinference-instrumentation-llama-index
 opentelemetry-exporter-otlp
+instructor[google-generativeai]
