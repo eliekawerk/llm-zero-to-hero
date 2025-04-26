@@ -201,8 +201,166 @@ header h1 {
   font-family: inherit;
 }
 
+/* PDF Viewer Styles */
+.pdf-viewer {
+  margin: 20px 0;
+  padding: 15px;
+  background-color: var(--background-color);
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.pdf-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pdf-toggle-btn {
+  background-color: var(--accent-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  transition: background-color 0.2s;
+}
+
+.pdf-toggle-btn:hover {
+  background-color: var(--secondary-color);
+}
+
+.pdf-toggle-btn.disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.toggle-arrow {
+  margin-left: 8px;
+  font-size: 10px;
+  transition: transform 0.3s;
+}
+
+.pdf-filename {
+  font-size: 14px;
+  color: var(--secondary-color);
+  margin-left: 10px;
+  font-weight: 500;
+}
+
+.pdf-content {
+  overflow: hidden;
+  transition: max-height 0.5s ease;
+}
+
+.pdf-content.collapsed {
+  max-height: 0;
+}
+
+.pdf-content.expanded {
+  max-height: 1000px;
+  margin-top: 15px;
+}
+
+.pdf-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.pdf-page-info {
+  font-size: 16px;
+  color: var(--secondary-color);
+  font-weight: bold;
+}
+
+.pdf-nav-btn {
+  padding: 6px 12px;
+  font-size: 14px;
+  background-color: #556B2F; /* Dark olive green color */
+}
+
+.pdf-nav-btn:hover {
+  background-color: #3A5311; /* Darker shade for hover state */
+}
+
+.pdf-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+  overflow: auto;
+  padding: 10px;
+  background-color: #f1f1f1;
+  border-radius: 4px;
+  min-height: 700px;
+  max-height: 80vh;
+}
+
+.pdf-canvas {
+  display: block; /* Ensures the canvas doesn't have extra spacing */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  /* Remove max-width and height constraints to prevent distortion */
+}
+
+.pdf-placeholder {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  background-color: #f1f1f1;
+  color: #888;
+  font-size: 18px;
+  border-radius: 4px;
+}
+
+.pdf-placeholder .error {
+  color: var(--incorrect-color);
+}
+
+/* Existing User Critique styling */
+.existing-critique {
+  background-color: #f8f9fa;
+  padding: 12px 15px;
+  border-radius: 4px;
+  border-left: 4px solid #4a6fa5;
+  margin-bottom: 15px;
+  font-style: italic;
+}
+
+/* Add styles for file selector */
+.file-selector {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+  gap: 10px;
+}
+
+.file-selector select {
+  padding: 6px 10px;
+  font-size: 14px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  min-width: 250px;
+  background-color: white;
+}
+
 @media (max-width: 768px) {
   .record-details, .answer-comparison {
     grid-template-columns: 1fr;
+  }
+  
+  .pdf-controls {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .pdf-container {
+    height: auto;
   }
 }

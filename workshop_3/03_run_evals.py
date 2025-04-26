@@ -8,20 +8,28 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_score
 from pydantic import BaseModel, Field
-from typing import List, Optional, Literal, Dict
-from openai import OpenAI
+from typing import List, Optional, Literal
 from dotenv import load_dotenv
 from pathlib import Path
+import google.generativeai as genai
 
 # Load environment variables from .env file
-load_dotenv()
+load_dotenv(verbose=True, dotenv_path=".env")
 
-# Ensure you have set OPENAI_API_KEY in your environment
-if not os.getenv("OPENAI_API_KEY"):
-  raise ValueError("Please set OPENAI_API_KEY environment variable")
+# Ensure you have set GOOGLE_API_KEY in your environment
+if not os.getenv("GOOGLE_API_KEY"):
+  raise ValueError("Please set GOOGLE_API_KEY environment variable")
 
-# Initialize the OpenAI client with Instructor
-client = instructor.patch(OpenAI())
+google_api_key = os.getenv("GOOGLE_API_KEY")
+print(f"Google API Key: {google_api_key}")
+genai.configure(api_key=google_api_key)
+
+# Initialize the Gemini client with Instructor
+client = instructor.from_gemini(
+    client=genai.GenerativeModel(
+        model_name="models/gemini-1.5-flash-latest",  
+    )
+)
 
 # Define paths
 GOLD_SET_PATH = "data/gold_set.jsonl"
@@ -97,7 +105,7 @@ def evaluate_answer(gold_answer, predicted_answer):
     """
     
     evaluation = client.chat.completions.create(
-      model="gpt-4o",
+      # model="gpt-4o",
       response_model=AnswerEvaluation,
       messages=[
         {"role": "system", "content": "You are an expert evaluator of question answering systems."},
@@ -132,7 +140,7 @@ def analyze_error(gold_answer, predicted_answer, question):
     """
     
     analysis = client.chat.completions.create(
-      model="gpt-4o",
+      # model="gpt-4o",
       response_model=ErrorAnalysis,
       messages=[
         {"role": "system", "content": "You are an expert evaluator of RAG systems who specializes in error analysis."},

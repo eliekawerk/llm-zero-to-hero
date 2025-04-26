@@ -2,3 +2,16 @@ gradio
 PyMuPDF
 datasette
 python-dotenv
+instructor[google-generativeai]
+lancedb
+transformers
+scikit-learn
+docx2txt
+datasets
+nltk
+openai
+tantivy
+pylance
+sentence-transformers
+numpy<2
+pandas

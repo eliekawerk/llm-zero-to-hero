@@ -1,10 +1,28 @@
 import os
 import json
-import openai
+from dotenv import load_dotenv
 from tqdm import tqdm
-from rag_vanilla import rag_pipeline
+import instructor
+import google.generativeai as genai
 
-openai.api_key = os.getenv("OPENAI_API_KEY")  # set this in your env
+# Initialize Gemini client
+
+load_dotenv(verbose=True, dotenv_path=".env")
+
+google_api_key = os.getenv("GOOGLE_API_KEY")
+print(f"Google API Key: {google_api_key}")
+genai.configure(api_key=google_api_key)
+
+client = instructor.from_gemini(
+    client=genai.GenerativeModel(
+        model_name="models/gemini-1.5-flash-latest",  
+    )
+)
+
+# Update pipeline to use Gemini
+from rag_vanilla import ingest_file, rag_pipeline_vector_db
+
+# Ensure GEMINI_API_KEY is set in your environment
 
 # Load questions
 with open("data/questions.json", "r") as f:
@@ -35,6 +53,9 @@ def main():
         # Read PDF file as binary data
         with open(pdf_path, "rb") as f:
             pdf_data = f.read()
+        
+        print(f"Processing {filename}...")
+        table = ingest_file(pdf_data)
 
         for q in questions:
             qa = {
@@ -44,7 +65,7 @@ def main():
 
             try:
                 # Use rag_pipeline instead of ask_llm
-                response = rag_pipeline(pdf_data, q["question"])
+                response = rag_pipeline_vector_db(None, q["question"], table)
                 qa["predicted_answer"] = response["response"]
                 
                 # Store metrics in the output

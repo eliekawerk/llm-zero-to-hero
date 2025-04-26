@@ -4,16 +4,22 @@ import fitz
 import sqlite3
 from datetime import datetime
 import uuid
+import instructor
+import google.generativeai as genai
 from openai import OpenAI
+from pydantic import BaseModel
 import requests
 import time
 from sklearn.metrics.pairwise import cosine_similarity
 from dotenv import load_dotenv
+from utils import lanceDBConnection, semantic_search, text_chunker
 
 load_dotenv(verbose=True, dotenv_path=".env")
+genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 print(f"Environment variables loaded from .env file.")
 
 DB_FILE = "pdf_vanilla_qa_V2_logs.db"
+CHUNK_SIZE = 300
 
 # Initialize the database
 def init_db():
@@ -82,9 +88,9 @@ def log_interaction(pdf_name, query, response, system_prompt, chunk_size, user_p
 def get_text_embedding(text_chunks):
     """Gets text embeddings using the OpenAI API.""" 
     try:
-        client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+        emb_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
         start_time = time.time()
-        response = client.embeddings.create(
+        response = emb_client.embeddings.create(
             model="text-embedding-ada-002",
             input=text_chunks,
             encoding_format="float"
@@ -105,11 +111,35 @@ def find_relevant_chunks(query_embedding, chunk_embeddings, chunks, top_k=10):
     relevant_chunks = sorted(zip(similarities, chunks), key=lambda x: x[0], reverse=True)[:top_k]
     return [chunk for _, chunk in relevant_chunks]
 
-def generate_response(query, context):
-    """Generates a response using OpenAI's Completion API with retrieved context."""
+def get_text_embedding_google(text_chunks):
+    """Gets text embeddings using Google's embedding model 'models/text-embedding-004'."""
+    try:
+        start_time = time.time()
+        response = genai.generate_embeddings(
+            model="models/text-embedding-004",
+            input=text_chunks
+        )
+        embeddings = response["embeddings"]
+        embedding_time = time.time() - start_time
+        return embeddings, embedding_time
+    except requests.exceptions.RequestException as e:
+        return {"error": str(e)}, 0
 
-    V1_SYSTEM_PROMPT = "You are a Q&A assistant. Answer the question based only from context provided."
-    V1_PROMPT = f"Question: {query}\n\nContext:\n{' '.join(context)}"
+class QAModel(BaseModel):
+    answer: str
+
+def generate_response(query, context):
+    """Generates a response using Google Gemini with retrieved context."""
+    
+    # load_dotenv(verbose=True, dotenv_path=".env")
+    # print(f"Environment variables loaded from .env file.")
+    # print(f"Google API Key: {os.getenv('GOOGLE_API_KEY')}")
+    
+    client = instructor.from_gemini(
+        client=genai.GenerativeModel(
+            model_name="models/gemini-1.5-flash-latest",  
+        )
+    )    
     
     V2_SYSTEM_PROMPT = """You are a helpful assistant.
 Only answer questions based on the context provided.
@@ -128,60 +158,71 @@ Be concise, factual, and avoid speculation.
   ### Context:
   {'\n'.join(context).strip()}
   """
-  
-    V3_PROMPT = f"""
-Context information is below.
----------------------
-{context}
----------------------
-Given the context information and not prior knowledge, answer the question:
-{query}
-If the answer is not in the context, respond with: Not mentioned in the resume.
-
-Ensure that all relevant data, especially specific details like dates and durations, are properly retrieved 
-and incorporated into the generated answer. When providing answers that include qualification, certification, something like that,
-ensure that dates and durations are included, if available, in the answer. When asked about industries the person has worked in,
-you can glean that from their work experience descriptions. Make sure to not miss any important details.
-"""
-
-    system_prompt = V2_SYSTEM_PROMPT
-    user_prompt = V3_PROMPT
-
-    client = OpenAI(
-        api_key=os.getenv("OPENAI_API_KEY")
-    )
 
     start_time = time.time()
     completion = client.chat.completions.create(
-        model="gpt-4o",
         messages=[
             {
                 "role": "system",
-                "content": system_prompt
+                "content": V2_SYSTEM_PROMPT
             },
             {
                 "role": "user",
-                "content": user_prompt
+                "content": V2_PROMPT
             }
-        ]
+        ],
+        response_model=QAModel
     )
     llm_time = time.time() - start_time
-    
-    # Extract token usage information
-    input_tokens = completion.usage.prompt_tokens
-    output_tokens = completion.usage.completion_tokens
-    total_tokens = completion.usage.total_tokens
-    
-    
+
     return {
-      "response": completion.choices[0].message.content,
-      "system_prompt": system_prompt,
-      "user_prompt": user_prompt,
-      "input_tokens": input_tokens,
-      "output_tokens": output_tokens,
-      "total_tokens": total_tokens,
+      "response": completion.answer,
+      "system_prompt": V2_SYSTEM_PROMPT,
+      "user_prompt": V2_PROMPT,
       "llm_time": llm_time
     }
+
+def ingest_files():
+    """Ingest PDF files from the resumes folder into LanceDB."""
+    resumes_folder = "./resumes"
+    for file_name in os.listdir(resumes_folder):
+        if file_name.endswith(".pdf"):
+            file_path = os.path.join(resumes_folder, file_name)
+    with open(file_path, "rb") as pdf_file:
+        pdf_bytes = pdf_file.read()
+
+    text_data = extract_text_from_pdf(pdf_bytes)
+
+    chunks = text_chunker(text_data, max_chunk_length=CHUNK_SIZE, overlap=50)
+    print("Number of Chunks: ", len(chunks))
+    metadata = {"file_path": file_path, "name": "Alex Thompson"}
+
+    # create and add table in table
+    table = lanceDBConnection(chunks, metadata)
+
+    # Create a fts index before the hybrid search
+    table.create_fts_index("text", replace=True)
+
+    print("Ingestion complete. All PDF files have been added to LanceDB.")
+    return table
+
+def ingest_file(pdf_upload):
+    """Ingest PDF file into LanceDB."""
+    text_data = extract_text_from_pdf(pdf_upload)
+
+    chunks = text_chunker(text_data, max_chunk_length=CHUNK_SIZE, overlap=50)
+    print("Number of Chunks: ", len(chunks))
+    # print(pdf_upload)
+    metadata = {"file_path": "Uploaded PDF"}
+
+    # create and add table in table
+    table = lanceDBConnection(chunks, metadata)
+
+    # Create a fts index before the hybrid search
+    table.create_fts_index("text", replace=True)
+
+    print("Ingestion complete. PDF file has been added to LanceDB.")
+    return table
 
 def rag_pipeline(pdf_upload, query_input):
     """Main RAG pipeline."""
@@ -234,6 +275,52 @@ def rag_pipeline(pdf_upload, query_input):
     
     return response
 
+def rag_pipeline_vector_db(pdf_upload, query_input, table=None):
+    """Main RAG pipeline using vector DB."""
+    if pdf_upload:
+        table = ingest_file(pdf_upload)
+    
+    total_start_time = time.time()
+    retrieval_start_time = time.time()
+    
+    relevant_chunks = semantic_search(table, query_input)
+    retrieval_time = time.time() - retrieval_start_time
+    
+    # Generation phase
+    response = generate_response(query_input, relevant_chunks)
+    
+    # Calculate total time
+    total_time = time.time() - total_start_time
+    
+    # Get PDF name
+    pdf_name = pdf_upload.name if hasattr(pdf_upload, 'name') else "Uploaded PDF"
+    
+    # Log interaction with metrics
+    log_interaction(
+        pdf_name=pdf_name, 
+        query=query_input, 
+        response=response["response"], 
+        system_prompt=response["system_prompt"], 
+        chunk_size=CHUNK_SIZE, 
+        user_prompt=response["user_prompt"],
+        input_tokens=response.get("input_tokens", 0),
+        output_tokens=response.get("output_tokens", 0),
+        total_tokens=response.get("total_tokens", 0),
+        retrieval_time=retrieval_time,
+        llm_time=response.get("llm_time", 0),
+        total_time=total_time
+    )
+    
+    print(f"Response: {response['response']}")  # Print response for debugging
+    print(f"Tokens: {response.get('total_tokens', 0)} (input: {response.get('input_tokens', 0)}, output: {response.get('output_tokens', 0)})")
+    print(f"Times: total={total_time:.2f}s, retrieval={retrieval_time:.2f}s, llm={response.get('llm_time', 0):.2f}s")
+    
+    # Add metrics to the response
+    response["retrieval_time"] = retrieval_time
+    response["total_time"] = total_time
+    
+    return response
+
 # Gradio app
 with gr.Blocks() as app:
   gr.Markdown("# Vanilla RAG")
@@ -243,7 +330,7 @@ with gr.Blocks() as app:
 
   query_button = gr.Button("Submit")
   query_button.click(
-      lambda pdf, query: rag_pipeline(pdf, query)["response"], 
+      lambda pdf, query: rag_pipeline_vector_db(pdf, query)["response"], 
       inputs=[pdf_upload, query_input], 
       outputs=output
   )
