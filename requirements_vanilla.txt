@@ -15,3 +15,5 @@ pylance
 sentence-transformers
 numpy<2
 pandas
+opik
+google-genai

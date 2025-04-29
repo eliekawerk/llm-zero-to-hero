@@ -1,0 +1,13 @@
+Metric,Value
+Total queries,60
+Correct answers,50 (83.33%)
+Total tokens used,0
+- Input tokens,0 (nan%)
+- Output tokens,0 (nan%)
+Total cost,$0.0000
+- Input cost,$0.0000 (nan%)
+- Output cost,$0.0000 (nan%)
+Average tokens per query,0.0
+Average cost per query,$0.0000
+Cost per correct answer,$0.0000
+Accuracy per 1K tokens,0.0000
