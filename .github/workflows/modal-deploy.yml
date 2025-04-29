@@ -29,10 +29,7 @@ jobs:
 
       - name: Configure Modal token
         run: |
-          echo "${{ secrets.MODAL_TOKEN_ID }}" > modal_token_id.txt
-          echo "${{ secrets.MODAL_TOKEN_SECRET }}" > modal_token_secret.txt
-          modal token set-from-files modal_token_id.txt modal_token_secret.txt --yes
-          rm modal_token_id.txt modal_token_secret.txt
+          modal token set --token-id ${{ secrets.MODAL_TOKEN_ID }} --token-secret ${{ secrets.MODAL_TOKEN_SECRET }}
         env:
           MODAL_TOKEN_ID: ${{ secrets.MODAL_TOKEN_ID }}
           MODAL_TOKEN_SECRET: ${{ secrets.MODAL_TOKEN_SECRET }}
