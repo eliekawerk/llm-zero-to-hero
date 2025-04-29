@@ -91,6 +91,7 @@ def ingest_file_with_storage(pdf_upload):
 
 
 @app.function(
+    scaledown_window=300,
     max_containers=1,
     allow_concurrent_inputs=1000,
     secrets=[modal.Secret.from_name("google-secrets")],
