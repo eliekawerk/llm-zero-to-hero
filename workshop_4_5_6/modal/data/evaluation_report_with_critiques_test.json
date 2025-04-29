@@ -1,0 +1,771 @@
+{
+  "overall_metrics": {
+    "accuracy": 0.55,
+    "precision": 1,
+    "recall": 0.55,
+    "f1": 0.7096774193548387
+  },
+  "question_metrics": {
+    "What is the candidate's most recent job title?": {
+      "accuracy": 0.6666666666666666,
+      "count": 6
+    },
+    "List the programming languages mentioned in the resume.": {
+      "accuracy": 0.16666666666666666,
+      "count": 6
+    },
+    "Does the candidate have any leadership or management experience?": {
+      "accuracy": 0.3333333333333333,
+      "count": 6
+    },
+    "What degrees or academic qualifications does the candidate hold?": {
+      "accuracy": 0.8333333333333334,
+      "count": 6
+    },
+    "What is the total number of years of professional experience?": {
+      "accuracy": 0.16666666666666666,
+      "count": 6
+    },
+    "Has the candidate worked in any Fortune 500 companies?": {
+      "accuracy": 1,
+      "count": 6
+    },
+    "What industries has the candidate worked in?": {
+      "accuracy": 0,
+      "count": 6
+    },
+    "Does the candidate have experience working with cloud technologies?": {
+      "accuracy": 0.8333333333333334,
+      "count": 6
+    },
+    "List any certifications or professional training mentioned.": {
+      "accuracy": 0.8333333333333334,
+      "count": 6
+    },
+    "What projects or achievements are highlighted in the resume?": {
+      "accuracy": 0.6666666666666666,
+      "count": 6
+    }
+  },
+  "detailed_results": [
+    {
+      "resume": "emma-roberts.pdf",
+      "question": "What is the candidate's most recent job title?",
+      "gold_answer": "Platform Developer",
+      "predicted_answer": "Platform Developer",
+      "is_correct": true,
+      "reasoning": "The predicted answer \"Platform Developer\" is identical to the gold standard answer.  Therefore, it is semantically equivalent and contains the same key information.",
+      "user_critique": ""
+    },
+    {
+      "resume": "emma-roberts.pdf",
+      "question": "List the programming languages mentioned in the resume.",
+      "gold_answer": "Python, Java, JavaScript",
+      "predicted_answer": "Python, Java, JavaScript, SQL, NoSQL",
+      "is_correct": false,
+      "reasoning": "The predicted answer includes additional programming languages (SQL and NoSQL) that are not present in the gold standard answer.  While the core languages (Python, Java, JavaScript) are correctly identified, the extra languages make the answer incorrect.",
+      "incorrect_info": [
+        "SQL",
+        "NoSQL"
+      ],
+      "user_critique": ""
+    },
+    {
+      "resume": "emma-roberts.pdf",
+      "question": "Does the candidate have any leadership or management experience?",
+      "gold_answer": "Not mentioned in the resume.",
+      "predicted_answer": "The provided text mentions collaboration with cross-functional teams, mentoring aspiring developers, and conducting workshops, suggesting some leadership and mentorship experience. However, there is no explicit mention of formal management roles.",
+      "is_correct": false,
+      "reasoning": "The gold standard answer explicitly states that the information is not mentioned in the resume. The predicted answer, while acknowledging the absence of explicit mention of formal management roles, provides an interpretation and inference based on the available text.  This is not equivalent to stating that the information is not present.  The predicted answer introduces information that is not explicitly stated as fact in the gold standard.",
+      "incorrect_info": [
+        "The predicted answer infers leadership and mentorship experience based on actions described, which is not the same as explicitly stating the information was not in the resume."
+      ],
+      "user_critique": ""
+    },
+    {
+      "resume": "emma-roberts.pdf",
+      "question": "What degrees or academic qualifications does the candidate hold?",
+      "gold_answer": "Bachelor of Science in Computer Science from the University of Technology.",
+      "predicted_answer": "Bachelor of Science in Computer Science from the University of Technology, City, State.  Graduated May 2022.",
+      "is_correct": true,
+      "reasoning": "The predicted answer contains all the key information from the gold standard answer: the degree, major, and university.  The additional information about the city, state, and graduation date are not incorrect and do not materially alter the meaning of the core information.",
+      "user_critique": ""
+    },
+    {
+      "resume": "emma-roberts.pdf",
+      "question": "What is the total number of years of professional experience?",
+      "gold_answer": "1.5 years",
+      "predicted_answer": "1.5",
+      "is_correct": false,
+      "reasoning": "The predicted answer \"1.5\" is missing the unit of measurement \"years\", which is crucial for conveying the correct meaning.  While the numerical value is correct, the omission of \"years\" makes the answer incomplete and semantically different from the gold standard.",
+      "missing_info": [
+        "years"
+      ],
+      "user_critique": ""
+    },
+    {
+      "resume": "emma-roberts.pdf",
+      "question": "Has the candidate worked in any Fortune 500 companies?",
+      "gold_answer": "Not mentioned in the resume.",
+      "predicted_answer": "I don't have enough information to answer that based on the provided context.",
+      "is_correct": true,
+      "reasoning": "Both the gold standard and the predicted answer convey the same core message: the requested information is absent from the provided context (resume).  While phrased differently, they are semantically equivalent in that they both indicate a lack of information.",
+      "user_critique": ""
+    },
+    {
+      "resume": "emma-roberts.pdf",
+      "question": "What industries has the candidate worked in?",
+      "gold_answer": "Not mentioned in the resume.",
+      "predicted_answer": "The candidate has worked in the technology industry, specifically in platform development at Tech Solutions Inc. and Innovative Platforms Ltd.",
+      "is_correct": false,
+      "reasoning": "The gold standard answer explicitly states that the information is not mentioned in the resume. The predicted answer, however, provides specific details about the candidate's work experience, which contradicts the gold standard.  Therefore, the prediction is incorrect.",
+      "incorrect_info": [
+        "The provided work experience details"
+      ],
+      "user_critique": ""
+    },
+    {
+      "resume": "emma-roberts.pdf",
+      "question": "Does the candidate have experience working with cloud technologies?",
+      "gold_answer": "Yes, the candidate has experience working with cloud technologies, including AWS and Azure.",
+      "predicted_answer": "Yes, the candidate has experience working with AWS and Azure, as explicitly stated in their professional experience and projects.",
+      "is_correct": true,
+      "reasoning": "The predicted answer conveys the same core information as the gold standard answer.  Both answers confirm the candidate's experience with AWS and Azure. While the predicted answer adds a bit more detail about where this information was found (resume/projects), this is not contradictory or incorrect and it strengthens the answer. The meaning remains the same.",
+      "user_critique": ""
+    },
+    {
+      "resume": "emma-roberts.pdf",
+      "question": "List any certifications or professional training mentioned.",
+      "gold_answer": "- Python for Everybody Specialization - Coursera\n- Java Programming and Software Engineering Fundamentals - Coursera\n- AWS Certified Developer – Associate - Amazon Web Services\n- Google Cloud Professional Cloud Developer - Google Cloud",
+      "predicted_answer": "Python for Everybody Specialization - Coursera, Java Programming and Software Engineering Fundamentals - Coursera, AWS Certified Developer – Associate - Amazon Web Services, Google Cloud Professional Cloud Developer - Google Cloud",
+      "is_correct": true,
+      "reasoning": "The predicted answer contains the same information as the gold standard. The only difference is the use of commas to separate the items instead of line breaks. This is a minor formatting difference that does not affect the meaning or correctness of the answer.",
+      "user_critique": ""
+    },
+    {
+      "resume": "emma-roberts.pdf",
+      "question": "What projects or achievements are highlighted in the resume?",
+      "gold_answer": "Highlighted projects and achievements in the resume include:\n\n1. Developed core components of a Cloud Management Platform.\n2. Built a Data Integration Service using Python and Flask.\n3. Assisted in the development of an API Gateway.\n4. Contributed to a Monitoring and Alerting System.\n5. Developed a Cloud Resource Manager using Django and Django REST Framework.\n6. Built an API Management Platform with Flask.\n7. Created a Real-Time Monitoring System using Node.js and Express.js.",
+      "predicted_answer": "The resume highlights the following projects and achievements:\n\n* **Cloud Management Platform:** Developed core components enabling users to provision, monitor, and manage cloud resources across multiple providers.\n* **Data Integration Service:** Built a service using Python and Flask for seamless data import/export between systems.\n* **API Gateway:** Assisted in developing an API gateway for accessing platform services, enhancing security and performance.\n* **Monitoring and Alerting System:** Contributed to creating a system for real-time performance tracking and automated issue notifications.\n* **Cloud Resource Manager:** Developed a manager using Django and Django REST Framework for provisioning and managing cloud resources across AWS, Azure, and GCP. Implemented OAuth2 for secure access and used Terraform for IaC.\n* **API Management Platform:** Built a platform with Flask for creating, monitoring, and managing APIs. Implemented rate limiting, API key management, and usage analytics. Used PostgreSQL for data storage and Docker for containerization.\n* **Real-Time Monitoring System:** Created a system using Node.js and Express.js for tracking and visualizing platform performance metrics. Implemented WebSocket for real-time communication and used MongoDB for handling large volumes of time-series data.",
+      "is_correct": true,
+      "reasoning": "The predicted answer is semantically equivalent to the gold standard. It contains all the key information from the gold standard, with minor additions that provide more context and detail without introducing any inaccuracies.  The additional details enhance the understanding of each project and do not contradict the gold standard.",
+      "user_critique": ""
+    },
+    {
+      "resume": "jane-smith.pdf",
+      "question": "What is the candidate's most recent job title?",
+      "gold_answer": "Senior Full Stack Developer",
+      "predicted_answer": "Senior Full Stack Developer",
+      "is_correct": true,
+      "reasoning": "The predicted answer is identical to the gold standard answer.  Therefore, it is considered semantically equivalent and completely correct.",
+      "user_critique": ""
+    },
+    {
+      "resume": "jane-smith.pdf",
+      "question": "List the programming languages mentioned in the resume.",
+      "gold_answer": "JavaScript, TypeScript, Python, Java.",
+      "predicted_answer": "JavaScript, TypeScript, Python, Java",
+      "is_correct": true,
+      "reasoning": "The predicted answer is identical to the gold standard answer.  Both lists contain the same programming languages.",
+      "user_critique": ""
+    },
+    {
+      "resume": "jane-smith.pdf",
+      "question": "Does the candidate have any leadership or management experience?",
+      "gold_answer": "Yes, the candidate has leadership experience as they have led development teams and mentored junior developers in their role as a Senior Full Stack Developer at Tech Innovators Inc.",
+      "predicted_answer": "Yes, the candidate has experience leading development of multiple full-stack web applications, mentoring junior developers, and conducting code reviews.  They also led the development of an inventory management system and a CRM tool.",
+      "is_correct": true,
+      "reasoning": "The predicted answer correctly identifies that the candidate has leadership experience.  While the specifics of projects and team sizes differ slightly, the core information about leading teams and mentoring junior developers is present in both. The additional details in the predicted answer (e.g., code reviews, specific projects) are not contradictory and strengthen the overall assertion of leadership experience.",
+      "user_critique": ""
+    },
+    {
+      "resume": "jane-smith.pdf",
+      "question": "What degrees or academic qualifications does the candidate hold?",
+      "gold_answer": "Jane Smith holds a Master of Science in Computer Science from the University of Technology and a Bachelor of Science in Information Technology from Tech University.",
+      "predicted_answer": "Master of Science in Computer Science, University of Technology, City, State (Graduated May 2013)\nBachelor of Science in Information Technology, Tech University, City, State (Graduated May 2011)",
+      "is_correct": true,
+      "reasoning": "The predicted answer conveys the same information as the gold standard. Although the formatting differs and additional details like graduation dates and location are included in the prediction, these additions do not contradict or alter the core information about Jane Smith's degrees.  The key information – degrees, majors, and universities – is accurately represented in both.",
+      "user_critique": ""
+    },
+    {
+      "resume": "jane-smith.pdf",
+      "question": "What is the total number of years of professional experience?",
+      "gold_answer": "Jane Smith has over 11 years of professional experience.",
+      "predicted_answer": "11",
+      "is_correct": false,
+      "reasoning": "The predicted answer, \"11\", is only a part of the gold standard answer. It misses the crucial information that the experience is \"professional\" and belongs to \"Jane Smith\".  The numerical value alone is insufficient and lacks important context.",
+      "missing_info": [
+        "Jane Smith",
+        "professional experience"
+      ],
+      "user_critique": ""
+    },
+    {
+      "resume": "jane-smith.pdf",
+      "question": "Has the candidate worked in any Fortune 500 companies?",
+      "gold_answer": "Not mentioned in the resume.",
+      "predicted_answer": "I don't have enough information to answer that based on the provided context.",
+      "is_correct": true,
+      "reasoning": "The predicted answer conveys the same meaning as the gold standard. Both indicate that the requested information cannot be found in the provided context (resume).  The slight difference in wording is acceptable because the core message remains consistent.",
+      "user_critique": ""
+    },
+    {
+      "resume": "jane-smith.pdf",
+      "question": "What industries has the candidate worked in?",
+      "gold_answer": "Not mentioned in the resume.",
+      "predicted_answer": "Based on the provided text, the candidate has worked in e-commerce, real-time analytics, inventory management, and customer relationship management.",
+      "is_correct": false,
+      "reasoning": "The gold standard answer explicitly states that the information is not found in the resume.  The predicted answer, however, provides information that is supposedly found in the resume. These are contradictory. The prediction is incorrect because it fails to reflect the absence of information as indicated in the gold standard.",
+      "incorrect_info": [
+        "The predicted answer hallucinates information about the candidate's work experience in e-commerce, real-time analytics, inventory management, and customer relationship management, which contradicts the gold standard's assertion that this information is not mentioned in the resume."
+      ],
+      "user_critique": ""
+    },
+    {
+      "resume": "jane-smith.pdf",
+      "question": "Does the candidate have experience working with cloud technologies?",
+      "gold_answer": "Yes, the candidate has experience working with cloud technologies, specifically AWS, Azure, and GCP.",
+      "predicted_answer": "Yes, the candidate has experience with AWS, Azure, and GCP, as explicitly stated in their skills section.",
+      "is_correct": true,
+      "reasoning": "The predicted answer correctly identifies the candidate's experience with AWS, Azure, and GCP.  While the wording differs slightly, the core information is the same and the meaning is preserved. The added detail about the information being explicitly stated in the skills section is a relevant addition rather than an error.",
+      "user_critique": ""
+    },
+    {
+      "resume": "jane-smith.pdf",
+      "question": "List any certifications or professional training mentioned.",
+      "gold_answer": "AWS Certified Solutions Architect – Associate - Amazon Web Services  \nCertified Kubernetes Administrator (CKA) - CNCF  \nFull Stack Web Developer Nanodegree - Udacity",
+      "predicted_answer": "AWS Certified Solutions Architect – Associate, Certified Kubernetes Administrator (CKA), Full Stack Web Developer Nanodegree",
+      "is_correct": true,
+      "reasoning": "The predicted answer captures all the essential information present in the gold standard answer.  While the formatting and inclusion of the awarding bodies (Amazon Web Services, CNCF, Udacity) differ slightly, these differences are minor and do not alter the core meaning.  The predicted answer successfully conveys the same certifications and qualifications.",
+      "user_critique": ""
+    },
+    {
+      "resume": "jane-smith.pdf",
+      "question": "What projects or achievements are highlighted in the resume?",
+      "gold_answer": "The resume highlights the following projects and achievements:\n\n1. **E-Commerce Platform**: Spearheaded development, integrating third-party payment gateways and ensuring PCI compliance.\n2. **Real-Time Analytics Dashboard**: Built using React, Redux, and WebSocket to provide live data and visualizations.\n3. **Inventory Management System**: Led development to streamline warehouse operations and reduce manual errors.\n4. **Customer Relationship Management (CRM) Tool**: Created a tool with advanced search and filtering to improve data management and sales processes.\n5. **Social Networking Site**: Contributed to developing features like user profiles, messaging, and news feeds.\n6. **Online Learning Platform**: Assisted in building a platform with interactive courses, quizzes, and progress tracking.\n7. **Personal Blog Platform**: Developed using Gatsby and Node.js with features like markdown support and user authentication.\n8. **Real-Time Chat Application**: Built using React, Node.js, and Socket.io with features such as private messaging and group chats.\n9. **Expense Tracker App**: Created using React Native for managing finances on iOS and Android, integrating with Firebase.",
+      "predicted_answer": "The resume highlights the following projects:\n\n*   **E-Commerce Platform:** A scalable e-commerce platform integrating third-party payment gateways and ensuring PCI compliance.\n*   **Real-Time Analytics Dashboard:** A real-time dashboard using React, Redux, and WebSocket for live data visualization.\n*   **Inventory Management System:** A comprehensive system streamlining warehouse operations and reducing manual errors.\n*   **Customer Relationship Management (CRM) Tool:** A CRM tool with advanced search and filtering capabilities to improve customer data management and sales processes.\n*   **Social Networking Site:**  A social networking site with features such as user profiles, messaging, and news feeds.\n*   **Online Learning Platform:** An online learning platform with interactive courses, quizzes, and progress tracking.\n*   **Personal Blog Platform:** A personal blog platform using Gatsby and Node.js with markdown support, user authentication, and a custom CMS.\n*   **Real-Time Chat Application:** A real-time chat application using React, Node.js, and Socket.io with features like private messaging and group chats.\n*   **Expense Tracker App:** An expense tracker app using React Native, integrated with Firebase for authentication and real-time database capabilities.",
+      "is_correct": true,
+      "reasoning": "The predicted answer successfully captures all the key information present in the gold standard answer.  While there are minor variations in phrasing, these do not alter the core meaning or significance of the projects listed.  Both answers accurately reflect the projects and their essential features.  No incorrect information is present in the prediction.",
+      "user_critique": ""
+    },
+    {
+      "resume": "john-doe.pdf",
+      "question": "What is the candidate's most recent job title?",
+      "gold_answer": "Frontend Developer at XYZ Tech Solutions, January 2023 - Present.",
+      "predicted_answer": "Frontend Developer",
+      "is_correct": false,
+      "reasoning": "The predicted answer only provides the job title, omitting crucial information present in the gold standard, such as the company name (XYZ Tech Solutions) and the employment period (January 2023 - Present).  While the job title is correct, the missing context renders the answer incomplete and thus incorrect.",
+      "missing_info": [
+        "Company Name",
+        "Employment Period"
+      ],
+      "user_critique": ""
+    },
+    {
+      "resume": "john-doe.pdf",
+      "question": "List the programming languages mentioned in the resume.",
+      "gold_answer": "HTML, CSS, JavaScript, TypeScript",
+      "predicted_answer": "HTML, CSS, JavaScript, TypeScript, React, Vue.js, jQuery",
+      "is_correct": false,
+      "reasoning": "The predicted answer includes additional frameworks (React, Vue.js, jQuery) that are not present in the gold standard. While the core languages are correctly identified, the extra frameworks make the answer not semantically equivalent. The gold standard lists only the core languages.",
+      "incorrect_info": [
+        "React",
+        "Vue.js",
+        "jQuery"
+      ],
+      "user_critique": ""
+    },
+    {
+      "resume": "john-doe.pdf",
+      "question": "Does the candidate have any leadership or management experience?",
+      "gold_answer": "The candidate has led the frontend development of an e-commerce platform using React but has no explicit leadership or management positions mentioned in the resume.",
+      "predicted_answer": "Yes, the candidate led the frontend development of an e-commerce platform and developed a responsive employee portal.  They also mentored aspiring web developers and participated in Agile team activities including sprint planning and retrospectives.",
+      "is_correct": false,
+      "reasoning": "The predicted answer adds information not present in the gold standard, such as developing a responsive employee portal, mentoring aspiring developers, and Agile team participation. While the core information about leading frontend development of an e-commerce platform using React is present, the additional details make the prediction not semantically equivalent to the gold standard.  The gold standard explicitly states that no leadership or management positions are mentioned; the predicted answer implies some leadership through mentoring and Agile participation, which contradicts this.",
+      "incorrect_info": [
+        "Developed a responsive employee portal",
+        "Mentored aspiring web developers",
+        "Participated in Agile team activities including sprint planning and retrospectives"
+      ],
+      "user_critique": ""
+    },
+    {
+      "resume": "john-doe.pdf",
+      "question": "What degrees or academic qualifications does the candidate hold?",
+      "gold_answer": "Bachelor of Science in Computer Science from University of Technology, graduated May 2022.",
+      "predicted_answer": "Bachelor of Science in Computer Science from University of Technology",
+      "is_correct": false,
+      "reasoning": "The predicted answer is missing the graduation date (May 2022) which is a key piece of information present in the gold standard answer. While the core information about the degree is correct, omitting the graduation date makes the answer incomplete and not fully equivalent to the gold standard.",
+      "missing_info": [
+        "Graduation date"
+      ],
+      "user_critique": ""
+    },
+    {
+      "resume": "john-doe.pdf",
+      "question": "What is the total number of years of professional experience?",
+      "gold_answer": "1.5 years",
+      "predicted_answer": "1.5",
+      "is_correct": false,
+      "reasoning": "The predicted answer \"1.5\" is missing the unit of time \"years\" present in the gold standard answer \"1.5 years\".  While numerically the same, the omission of the unit makes the answer incomplete and not semantically equivalent.",
+      "missing_info": [
+        "years"
+      ],
+      "user_critique": ""
+    },
+    {
+      "resume": "john-doe.pdf",
+      "question": "Has the candidate worked in any Fortune 500 companies?",
+      "gold_answer": "Not mentioned in the resume.",
+      "predicted_answer": "I don't have enough information to answer that based on the provided context.",
+      "is_correct": true,
+      "reasoning": "The predicted answer conveys the same meaning as the gold standard. Both indicate that the requested information is unavailable in the provided context.",
+      "user_critique": ""
+    },
+    {
+      "resume": "john-doe.pdf",
+      "question": "What industries has the candidate worked in?",
+      "gold_answer": "The candidate has worked in the technology and digital agency industries, specifically in web development and digital projects.",
+      "predicted_answer": "Based on the provided text, the candidate has worked in the e-commerce and tech industries.  They also have experience working with an agency (ABC Digital Agency) on various client projects. The specific industries of those clients are not specified.",
+      "is_correct": false,
+      "reasoning": "The predicted answer mentions e-commerce and tech industries, which are not explicitly stated in the gold standard. While the gold standard mentions \"technology and digital agency industries\", the predicted answer only partially overlaps by mentioning \"tech industries\" and an agency.  The gold standard specifically points to \"web development and digital projects,\" which is not directly addressed in the prediction, only hinted at by \"various client projects\". Therefore, key information is missing, and the overlap is insufficient to consider them semantically equivalent.",
+      "missing_info": [
+        "web development",
+        "digital projects",
+        "technology and digital agency industries"
+      ],
+      "incorrect_info": [
+        "e-commerce industries"
+      ],
+      "user_critique": ""
+    },
+    {
+      "resume": "john-doe.pdf",
+      "question": "Does the candidate have experience working with cloud technologies?",
+      "gold_answer": "Not mentioned in the resume.",
+      "predicted_answer": "I don't have enough information to answer that based on the provided context.",
+      "is_correct": true,
+      "reasoning": "The predicted answer conveys the same meaning as the gold standard answer.  Both indicate that the requested information cannot be found in the provided context (resume). While the phrasing differs, the core message of information unavailability is preserved.",
+      "user_critique": ""
+    },
+    {
+      "resume": "john-doe.pdf",
+      "question": "List any certifications or professional training mentioned.",
+      "gold_answer": "Front-End Web Developer Nanodegree - Udacity\nJavaScript Algorithms and Data Structures - freeCodeCamp",
+      "predicted_answer": "Front-End Web Developer Nanodegree - Udacity, JavaScript Algorithms and Data Structures - freeCodeCamp",
+      "is_correct": true,
+      "reasoning": "The predicted answer is semantically equivalent to the gold standard. Both answers list the same two certifications with the same issuing organizations. The only difference is the use of a comma in the predicted answer to separate the two items, which is a minor stylistic variation that does not affect the meaning.",
+      "user_critique": ""
+    },
+    {
+      "resume": "john-doe.pdf",
+      "question": "What projects or achievements are highlighted in the resume?",
+      "gold_answer": "The resume highlights the following projects and achievements: \n\n1. E-Commerce Platform: Led frontend development using React, integrating payment gateways and third-party services.\n2. Employee Portal: Developed a responsive portal with Vue.js for company resources and self-service tools.\n3. Marketing Website: Collaborated on a responsive design for a major client's website, improving user retention and lead generation.\n4. Event Management System: Assisted in creating a system with Vue.js for organizing events.\n5. Personal Portfolio Website: Built with React and Tailwind CSS, featuring smooth scrolling and animations.\n6. Task Manager App: Developed with Vue.js and Vuex for managing tasks with persistent data storage.\n7. Weather Dashboard: Created with JavaScript, integrating OpenWeatherMap API for real-time data.\n\nAdditionally, achievements include:\n- 30% improvement in website load times through optimization.\n- Contribution to code reviews and management in an Agile team.",
+      "predicted_answer": "The resume highlights the following projects and achievements:\n\n* **E-Commerce Platform:** Led frontend development using React, integrating payment gateways and third-party services.\n* **Employee Portal:** Developed a responsive employee portal using Vue.js, providing employee access to company resources.\n* **Marketing Website:** Collaborated on development, implementing a responsive design to improve user retention and lead generation.\n* **Event Management System:** Assisted in creating an event management system with Vue.js.\n* **Personal Portfolio Website:** Built a personal portfolio website using React and Tailwind CSS.\n* **Task Manager App:** Developed a task manager app with Vue.js and Vuex.\n* **Weather Dashboard:** Created a weather dashboard using HTML, CSS, and JavaScript, integrating the OpenWeatherMap API.\n\nAdditionally, the resume mentions contributions to various client projects at ABC Digital Agency, including landing pages, corporate websites, and single-page applications, and mentoring aspiring web developers at CodeForGood.",
+      "is_correct": false,
+      "reasoning": "The predicted answer includes extra information not present in the gold standard answer. Specifically, the mention of \"contributions to various client projects at ABC Digital Agency, including landing pages, corporate websites, and single-page applications, and mentoring aspiring web developers at CodeForGood\" is not found in the gold standard.  While most of the project details are similar, the addition of this extra information makes the predicted answer not semantically equivalent to the gold standard.",
+      "incorrect_info": [
+        "contributions to various client projects at ABC Digital Agency, including landing pages, corporate websites, and single-page applications",
+        "mentoring aspiring web developers at CodeForGood"
+      ],
+      "user_critique": ""
+    },
+    {
+      "resume": "alex-thompson.pdf",
+      "question": "What is the candidate's most recent job title?",
+      "gold_answer": "Backend Developer at Tech Innovations Ltd.",
+      "predicted_answer": "Backend Developer",
+      "is_correct": false,
+      "reasoning": "The predicted answer is missing crucial information present in the gold standard. While it correctly identifies the role as \"Backend Developer\", it omits the employer, \"Tech Innovations Ltd.\", which is a significant piece of information.  The omission makes the answer incomplete and not semantically equivalent.",
+      "missing_info": [
+        "Employer name: Tech Innovations Ltd."
+      ],
+      "user_critique": ""
+    },
+    {
+      "resume": "alex-thompson.pdf",
+      "question": "List the programming languages mentioned in the resume.",
+      "gold_answer": "Python, Java, JavaScript, SQL",
+      "predicted_answer": "Python, Java, JavaScript, SQL, NoSQL, Node.js",
+      "is_correct": false,
+      "reasoning": "The predicted answer includes additional programming languages (NoSQL, Node.js) that are not present in the gold standard answer. While the core programming languages match, the inclusion of extra languages makes the answer not semantically equivalent to the gold standard.",
+      "incorrect_info": [
+        "NoSQL",
+        "Node.js"
+      ],
+      "user_critique": ""
+    },
+    {
+      "resume": "alex-thompson.pdf",
+      "question": "Does the candidate have any leadership or management experience?",
+      "gold_answer": "Not mentioned in the resume.",
+      "predicted_answer": "The provided text mentions the candidate mentored aspiring backend developers, conducted workshops and coding sessions, assisted in organizing hackathons, and conducted code reviews.  These activities demonstrate leadership and mentoring skills, but not necessarily formal management experience.",
+      "is_correct": false,
+      "reasoning": "The gold standard answer explicitly states that the information is not mentioned in the resume. The predicted answer, however, provides details about the candidate's activities, which contradicts the gold standard.  Therefore, the prediction is incorrect.",
+      "incorrect_info": [
+        "The predicted answer provides information about the candidate's activities, which contradicts the gold standard's statement that the information is not mentioned in the resume."
+      ],
+      "user_critique": ""
+    },
+    {
+      "resume": "alex-thompson.pdf",
+      "question": "What degrees or academic qualifications does the candidate hold?",
+      "gold_answer": "Bachelor of Science in Computer Science from University of Technology, graduated in May 2022.",
+      "predicted_answer": "Bachelor of Science in Computer Science from University of Technology, City, State.  Graduated May 2022.",
+      "is_correct": true,
+      "reasoning": "The predicted answer is largely consistent with the gold standard.  While the predicted answer adds \"City, State\", this is not considered incorrect information as it is an elaboration that doesn't contradict the gold standard.  The core information (degree, major, university, graduation date) is identical, making the answers semantically equivalent.",
+      "user_critique": ""
+    },
+    {
+      "resume": "alex-thompson.pdf",
+      "question": "What is the total number of years of professional experience?",
+      "gold_answer": "1.5 years",
+      "predicted_answer": "1.5 years",
+      "is_correct": true,
+      "reasoning": "The predicted answer \"1.5 years\" is semantically equivalent to the gold standard answer \"1.5 years\".  Both answers convey the same precise information regarding the duration.",
+      "user_critique": ""
+    },
+    {
+      "resume": "alex-thompson.pdf",
+      "question": "Has the candidate worked in any Fortune 500 companies?",
+      "gold_answer": "Not mentioned in the resume.",
+      "predicted_answer": "I don't have enough information to answer that based on the provided context.",
+      "is_correct": true,
+      "reasoning": "The predicted answer conveys the same meaning as the gold standard answer.  Both indicate that the requested information cannot be found within the provided context (resume, in this case). While phrased differently, the core message remains consistent: the answer is unavailable.",
+      "user_critique": ""
+    },
+    {
+      "resume": "alex-thompson.pdf",
+      "question": "What industries has the candidate worked in?",
+      "gold_answer": "Not mentioned in the resume.",
+      "predicted_answer": "e-commerce, customer relationship management (CRM), inventory management, and general web application development.",
+      "is_correct": false,
+      "reasoning": "The gold standard answer explicitly states that the information is not present in the resume. The predicted answer, however, provides specific details about e-commerce, CRM, inventory management, and web application development.  These details contradict the gold standard, indicating the prediction is incorrect.",
+      "incorrect_info": [
+        "e-commerce",
+        "customer relationship management (CRM)",
+        "inventory management",
+        "general web application development"
+      ],
+      "user_critique": ""
+    },
+    {
+      "resume": "alex-thompson.pdf",
+      "question": "Does the candidate have experience working with cloud technologies?",
+      "gold_answer": "Yes, the candidate has experience working with cloud technologies, specifically AWS and Azure.",
+      "predicted_answer": "Yes, the candidate has experience with AWS and Azure cloud technologies, as indicated in their skills section.",
+      "is_correct": true,
+      "reasoning": "The predicted answer and the gold standard answer convey the same core information: the candidate possesses experience with AWS and Azure cloud technologies.  While the phrasing differs slightly, the meaning remains consistent. The predicted answer's addition of \"as indicated in their skills section\" provides supporting context without altering the fundamental truth conveyed.",
+      "user_critique": ""
+    },
+    {
+      "resume": "alex-thompson.pdf",
+      "question": "List any certifications or professional training mentioned.",
+      "gold_answer": "- Python for Everybody Specialization - Coursera\n- Java Programming and Software Engineering Fundamentals - Coursera\n- AWS Certified Developer – Associate - Amazon Web Services",
+      "predicted_answer": "Python for Everybody Specialization - Coursera, Java Programming and Software Engineering Fundamentals - Coursera, AWS Certified Developer – Associate - Amazon Web Services",
+      "is_correct": true,
+      "reasoning": "The predicted answer contains the same information as the gold standard answer.  The only difference is the use of commas instead of line breaks; this is a minor formatting difference that does not affect the meaning or correctness of the answer.",
+      "user_critique": ""
+    },
+    {
+      "resume": "alex-thompson.pdf",
+      "question": "What projects or achievements are highlighted in the resume?",
+      "gold_answer": "Highlighted projects and achievements in the resume include:\n\n1. **E-Commerce API**: Developed a comprehensive API for an e-commerce platform, handling user authentication, product management, and order processing.\n2. **Data Processing Pipeline**: Designed and implemented a data processing pipeline using Python and AWS Lambda for real-time data analysis and reporting.\n3. **Customer Relationship Management (CRM) System**: Assisted in the development, implementing features like customer data management and interaction tracking.\n4. **Inventory Management System**: Contributed to streamlining warehouse operations and reducing manual errors.\n5. **Personal Blog API**: Developed using Django and Django REST Framework, handling user registration, authentication, and content management.\n6. **Chat Application Backend**: Created backend using Node.js and Express.js, implementing real-time communication with WebSocket.\n7. **Expense Tracker API**: Built with Flask, allowing users to manage finances, implemented JWT-based authentication, and deployed on Heroku.\n\nAchievements include mentoring as a Coding Mentor at Code4Good, conducting workshops, and organizing hackathons.",
+      "predicted_answer": "The resume highlights the following projects and achievements:\n\n**Professional Experience:**\n\n*   **Tech Innovations Ltd.:** Developed and maintained server-side logic for web applications using Django and Flask; designed and implemented RESTful APIs; managed and optimized database schemas using PostgreSQL and MongoDB; collaborated with cross-functional teams; conducted code reviews; implemented CI/CD pipelines using Jenkins.\n    *   **Key Project: E-Commerce API:** Developed a comprehensive API for an e-commerce platform, handling user authentication, product management, and order processing.\n    *   **Key Project: Data Processing Pipeline:** Designed and implemented a data processing pipeline using Python and AWS Lambda, enabling real-time data analysis and reporting.\n*   **Innovative Solutions Inc.:** Assisted in the development of backend services for web applications using Java and Spring Boot; implemented user authentication and authorization mechanisms; designed and optimized SQL queries; participated in debugging and troubleshooting; worked on feature enhancements and bug fixes; collaborated with cross-functional teams.\n    *   **Key Project: Customer Relationship Management (CRM) System:** Assisted in development, implementing features such as customer data management, interaction tracking, and reporting.\n    *   **Key Project: Inventory Management System:** Contributed to the creation of an inventory management system, streamlining warehouse operations and reducing manual errors.\n\n**Personal Projects:**\n\n*   **Personal Blog API:** Developed a personal blog API using Django and Django REST Framework, handling user registration, authentication, and content management.  Used PostgreSQL and Docker.\n*   **Chat Application Backend:** Created the backend for a real-time chat application using Node.js and Express.js, implementing WebSockets and using MongoDB.\n*   **Expense Tracker API:** Built an expense tracker API with Flask, using JWT-based authentication and PostgreSQL, deployed on Heroku.",
+      "is_correct": false,
+      "reasoning": "The predicted answer is not semantically equivalent to the gold standard answer. While it correctly identifies most of the projects and achievements mentioned in the gold standard, it introduces additional information (specific company names, technologies used, additional details about roles and responsibilities) that are not present in the original text.  This added context alters the meaning and scope of the original answer.  The gold standard is a concise list of achievements, while the predicted answer elaborates with contextual information, making it an inaccurate representation of the gold standard.  Moreover, the gold standard mentions mentoring and hackathon involvement, which are missing in the predicted answer.",
+      "missing_info": [
+        "Mentoring at Code4Good",
+        "Conducting workshops",
+        "Organizing hackathons"
+      ],
+      "incorrect_info": [
+        "Tech Innovations Ltd.",
+        "Innovative Solutions Inc.",
+        "additional details about technologies and methodologies used in each project"
+      ],
+      "user_critique": ""
+    },
+    {
+      "resume": "michael-johnson.pdf",
+      "question": "What is the candidate's most recent job title?",
+      "gold_answer": "Principal Full Stack Developer",
+      "predicted_answer": "Principal Full Stack Developer",
+      "is_correct": true,
+      "reasoning": "The predicted answer is identical to the gold standard answer.  Therefore, it is considered semantically equivalent and entirely correct.",
+      "user_critique": ""
+    },
+    {
+      "resume": "michael-johnson.pdf",
+      "question": "List the programming languages mentioned in the resume.",
+      "gold_answer": "JavaScript, TypeScript, Python, Java",
+      "predicted_answer": "HTML, CSS, JavaScript, Python, Ruby on Rails, Gatsby, Node.js, Angular, Django, React, TypeScript, Java",
+      "is_correct": false,
+      "reasoning": "The predicted answer contains all the programming languages listed in the gold standard, but it also includes many other technologies that are not requested.  The gold standard is a concise list of programming languages, while the prediction is a more extensive list that includes frameworks and libraries.",
+      "incorrect_info": [
+        "HTML",
+        "CSS",
+        "Ruby on Rails",
+        "Gatsby",
+        "Node.js",
+        "Angular",
+        "Django",
+        "React"
+      ],
+      "user_critique": ""
+    },
+    {
+      "resume": "michael-johnson.pdf",
+      "question": "Does the candidate have any leadership or management experience?",
+      "gold_answer": "Yes, the candidate has leadership and management experience as a Principal Full Stack Developer, where they led design and development efforts, mentored and guided a team of full stack developers, provided technical direction, and collaborated with various stakeholders to drive project success.",
+      "predicted_answer": "Yes, the candidate has extensive leadership and management experience.  Their roles as Principal Full Stack Developer and Senior Full Stack Developer involved leading teams, mentoring developers, providing technical direction, conducting code reviews, and collaborating with stakeholders to define project requirements and timelines.",
+      "is_correct": true,
+      "reasoning": "The predicted answer accurately captures the essence of the gold standard answer.  Both answers confirm the candidate's leadership and management experience. While the predicted answer omits the specific title 'Principal Full Stack Developer' and doesn't explicitly mention 'driving project success', these are minor omissions that don't significantly alter the core meaning.  The inclusion of 'Senior Full Stack Developer' adds context without contradicting the gold standard. The key information regarding leadership, mentoring, technical direction, and stakeholder collaboration is present in both.",
+      "missing_info": [
+        "Specific mention of 'Principal Full Stack Developer' role",
+        "Explicit mention of 'driving project success'"
+      ],
+      "user_critique": ""
+    },
+    {
+      "resume": "michael-johnson.pdf",
+      "question": "What degrees or academic qualifications does the candidate hold?",
+      "gold_answer": "The candidate holds a Master of Science in Computer Science from the University of Technology and a Bachelor of Science in Information Technology from Tech University.",
+      "predicted_answer": "The candidate holds a Master of Science in Computer Science from the University of Technology and a Bachelor of Science in Information Technology from Tech University.",
+      "is_correct": true,
+      "reasoning": "The predicted answer is semantically equivalent to the gold standard answer.  Both answers convey the same information regarding the candidate's degrees: a Master of Science in Computer Science from the University of Technology and a Bachelor of Science in Information Technology from Tech University. There are no significant differences in meaning or the inclusion of incorrect information.",
+      "user_critique": ""
+    },
+    {
+      "resume": "michael-johnson.pdf",
+      "question": "What is the total number of years of professional experience?",
+      "gold_answer": "Over 16 years.",
+      "predicted_answer": "12",
+      "is_correct": false,
+      "reasoning": "The predicted answer \"12\" is significantly different from the gold standard answer \"Over 16 years.\"  The predicted answer lacks the key information about the number of years being greater than 16.  It provides an entirely different value and is therefore incorrect.",
+      "missing_info": [
+        "The indication that the number of years is greater than 16."
+      ],
+      "incorrect_info": [
+        "12"
+      ],
+      "user_critique": ""
+    },
+    {
+      "resume": "michael-johnson.pdf",
+      "question": "Has the candidate worked in any Fortune 500 companies?",
+      "gold_answer": "Not mentioned in the resume.",
+      "predicted_answer": "I don't have enough information to answer that based on the provided context.",
+      "is_correct": true,
+      "reasoning": "Both the gold standard and the predicted answer convey the same core message: the requested information is absent from the provided context (resume). While the phrasing differs, the semantic meaning remains consistent, indicating that the information is unavailable.",
+      "user_critique": ""
+    },
+    {
+      "resume": "michael-johnson.pdf",
+      "question": "What industries has the candidate worked in?",
+      "gold_answer": "The candidate has worked in the Financial, Healthcare, E-Commerce, and Real-Time Collaboration industries.",
+      "predicted_answer": "Based on the provided text, the candidate has worked in the following industries: web solutions, startups, technology, finance, and healthcare.",
+      "is_correct": false,
+      "reasoning": "The predicted answer mentions some overlapping industries (finance and healthcare) but also includes additional industries (web solutions, startups, technology) not present in the gold standard.  Furthermore, the gold standard lists four specific industries, while the prediction includes a broader, less precise categorization.  The inclusion of extra industries makes the prediction not fully equivalent to the gold standard.",
+      "missing_info": [
+        "E-Commerce",
+        "Real-Time Collaboration"
+      ],
+      "incorrect_info": [
+        "web solutions",
+        "startups",
+        "technology"
+      ],
+      "user_critique": ""
+    },
+    {
+      "resume": "michael-johnson.pdf",
+      "question": "Does the candidate have experience working with cloud technologies?",
+      "gold_answer": "Yes, the candidate has experience with cloud technologies, specifically AWS, Azure, and GCP.",
+      "predicted_answer": "Yes, the candidate has experience working with AWS, Azure, and GCP, as indicated in their skills section.",
+      "is_correct": true,
+      "reasoning": "The predicted answer is semantically equivalent to the gold standard. Both answers correctly confirm the candidate's experience with AWS, Azure, and GCP. The minor difference in wording ('cloud technologies' vs 'working with') does not affect the meaning.  The prediction also correctly points to the source of this information ('skills section').",
+      "user_critique": ""
+    },
+    {
+      "resume": "michael-johnson.pdf",
+      "question": "List any certifications or professional training mentioned.",
+      "gold_answer": "AWS Certified Solutions Architect – Professional, Certified Kubernetes Administrator (CKA), Certified ScrumMaster (CSM), Full Stack Web Developer Nanodegree.",
+      "predicted_answer": "AWS Certified Solutions Architect – Professional - Amazon Web Services, Certified Kubernetes Administrator (CKA) - CNCF, Certified ScrumMaster (CSM) - Scrum Alliance, Full Stack Web Developer Nanodegree - Udacity",
+      "is_correct": true,
+      "reasoning": "The predicted answer contains the same certifications and nanodegree as the gold standard answer.  The additions of the awarding bodies (Amazon Web Services, CNCF, Scrum Alliance, Udacity) are considered minor additions that provide clarifying context and do not alter the core meaning.  Therefore, the predicted answer is semantically equivalent to the gold standard.",
+      "user_critique": ""
+    },
+    {
+      "resume": "michael-johnson.pdf",
+      "question": "What projects or achievements are highlighted in the resume?",
+      "gold_answer": "The resume highlights the following projects and achievements:\n\n1. Led the development of a Financial Analytics Platform, resulting in a 40% increase in user engagement.\n2. Architected and developed a Healthcare Management System, improving workflow efficiency.\n3. Spearheaded the development of a scalable E-Commerce Platform.\n4. Built a Real-Time Collaboration Tool using WebSocket, React, and Node.js.\n5. Contributed to a Social Networking Site with features such as user profiles and messaging.\n6. Assisted in building an Online Learning Platform with interactive courses.\n7. Contributed to a Project Management Tool with task management and reporting features.\n8. Assisted in building a Customer Support System with ticketing and live chat functionalities.\n9. Developed a Personal Blog Platform with Gatsby and Node.js.\n10. Built a Real-Time Chat Application with React and Socket.io.\n11. Created an Expense Tracker App using React Native.",
+      "predicted_answer": "The resume highlights the following projects and achievements:\n\n**Web Solutions Co. (Stack Developer):**\n*   Social Networking Site:  Implemented features such as user profiles, messaging, and news feeds.\n*   Online Learning Platform: Assisted in building a platform with interactive courses, quizzes, and progress tracking.\n\n**Startup XYZ (Junior Full Stack Developer):**\n*   Project Management Tool: Contributed to development, implementing features such as task assignment and progress tracking.\n*   Customer Support System: Assisted in building a system with ticketing, knowledge base, and live chat functionalities.\n\n**Tech Innovators Ltd. (Senior Full Stack Developer):**\n*   E-Commerce Platform: Spearheaded development, integrating payment gateways and CRM tools.\n*   Real-Time Collaboration Tool: Built a tool using WebSocket, React, and Node.js for real-time document collaboration.\n\n**Innovative Solutions Inc. (Principal Full Stack Developer):**\n*   Financial Analytics Platform: Led development, integrating third-party APIs and implementing real-time data processing, resulting in a 40% increase in user engagement.\n*   Healthcare Management System: Architected and developed a system with Django and React, streamlining patient data management.\n\n**Personal Projects:**\n*   Personal Blog Platform (Gatsby and Node.js): Features markdown support, user authentication, and a custom CMS.\n*   Real-Time Chat Application (React, Node.js, and Socket.io): Includes private messaging and group chats.\n*   Expense Tracker App (React Native and Firebase): Manages finances on iOS and Android devices.",
+      "is_correct": true,
+      "reasoning": "The predicted answer captures all the essential information present in the gold standard answer. While the predicted answer provides additional context such as company names and specific technologies used, this extra detail does not contradict or alter the core achievements mentioned in the gold standard.  The meaning is preserved, and no significant incorrect information is introduced. Minor variations in wording are acceptable and do not affect the overall accuracy.",
+      "user_critique": ""
+    },
+    {
+      "resume": "JO Reyes CV April 2025.pdf",
+      "question": "What is the candidate's most recent job title?",
+      "gold_answer": "AI/ML Technical Specialist",
+      "predicted_answer": "AI/ML Technical Specialist",
+      "is_correct": true,
+      "reasoning": "The predicted answer is identical to the gold standard answer.  Therefore, it is perfectly correct and semantically equivalent.",
+      "user_critique": ""
+    },
+    {
+      "resume": "JO Reyes CV April 2025.pdf",
+      "question": "List the programming languages mentioned in the resume.",
+      "gold_answer": "Python, TypeScript",
+      "predicted_answer": "Python, TypeScript, .Net Core, SQL, Kusto",
+      "is_correct": false,
+      "reasoning": "The predicted answer contains extra information ('.Net Core, SQL, Kusto') that is not present in the gold standard answer.  While the gold standard information is present, the addition of extra, unsupported information makes the answer incorrect.",
+      "incorrect_info": [
+        ".Net Core",
+        "SQL",
+        "Kusto"
+      ],
+      "user_critique": "This is a test JO"
+    },
+    {
+      "resume": "JO Reyes CV April 2025.pdf",
+      "question": "Does the candidate have any leadership or management experience?",
+      "gold_answer": "Yes, the candidate has leadership and management experience as a team leader and Technical Lead for a distributed international team at Inchcape Australia - Subaru, and has led a team in an Intelligent Document Processing Project at Cevo Australia.",
+      "predicted_answer": "Yes, the candidate has experience as a team leader for a distributed international team at Inchcape Australia, responsible for the technical strategy and development of Subaru's e-commerce CMS.  Additionally, they led a team that designed, built, and delivered a proof of concept for an intelligent document processing system for a strata management company.",
+      "is_correct": false,
+      "reasoning": "While the predicted answer correctly identifies the candidate's leadership experience at Inchcape Australia and involvement in an Intelligent Document Processing project, it contains inaccuracies and omissions.  The gold standard mentions the candidate's role as \"Technical Lead\" for a distributed international team at Inchcape Australia, which is missing in the prediction, Instead, the prediction mentions responsibility for \"technical strategy and development of Subaru's e-commerce CMS\", which isn't explicitly stated in the gold standard. The prediction also changes the client for the intelligent document processing project from \"Cevo Australia\" to \"a strata management company\". These discrepancies make the predicted answer not fully equivalent to the gold standard.",
+      "missing_info": [
+        "The candidate's role as \"Technical Lead\"",
+        "The specific client \"Cevo Australia\""
+      ],
+      "incorrect_info": [
+        "The description of the candidate's role in Inchcape Australia (Instead of \"Technical Lead\", the prediction mentions \"technical strategy and development of Subaru's e-commerce CMS\")",
+        "The client for the intelligent document processing project (incorrectly identified as a strata management company instead of Cevo Australia)"
+      ],
+      "user_critique": ""
+    },
+    {
+      "resume": "JO Reyes CV April 2025.pdf",
+      "question": "What degrees or academic qualifications does the candidate hold?",
+      "gold_answer": "- Graduate Certificate of Data Science, University of New South Wales (Jan 2023-Jan 2024)\n- BSc Computer Science, University of San Carlos, Philippines",
+      "predicted_answer": "The candidate holds a Graduate Certificate of Data Science from the University of New South Wales, and a BSc in Computer Science from the University of San Carlos, Philippines.",
+      "is_correct": true,
+      "reasoning": "The predicted answer accurately reflects the information provided in the gold standard.  Both mention the same two degrees, from the same universities, with only minor differences in phrasing and presentation. The predicted answer successfully captures the key information while preserving the meaning.",
+      "user_critique": ""
+    },
+    {
+      "resume": "JO Reyes CV April 2025.pdf",
+      "question": "What is the total number of years of professional experience?",
+      "gold_answer": "Over 10 years.",
+      "predicted_answer": "10",
+      "is_correct": false,
+      "reasoning": "The predicted answer \"10\" is not semantically equivalent to the gold standard answer \"Over 10 years.\"  The gold standard specifies a duration of more than 10 years, while the prediction only provides the number 10, omitting the crucial \"years\" and the \"over\" qualifier. This is a significant omission that alters the meaning.",
+      "missing_info": [
+        "years",
+        "over"
+      ],
+      "user_critique": ""
+    },
+    {
+      "resume": "JO Reyes CV April 2025.pdf",
+      "question": "Has the candidate worked in any Fortune 500 companies?",
+      "gold_answer": "Not mentioned in the resume.",
+      "predicted_answer": "Based on the provided text, the candidate has worked for Inchcape Australia, a multinational automotive company, and Readify (Telstra), an Australian IT consultancy.  Whether either company is a Fortune 500 company is not specified.",
+      "is_correct": true,
+      "reasoning": "The predicted answer correctly identifies that the information about whether the candidate worked for a Fortune 500 company is not present in the provided text.  This aligns with the gold standard answer, which states 'Not mentioned in the resume'. The prediction accurately reflects the absence of this specific information.",
+      "user_critique": ""
+    },
+    {
+      "resume": "JO Reyes CV April 2025.pdf",
+      "question": "What industries has the candidate worked in?",
+      "gold_answer": "The candidate has worked in the industries of digital twins, industrial automation, e-commerce, cloud computing consultancy, mining, automotive distribution and services, and IT consultancy.",
+      "predicted_answer": "The candidate has worked in the mining, automotive distribution, retail, services, and IT consulting industries.",
+      "is_correct": false,
+      "reasoning": "The predicted answer omits several key industries mentioned in the gold standard answer, including digital twins, industrial automation, e-commerce, and cloud computing consultancy. While some industries are correctly identified, the omission of significant portions of the candidate's work experience renders the prediction incomplete and thus incorrect.",
+      "missing_info": [
+        "digital twins",
+        "industrial automation",
+        "e-commerce",
+        "cloud computing consultancy"
+      ],
+      "incorrect_info": [
+        "retail"
+      ],
+      "user_critique": ""
+    },
+    {
+      "resume": "JO Reyes CV April 2025.pdf",
+      "question": "Does the candidate have experience working with cloud technologies?",
+      "gold_answer": "Yes, the candidate has over a decade of cloud-native development experience, particularly on AWS, and has worked with cloud technologies in their current role at Cevo Australia and previous roles utilizing AWS and Azure platforms.",
+      "predicted_answer": "Yes, the candidate has extensive experience working with cloud technologies, specifically AWS and Azure.  Their experience includes building and maintaining data pipelines using Azure services, developing e-commerce systems on AWS, and working as an AI/ML consultant for a company specializing in AWS cloud computing.",
+      "is_correct": false,
+      "reasoning": "While the predicted answer correctly identifies the candidate's experience with AWS and Azure, it lacks the crucial detail about the candidate's tenure exceeding a decade and the specific mention of their current role at Cevo Australia.  The predicted answer introduces details like \"building and maintaining data pipelines using Azure services\" and \"developing e-commerce systems on AWS\", which are not explicitly stated in the gold standard and might be considered fabrications unless further evidence supports them. Therefore, although there is overlap, the omission of key information and the inclusion of potentially unsupported details make the prediction not semantically equivalent to the gold standard.",
+      "missing_info": [
+        "Over a decade of experience",
+        "Current role at Cevo Australia"
+      ],
+      "incorrect_info": [
+        "building and maintaining data pipelines using Azure services",
+        "developing e-commerce systems on AWS",
+        "working as an AI/ML consultant for a company specializing in AWS cloud computing"
+      ],
+      "user_critique": ""
+    },
+    {
+      "resume": "JO Reyes CV April 2025.pdf",
+      "question": "List any certifications or professional training mentioned.",
+      "gold_answer": "- Graduate Certificate of Data Science, University of New South Wales (Jan 2023-Jan 2024)\n- AWS Machine Learning Specialty, AWS (Sep 2022)\n- Deep Learning Specialty (4-Months), DeepLearning.AI, Coursera (Jun 2022)\n- Data Science Bootcamp (3-Months), General Assembly, Sydney (Jan 2022)",
+      "predicted_answer": "Graduate Certificate of Data Science, University of New South Wales; AWS Machine Learning Specialty, AWS; Deep Learning Specialty (4-Months), DeepLearning.AI, Coursera; Data Science Bootcamp (3-Months), General Assembly, Sydney; BSc Computer Science, University of San Carlos, Philippines",
+      "is_correct": false,
+      "reasoning": "The predicted answer includes an extra qualification: \"BSc Computer Science, University of San Carlos, Philippines\", which is not present in the gold standard answer.  While the other qualifications are essentially correctly identified, the addition of the extra qualification makes the answer incorrect.",
+      "incorrect_info": [
+        "BSc Computer Science, University of San Carlos, Philippines"
+      ],
+      "user_critique": ""
+    },
+    {
+      "resume": "JO Reyes CV April 2025.pdf",
+      "question": "What projects or achievements are highlighted in the resume?",
+      "gold_answer": "The resume highlights the following projects and achievements:\n\n1. Productionisation of a Generative AI Project for a large Australian company in the mergers and acquisitions space.\n2. RAG-based Internal Project for Cevo Australia, allowing users to upload and analyze past Statements of Work (SOWs).\n3. Intelligent Document Processing Project for a leading Australian strata management company.\n4. Image Similarity Search Engine for a large Australian manufacturer of timber mouldings.\n5. Full-stack web applications for Willow's Digital Twin platform in the mining industry.\n6. Technical strategy and development for Subaru’s e-commerce CMS at Inchcape Australia.",
+      "predicted_answer": "The resume highlights several projects and achievements, including:  a RAG-based internal project for Cevo, an intelligent document processing project for a strata management company, an image similarity search engine for a timber moulding manufacturer, development of full-stack web applications for a mining digital twin platform, leading technical strategy and development for Subaru’s e-commerce CMS, building enterprise web/mobile solutions on Azure, productionizing a generative AI project for an M&A company, and creating various blog articles and tutorial sessions on Generative AI and MLOps techniques.  Specific technologies and methodologies employed across these projects are also detailed.",
+      "is_correct": true,
+      "reasoning": "The predicted answer captures all the key projects and achievements mentioned in the gold standard answer. While the phrasing differs slightly, the core information remains the same.  The additional information in the predicted answer (e.g., technologies used, blog articles) doesn't contradict the gold standard and can be considered supplementary.",
+      "user_critique": ""
+    }
+  ],
+  "error_summary": {
+    "error_count": 27,
+    "by_type": {
+      "incorrect_information": 15,
+      "formatting_issue": 3,
+      "hallucination": 5,
+      "missing_information": 4
+    },
+    "by_severity": {
+      "minor": 12,
+      "major": 15
+    },
+    "by_cause": {
+      "llm_reasoning_error": 19,
+      "retrieval_failure": 7,
+      "context_window_limitation": 1
+    },
+    "by_question": {
+      "List the programming languages mentioned in the resume.": 5,
+      "Does the candidate have any leadership or management experience?": 4,
+      "What is the total number of years of professional experience?": 5,
+      "What industries has the candidate worked in?": 6,
+      "What is the candidate's most recent job title?": 2,
+      "What degrees or academic qualifications does the candidate hold?": 1,
+      "What projects or achievements are highlighted in the resume?": 2,
+      "Does the candidate have experience working with cloud technologies?": 1,
+      "List any certifications or professional training mentioned.": 1
+    },
+    "key_insights": [
+      "Most common error type: incorrect_information (15 occurrences)",
+      "Most common cause: llm_reasoning_error (19 occurrences)",
+      "Most problematic question: 'What industries has the candidate worked in?' (6 failures)"
+    ]
+  }
+}
