@@ -54,7 +54,7 @@ Be concise, factual, and avoid speculation.
   {query}
 
   ### Context:
-  {context.strip()}
+  {context}
   """
 
     start_time = time.time()
