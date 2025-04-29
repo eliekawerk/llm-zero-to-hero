@@ -1,7 +1,10 @@
+from pathlib import Path
 import lancedb
 from lancedb.embeddings import get_registry
 from lancedb.pydantic import LanceModel, Vector
 import re
+
+import modal
 
 def text_chunker(text, max_chunk_length=1000, overlap=100):
     """
@@ -79,13 +82,12 @@ def full_text_search(table, question):
   
 def semantic_search(table, question):
   # Semantic Retriever
-  vs_result = table.search(question, query_type="vector").limit(10).to_list()
+  vs_result = table.search(question, query_type="vector").limit(5).to_list()
   return [r["text"] for r in vs_result]
   
 def hybrid_search(table, question):
   # Hybrid Retriever
   from lancedb.rerankers import LinearCombinationReranker
-  
 
   reranker = LinearCombinationReranker(
       weight=0.7

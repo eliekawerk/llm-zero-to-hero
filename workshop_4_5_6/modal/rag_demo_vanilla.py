@@ -4,13 +4,19 @@ import instructor
 import google.generativeai as genai
 from pydantic import BaseModel
 import time
-from utils import lanceDBConnection, semantic_search, text_chunker
+import sys
+from pathlib import Path
+
+# Add parent directory to path to make utils importable
+sys.path.append(str(Path(__file__).parent.parent))
+from utils import hybrid_search, lanceDBConnection, semantic_search, text_chunker
 
 # load_dotenv(verbose=True, dotenv_path=".env")
 # genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 # print(f"Environment variables loaded from .env file.")
 
 CHUNK_SIZE = 300
+PDF_STORAGE_DIR = "pdfs" # Directory inside volume for storing PDFs
 
 # Extract text from PDF
 def extract_text_from_pdf(pdf_bytes):
@@ -100,7 +106,9 @@ def rag_pipeline_vector_db(pdf_upload, query_input, table=None):
     total_start_time = time.time()
     retrieval_start_time = time.time()
     
-    relevant_chunks = semantic_search(table, query_input)
+    # relevant_chunks = semantic_search(table, query_input)
+    relevant_chunks = hybrid_search(table, query_input)
+    
     retrieval_time = time.time() - retrieval_start_time
     
     # Generation phase
