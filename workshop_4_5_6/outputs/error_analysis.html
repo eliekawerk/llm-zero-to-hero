@@ -1,0 +1,268 @@
+
+    <html>
+    <head>
+        <title>RAG Error Analysis Report</title>
+        <style>
+            body { font-family: Arial, sans-serif; margin: 20px; }
+            .header { background-color: #F44336; color: white; padding: 10px; }
+            h1 { color: white; }
+            h2 { color: #333; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
+            table { border-collapse: collapse; width: 100%; margin: 20px 0; }
+            th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+            th { background-color: #f2f2f2; }
+            .insights { background-color: #f9f9f9; padding: 15px; border-radius: 5px; }
+            .error-card { 
+                border: 1px solid #ddd; 
+                margin: 15px 0; 
+                padding: 15px; 
+                border-radius: 5px;
+                background-color: #fff;
+            }
+            .critical { border-left: 5px solid darkred; }
+            .major { border-left: 5px solid orangered; }
+            .minor { border-left: 5px solid gold; }
+            .error-header {
+                display: flex;
+                justify-content: space-between;
+            }
+            .error-type {
+                font-weight: bold;
+                color: #333;
+            }
+            .severity {
+                font-weight: bold;
+            }
+            .critical-text { color: darkred; }
+            .major-text { color: orangered; }
+            .minor-text { color: goldenrod; }
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <h1>RAG Error Analysis Report</h1>
+        </div>
+    
+        <h2>Key Insights</h2>
+        <div class="insights">
+        <ul>
+    <li>Most common error type: incorrect_information (8 occurrences)</li>
+<li>Most common cause: llm_reasoning_error (7 occurrences)</li>
+<li>Most problematic question: 'What is the total number of years of professional experience?' (5 failures)</li>
+
+        </ul>
+        </div>
+    
+        <h2>Error Types</h2>
+        <table>
+            <tr>
+                <th>Error Type</th>
+                <th>Count</th>
+            </tr>
+        
+            <tr>
+                <td>incorrect_information</td>
+                <td>8</td>
+            </tr>
+            
+            <tr>
+                <td>missing_information</td>
+                <td>1</td>
+            </tr>
+            
+            <tr>
+                <td>hallucination</td>
+                <td>1</td>
+            </tr>
+            </table>
+        <h2>Error Causes</h2>
+        <table>
+            <tr>
+                <th>Likely Cause</th>
+                <th>Count</th>
+            </tr>
+        
+            <tr>
+                <td>llm_reasoning_error</td>
+                <td>7</td>
+            </tr>
+            
+            <tr>
+                <td>retrieval_failure</td>
+                <td>3</td>
+            </tr>
+            </table>
+        <h2>Detailed Error Analyses</h2>
+        
+            <div class="error-card major">
+                <div class="error-header">
+                    <span class="error-type">missing_information</span>
+                    <span class="severity major-text">Severity: major</span>
+                </div>
+                
+                <h3>Question: List the programming languages mentioned in the resume.</h3>
+                <p><strong>Resume:</strong> jane-smith.pdf</p>
+                
+                <p><strong>Gold Answer:</strong> JavaScript, TypeScript, Python, Java, HTML5, CSS3, Sass, SQL, NoSQL, and more.</p>
+                <p><strong>Predicted Answer:</strong> JavaScript, TypeScript, Python, Java</p>
+                
+                <p><strong>Details:</strong> The RAG system failed to retrieve and include all the programming languages listed in the resume.  While it correctly identified some languages, it omitted several (HTML5, CSS3, Sass, SQL, NoSQL). This omission constitutes a significant portion of the requested information and renders the response incomplete.</p>
+                <p><strong>Likely Cause:</strong> retrieval_failure</p>
+                <p><strong>Fix Recommendation:</strong> Improve the retrieval mechanism used by the RAG system. This could involve enhancing the embedding model for better similarity matching or optimizing the retrieval strategy to ensure all relevant chunks of information from the document are extracted.  Consider adjusting the prompt to explicitly request a comprehensive list,  and/or verifying that all relevant parts of the resume are included in the indexed document for retrieval.</p>
+            </div>
+            
+            <div class="error-card major">
+                <div class="error-header">
+                    <span class="error-type">incorrect_information</span>
+                    <span class="severity major-text">Severity: major</span>
+                </div>
+                
+                <h3>Question: What is the total number of years of professional experience?</h3>
+                <p><strong>Resume:</strong> jane-smith.pdf</p>
+                
+                <p><strong>Gold Answer:</strong> Over 7 years</p>
+                <p><strong>Predicted Answer:</strong> 10</p>
+                
+                <p><strong>Details:</strong> The model predicted "10" years of experience, while the gold standard answer is "Over 7 years".  This is a significant numerical discrepancy and misrepresents the actual experience. The answer is factually incorrect.</p>
+                <p><strong>Likely Cause:</strong> llm_reasoning_error</p>
+                <p><strong>Fix Recommendation:</strong> Improve the model's ability to handle numerical ranges and imprecise information.  Consider incorporating techniques that allow for uncertainty and range estimations in the model's output.  Retraining with more data containing varied expressions of experience (e.g., "7+ years", "between 7 and 10 years") might help.  Additionally, enhancing the retrieval system to ensure it captures the nuances of the information source relating to experience is recommended.</p>
+            </div>
+            
+            <div class="error-card major">
+                <div class="error-header">
+                    <span class="error-type">hallucination</span>
+                    <span class="severity major-text">Severity: major</span>
+                </div>
+                
+                <h3>Question: What industries has the candidate worked in?</h3>
+                <p><strong>Resume:</strong> jane-smith.pdf</p>
+                
+                <p><strong>Gold Answer:</strong> The candidate has worked in the technology industry, specifically at Tech Innovators Inc., Innovative Solutions Ltd., and Web Solutions Co.  The specific industry sectors of these companies are not specified.</p>
+                <p><strong>Predicted Answer:</strong> Based on the provided text, the candidate has worked in e-commerce, real-time analytics, inventory management, and customer relationship management (CRM).  They also mention work on social networking and online learning platforms.</p>
+                
+                <p><strong>Details:</strong> The RAG system hallucinates industries and roles that the candidate has not actually worked in.  The gold standard answer only mentions technology-related work at three specific companies, while the incorrect answer adds several unrelated industries (e-commerce, real-time analytics, inventory management, CRM, social networking, online learning) with no evidence from the source text. This is a significant misrepresentation of the candidate's work history.</p>
+                <p><strong>Likely Cause:</strong> llm_reasoning_error</p>
+                <p><strong>Fix Recommendation:</strong> Improve the LLM's ability to discern factual information from speculative or implied information.  Implement stricter constraints on the model's generation, preventing it from fabricating details.  Fine-tune the model on a dataset specifically designed to reduce hallucinations and improve factual accuracy in information extraction tasks. Consider incorporating techniques to identify and flag potential hallucinated information in the generated response.</p>
+            </div>
+            
+            <div class="error-card major">
+                <div class="error-header">
+                    <span class="error-type">incorrect_information</span>
+                    <span class="severity major-text">Severity: major</span>
+                </div>
+                
+                <h3>Question: What is the total number of years of professional experience?</h3>
+                <p><strong>Resume:</strong> john-doe.pdf</p>
+                
+                <p><strong>Gold Answer:</strong> 2.5 years</p>
+                <p><strong>Predicted Answer:</strong> 1.5</p>
+                
+                <p><strong>Details:</strong> The model incorrectly predicted 1.5 years of professional experience when the gold standard answer is 2.5 years.  This represents a significant numerical inaccuracy, misrepresenting the candidate's experience by a full year.</p>
+                <p><strong>Likely Cause:</strong> retrieval_failure</p>
+                <p><strong>Fix Recommendation:</strong> Improve the retrieval system to ensure all relevant information about professional experience is accurately extracted and incorporated into the model's context.  Consider using more sophisticated methods for information extraction and validation, and potentially enriching the knowledge base with additional data sources or more robust verification techniques.</p>
+            </div>
+            
+            <div class="error-card major">
+                <div class="error-header">
+                    <span class="error-type">incorrect_information</span>
+                    <span class="severity major-text">Severity: major</span>
+                </div>
+                
+                <h3>Question: What industries has the candidate worked in?</h3>
+                <p><strong>Resume:</strong> john-doe.pdf</p>
+                
+                <p><strong>Gold Answer:</strong> The candidate has worked in the tech industry, specifically at XYZ Tech Solutions and ABC Digital Agency.</p>
+                <p><strong>Predicted Answer:</strong> The candidate has worked in the e-commerce, employee portal development, marketing, and event management systems industries.  They also have experience with general web development for various clients at an agency.</p>
+                
+                <p><strong>Details:</strong> The predicted answer hallucinates several industries and work experiences that are not mentioned in the gold standard.  While the gold standard specifies only work in the tech industry, the prediction incorrectly lists e-commerce, employee portal development, marketing, and event management. The mention of "general web development for various clients at an agency" is too vague and lacks the specificity of the gold standard which provides concrete company names. This level of inaccuracy misrepresents the candidate's experience.</p>
+                <p><strong>Likely Cause:</strong> llm_reasoning_error</p>
+                <p><strong>Fix Recommendation:</strong> Improve the LLM's ability to extract and synthesize information from the source documents.  This might involve refining the prompts to explicitly request only verified information and to avoid making assumptions.  Better techniques for entity recognition and relationship extraction could also improve accuracy.  Furthermore, training data should include examples emphasizing the importance of factual accuracy and precision in reporting professional experience.</p>
+            </div>
+            
+            <div class="error-card major">
+                <div class="error-header">
+                    <span class="error-type">incorrect_information</span>
+                    <span class="severity major-text">Severity: major</span>
+                </div>
+                
+                <h3>Question: Does the candidate have any leadership or management experience?</h3>
+                <p><strong>Resume:</strong> alex-thompson.pdf</p>
+                
+                <p><strong>Gold Answer:</strong> The resume indicates collaboration with cross-functional teams, but does not explicitly state any leadership or management roles.</p>
+                <p><strong>Predicted Answer:</strong> Based on the provided text, the candidate has experience mentoring aspiring backend developers and conducting workshops, suggesting some leadership and management skills.  The candidate also collaborated with cross-functional teams in multiple roles.</p>
+                
+                <p><strong>Details:</strong> The model incorrectly inferred leadership and management experience from the candidate's collaboration with cross-functional teams and mentoring activities.  While these activities suggest *some* leadership qualities, they don't definitively demonstrate formal leadership or management roles. The gold standard explicitly states the absence of explicitly stated leadership/management roles, which the model failed to acknowledge.  The model hallucinated the level of experience; it went beyond what the provided text supported.</p>
+                <p><strong>Likely Cause:</strong> llm_reasoning_error</p>
+                <p><strong>Fix Recommendation:</strong> Improve the model's ability to distinguish between implied skills and explicitly stated experiences.  Retrain with data that emphasizes the difference between collaborative work and formal leadership/management roles.  Consider adding a verification step to the RAG pipeline where the model's response is checked against the source text to ensure accuracy and avoid unsupported inferences.</p>
+            </div>
+            
+            <div class="error-card minor">
+                <div class="error-header">
+                    <span class="error-type">incorrect_information</span>
+                    <span class="severity minor-text">Severity: minor</span>
+                </div>
+                
+                <h3>Question: What is the total number of years of professional experience?</h3>
+                <p><strong>Resume:</strong> alex-thompson.pdf</p>
+                
+                <p><strong>Gold Answer:</strong> More than 1.5 years</p>
+                <p><strong>Predicted Answer:</strong> 1.5 years</p>
+                
+                <p><strong>Details:</strong> The predicted answer "1.5 years" is incorrect because it states a precise number while the gold standard answer indicates "More than 1.5 years".  The difference is small but represents an inaccuracy in the conveyed information.  The model failed to capture the nuance of "more than" in the gold standard response.</p>
+                <p><strong>Likely Cause:</strong> llm_reasoning_error</p>
+                <p><strong>Fix Recommendation:</strong> Improve the model's ability to handle comparative statements and uncertainties.  The training data should include more examples with phrasing such as "more than," "less than," "approximately," etc.  Additionally, techniques that allow the model to express uncertainty in its predictions, such as probability distributions or confidence intervals, could help mitigate this type of error.</p>
+            </div>
+            
+            <div class="error-card major">
+                <div class="error-header">
+                    <span class="error-type">incorrect_information</span>
+                    <span class="severity major-text">Severity: major</span>
+                </div>
+                
+                <h3>Question: What industries has the candidate worked in?</h3>
+                <p><strong>Resume:</strong> alex-thompson.pdf</p>
+                
+                <p><strong>Gold Answer:</strong> The candidate has worked in the technology industry, specifically at Tech Innovations Ltd. and Innovative Solutions Inc.</p>
+                <p><strong>Predicted Answer:</strong> e-commerce, customer relationship management (CRM), inventory management</p>
+                
+                <p><strong>Details:</strong> The RAG system hallucinated industries that the candidate has not worked in.  The prediction is completely different from the gold standard and contains no overlapping information. The model fabricated information about the candidate's work experience.</p>
+                <p><strong>Likely Cause:</strong> retrieval_failure</p>
+                <p><strong>Fix Recommendation:</strong> Improve the retrieval component of the RAG system. This likely involves enhancing the embedding model used for similarity search, ensuring that the candidate's resume or relevant documents are properly indexed and searchable, and potentially adjusting the retrieval parameters to return more relevant documents.  More thorough quality control checks should be implemented to identify and remove fabricated information.</p>
+            </div>
+            
+            <div class="error-card minor">
+                <div class="error-header">
+                    <span class="error-type">incorrect_information</span>
+                    <span class="severity minor-text">Severity: minor</span>
+                </div>
+                
+                <h3>Question: What is the total number of years of professional experience?</h3>
+                <p><strong>Resume:</strong> michael-johnson.pdf</p>
+                
+                <p><strong>Gold Answer:</strong> Over 12 years</p>
+                <p><strong>Predicted Answer:</strong> 12</p>
+                
+                <p><strong>Details:</strong> The model predicted "12" years of experience, while the gold standard answer specifies "Over 12 years". The difference is minor, but the model failed to capture the nuance of "over" 12 years, providing an imprecise answer.  The answer is not factually wrong, but lacks the precision present in the gold standard.</p>
+                <p><strong>Likely Cause:</strong> llm_reasoning_error</p>
+                <p><strong>Fix Recommendation:</strong> Improve the model's ability to handle nuanced language by training it on more examples that contain similar expressions of ranges and imprecise quantities.  Consider adding techniques to encourage the model to reflect uncertainty when it is not absolutely certain about the precise value.  The output could also be improved by providing a confidence score alongside the numerical response.</p>
+            </div>
+            
+            <div class="error-card minor">
+                <div class="error-header">
+                    <span class="error-type">incorrect_information</span>
+                    <span class="severity minor-text">Severity: minor</span>
+                </div>
+                
+                <h3>Question: What is the total number of years of professional experience?</h3>
+                <p><strong>Resume:</strong> JO Reyes CV April 2025.pdf</p>
+                
+                <p><strong>Gold Answer:</strong> Over 10 years</p>
+                <p><strong>Predicted Answer:</strong> 11</p>
+                
+                <p><strong>Details:</strong> The model produced a precise numerical answer (11 years) instead of the more appropriate and accurate response ("Over 10 years"). While factually close, the lack of uncertainty or range in the response is a misrepresentation of the underlying information.</p>
+                <p><strong>Likely Cause:</strong> llm_reasoning_error</p>
+                <p><strong>Fix Recommendation:</strong> Fine-tune the model on examples that emphasize the importance of expressing uncertainty when the exact figure is unknown or the information provided is vague. Train it to provide responses that reflect the precision of the source data. For this case, encourage responses like "Over 10 years" or "More than a decade" instead of a definite number.</p>
+            </div>
+            
+    </body>
+    </html>
+    

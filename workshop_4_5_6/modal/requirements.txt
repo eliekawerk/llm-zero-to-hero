@@ -1,0 +1,9 @@
+modal
+gradio<6
+pymupdf
+google-generativeai>=0.3.0
+instructor[google-generativeai]>=1.0.0
+lancedb>=0.3.0
+scikit-learn
+tantivy
+pydantic>=2.0.0

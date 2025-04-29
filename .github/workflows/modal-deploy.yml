@@ -1,0 +1,43 @@
+name: Deploy to Modal
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'workshop_4_5_6/modal/**'
+      - 'workshop_4_5_6/utils.py'
+      - '.github/workflows/modal-deploy.yml'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+
+      - name: Install Modal and dependencies
+        run: |
+          pip install modal lancedb pymupdf google-generativeai instructor pydantic tantivy
+          pip install -r workshop_4_5_6/modal/requirements.txt || echo "No requirements.txt file found"
+
+    #   - name: Configure Modal token
+    #     run: |
+    #       echo "${{ secrets.MODAL_TOKEN_ID }}" > modal_token_id.txt
+    #       echo "${{ secrets.MODAL_TOKEN_SECRET }}" > modal_token_secret.txt
+    #       modal token set-from-files modal_token_id.txt modal_token_secret.txt --yes
+    #       rm modal_token_id.txt modal_token_secret.txt
+        env:
+          MODAL_TOKEN_ID: ${{ secrets.MODAL_TOKEN_ID }}
+          MODAL_TOKEN_SECRET: ${{ secrets.MODAL_TOKEN_SECRET }}
+
+      - name: Deploy to Modal
+        run: |
+          cd workshop_4_5_6/modal
+          modal deploy -m rag_demo_vanilla_wrapper
