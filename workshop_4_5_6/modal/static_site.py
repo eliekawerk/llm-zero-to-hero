@@ -18,8 +18,10 @@ image = modal.Image.debian_slim().pip_install("fastapi", "uvicorn")
 
 local_assets_path = Path(__file__).parent / "data_viewers"
 local_data_path = Path(__file__).parent / "data"
+local_resume_path = Path(__file__).parent.parent / "resumes"
 image = image.add_local_dir(local_assets_path, remote_path="/assets")
 image = image.add_local_dir(local_data_path, remote_path="/assets/data")
+image = image.add_local_dir(local_resume_path, remote_path="/assets/resumes")
 
 # Create a Modal app
 app = modal.App("static-data-viewer")
