@@ -47,15 +47,15 @@ def serve_app() -> FastAPI:
         """Serve the main index.html file"""
         return FileResponse("/assets" / "index.html")
     
-    @api.get("/error_analysis")
-    async def error_analysis():
-        """Serve the error analysis HTML file"""
-        return FileResponse("/assets" / "error_analysis.html")
+    # @api.get("/error_analysis")
+    # async def error_analysis():
+    #     """Serve the error analysis HTML file"""
+    #     return FileResponse("/assets" / "error_analysis.html")
     
-    @api.get("/evaluation_report")
-    async def evaluation_report():
-        """Serve the evaluation_report HTML file"""
-        return FileResponse("/assets" / "evaluation_report.html")
+    # @api.get("/evaluation_report")
+    # async def evaluation_report():
+    #     """Serve the evaluation_report HTML file"""
+    #     return FileResponse("/assets" / "evaluation_report.html")
     
     # @api.get("/api/list-json-files")
     # async def list_json_files():
