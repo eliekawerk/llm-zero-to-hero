@@ -17,13 +17,18 @@ ARCHIVE_DIR = BASE_DIR / "resume_archive"
 image = modal.Image.debian_slim().pip_install("fastapi", "uvicorn")
 
 local_assets_path = Path(__file__).parent / "data_viewers"
+local_data_path = Path(__file__).parent / "data"
 image = image.add_local_dir(local_assets_path, remote_path="/assets")
+image = image.add_local_dir(local_data_path, remote_path="/assets/data")
 
 # Create a Modal app
 app = modal.App("static-data-viewer")
 
 # Create a Modal volume for storing data if needed
 data_volume = modal.Volume.from_name("data-viewer-volume", create_if_missing=True)
+
+# Create a FastAPI app
+api = FastAPI(title="Data Viewer")
 
 @app.function(
     image=image,
@@ -32,11 +37,8 @@ data_volume = modal.Volume.from_name("data-viewer-volume", create_if_missing=Tru
 @modal.concurrent(max_inputs=100)
 @modal.asgi_app()
 def serve_app() -> FastAPI:
-    # Create a FastAPI app
-    api = FastAPI(title="Data Viewer")
-    
     # Mount the static files from data_viewers directory
-    api.mount("/", StaticFiles(directory=str("/assets")), html=True)
+    api.mount("/", StaticFiles(directory="/assets", html=True))
     
     # @api.get("/")
     # async def root():
