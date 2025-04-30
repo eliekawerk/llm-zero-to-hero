@@ -228,6 +228,7 @@
     function renderErrorSummary(summary) {
       const summaryInfo = document.getElementById('summaryInfo');
       summaryInfo.innerHTML = `
+        <p><strong>Total Samples:</strong> ${summary.total_samples}</p>
         <p><strong>Total Errors:</strong> ${summary.error_count}</p>
         <p><strong>Major Errors:</strong> ${summary.by_severity.major} (${Math.round(summary.by_severity.major / summary.error_count * 100)}%)</p>
         <p><strong>Minor Errors:</strong> ${summary.by_severity.minor} (${Math.round(summary.by_severity.minor / summary.error_count * 100)}%)</p>
@@ -279,6 +280,24 @@
 
     function renderErrorCauseChart(byCause) {
       const ctx = document.getElementById('errorCausesChart').getContext('2d');
+      
+      // Create an array of colors for multiple error causes
+      const colors = [
+        '#FF6384', // Pink
+        '#36A2EB', // Blue
+        '#FFCE56', // Yellow
+        '#4BC0C0', // Teal
+        '#9966FF', // Purple
+        '#FF9F40', // Orange
+        '#7CFC00', // Lawn Green
+        '#20B2AA'  // Light Sea Green
+      ];
+      
+      // Generate colors array based on the number of causes
+      const backgroundColors = Object.keys(byCause).map((_, index) => 
+        colors[index % colors.length]
+      );
+      
       new Chart(ctx, {
         type: 'bar',
         data: {
@@ -286,7 +305,7 @@
           datasets: [{
             label: 'Count',
             data: Object.values(byCause),
-            backgroundColor: ['#FF6384', '#36A2EB']
+            backgroundColor: backgroundColors
           }]
         },
         options: {
@@ -315,30 +334,44 @@
 
     function renderQuestionErrorsChart(byQuestion) {
       const ctx = document.getElementById('questionErrorsChart').getContext('2d');
+      
+      // Create an array of [question, count] pairs for sorting
+      const questionPairs = [];
+      for (const question in byQuestion) {
+        questionPairs.push([question, parseInt(byQuestion[question], 10)]);
+      }
+      
+      // Sort by count in descending order
+      questionPairs.sort((a, b) => b[1] - a[1]);
+      
+      // Extract sorted questions and counts
+      const sortedQuestions = questionPairs.map(pair => pair[0]);
+      const sortedCounts = questionPairs.map(pair => pair[1]);
+      
       // Shorten the question text for display
-      const shortLabels = Object.keys(byQuestion).map(q => {
+      const shortLabels = sortedQuestions.map(q => {
         const words = q.split(' ');
         return words.length > 5 ? words.slice(0, 5).join(' ') + '...' : q;
       });
       
       new Chart(ctx, {
-        type: 'bar', // Changed from 'horizontalBar' to 'bar'
+        type: 'bar',
         data: {
           labels: shortLabels,
           datasets: [{
             label: 'Error Count',
-            data: Object.values(byQuestion),
+            data: sortedCounts,
             backgroundColor: '#4a6fa5'
           }]
         },
         options: {
-          indexAxis: 'y', // This makes it a horizontal bar chart in Chart.js v3+
+          indexAxis: 'y',
           responsive: true,
           maintainAspectRatio: false,
           plugins: {
             title: {
               display: true,
-              text: 'Errors by Question'
+              text: 'Errors by Question (Most to Least)'
             },
             legend: {
               display: false
@@ -347,7 +380,7 @@
               callbacks: {
                 title: function(tooltipItems) {
                   // Return the full question text in tooltip
-                  return Object.keys(byQuestion)[tooltipItems[0].dataIndex];
+                  return sortedQuestions[tooltipItems[0].dataIndex];
                 }
               }
             }
