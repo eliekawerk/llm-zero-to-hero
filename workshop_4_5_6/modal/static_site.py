@@ -32,10 +32,10 @@ data_volume = modal.Volume.from_name("data-viewer-volume", create_if_missing=Tru
 # Create a FastAPI app
 api = FastAPI(title="Data Viewer")
 
-@api.get("/")
-async def root():
-    """Serve the main index.html file"""
-    return FileResponse("/assets" / "index.html")
+# @api.get("/")
+# async def root():
+#     """Serve the main index.html file"""
+#     return FileResponse("/assets" / "index.html")
 
 @api.get("/error_analysis")
 async def error_analysis():
