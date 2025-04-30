@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Evaluation Report</title>
+  <!-- Include Chart.js for visualizations -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Include Bootstrap for styling -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Include custom styles from styles.css -->
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      background-color: #f5f7fa;
+      padding: 20px;
+    }
+    
+    .header-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #e6e9ed;
+      flex-wrap: wrap;
+    }
+    
+    .header-container h1 {
+      color: #166088;
+      font-size: 24px;
+      margin-right: 20px;
+    }
+    
+    .nav-back-btn {
+      padding: 8px 16px;
+      background-color: #4a6fa5;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      text-decoration: none;
+      font-size: 14px;
+      transition: background-color 0.2s;
+    }
+    
+    .nav-back-btn:hover {
+      background-color: #166088;
+    }
+    
+    .card {
+      margin-bottom: 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+    }
+    
+    .card-header {
+      background-color: #4a6fa5;
+      color: white;
+      font-weight: bold;
+      border-radius: 8px 8px 0 0 !important;
+    }
+    
+    .chart-container {
+      position: relative;
+      height: 300px;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+    
+    .metrics-item {
+      margin-bottom: 10px;
+      padding: 10px;
+      border-radius: 4px;
+      background-color: #f8f9fa;
+      border-left: 4px solid #4a6fa5;
+    }
+    
+    .key-insight {
+      padding: 12px;
+      margin: 5px 0;
+      border-radius: 5px;
+      background-color: #e7f3fe;
+      border-left: 5px solid #2196F3;
+    }
+    
+    .table-hover tbody tr:hover {
+      background-color: rgba(74, 111, 165, 0.1);
+    }
+    
+    .correct {
+      color: #28a745;
+      font-weight: bold;
+    }
+    
+    .incorrect {
+      color: #dc3545;
+      font-weight: bold;
+    }
+    
+    .accuracy-high {
+      background-color: rgba(40, 167, 69, 0.2);
+    }
+    
+    .accuracy-medium {
+      background-color: rgba(255, 193, 7, 0.2);
+    }
+    
+    .accuracy-low {
+      background-color: rgba(220, 53, 69, 0.2);
+    }
+    
+    .details-container {
+      max-height: 600px;
+      overflow-y: auto;
+    }
+    
+    .question-filter {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 15px;
+      border: 1px solid #dee2e6;
+      border-radius: 4px;
+    }
+    
+    .result-card {
+      margin-bottom: 15px;
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+    }
+    
+    .result-card.correct {
+      border-left: 4px solid #28a745;
+    }
+    
+    .result-card.incorrect {
+      border-left: 4px solid #dc3545;
+    }
+    
+    .collapse-toggle {
+      width: 100%;
+      text-align: left;
+      position: relative;
+      padding-right: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .collapse-toggle::after {
+      content: "▼";
+      position: absolute;
+      right: 15px;
+      transition: transform 0.3s;
+      font-size: 12px;
+    }
+    
+    .collapse-toggle.collapsed::after {
+      content: "▶";
+    }
+    
+    .percentage-correct {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 10px;
+      align-items: flex-start; /* Left justify the content */
+    }
+    
+    .progress-bar-container {
+      height: 20px;
+      background-color: #e9ecef;
+      border-radius: 4px;
+      margin-top: 5px;
+      overflow: hidden;
+      width: 25%; /* 25% of the page width */
+    }
+    
+    .progress-bar {
+      height: 100%;
+      background-color: #4a6fa5;
+      color: white;
+      text-align: center;
+      line-height: 20px;
+      font-size: 12px;
+      transition: width 0.3s;
+    }
+  </style>
+</head>
+<body>
+  <div class="container-fluid">
+    <div class="header-container">
+      <h1 class="mb-0 text-center flex-grow-1">Evaluation Report</h1>
+      <div>
+        <a href="index.html" class="btn btn-primary nav-back-btn">Back to Evaluation Results</a>
+        <a href="error_analysis.html" class="btn btn-primary nav-back-btn">Error Analysis</a>
+      </div>
+    </div>
+    
+    <!-- Overall Metrics Section -->
+    <div class="row mb-4">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header">Overall Metrics</div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-6">
+                <div id="overallMetricsInfo" class="metrics-item"></div>
+                <div id="keyInsights" class="mt-3"></div>
+              </div>
+              <div class="col-md-6">
+                <div class="chart-container">
+                  <canvas id="overallMetricsChart"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Question Metrics Section -->
+    <div class="row mb-4">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header">Question Metrics</div>
+          <div class="card-body">
+            <div class="row mb-4">
+              <div class="col-12">
+                <div class="chart-container">
+                  <canvas id="questionAccuracyChart"></canvas>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12">
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th>Question</th>
+                      <th>Accuracy</th>
+                      <th>Count</th>
+                    </tr>
+                  </thead>
+                  <tbody id="questionMetricsTable"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Detailed Results Section -->
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <span>Detailed Results</span>
+            <div class="form-inline">
+              <select id="resultFilterQuestion" class="form-select form-select-sm" style="width: 250px; display: inline-block; margin-right: 10px;">
+                <option value="all">All Questions</option>
+                <!-- Will be populated dynamically -->
+              </select>
+              <select id="resultFilterCorrect" class="form-select form-select-sm" style="width: 150px; display: inline-block;">
+                <option value="all">All Results</option>
+                <option value="true">Correct Only</option>
+                <option value="false">Incorrect Only</option>
+              </select>
+            </div>
+          </div>
+          <div class="card-body">
+            <div id="detailedResults" class="details-container accordion"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Fetch evaluation report data
+      fetch('./data/evaluation_report.json')
+        .then(response => response.json())
+        .then(data => {
+          renderOverallMetrics(data.overall_metrics);
+          renderKeyInsights(data.error_summary.key_insights);
+          renderQuestionAccuracyChart(data.question_metrics);
+          renderQuestionMetricsTable(data.question_metrics);
+          renderDetailedResults(data.detailed_results);
+          populateFilterDropdowns(data);
+          setupFilterListeners(data);
+        })
+        .catch(error => console.error('Error loading data:', error));
+    });
+
+    function renderOverallMetrics(metrics) {
+      const metricsContainer = document.getElementById('overallMetricsInfo');
+      metricsContainer.innerHTML = `
+        <p><strong>Total Samples:</strong> ${metrics.total_samples}</p>
+        <p><strong>Accuracy:</strong> ${(metrics.accuracy * 100).toFixed(1)}%</p>
+        <p><strong>Precision:</strong> ${(metrics.precision * 100).toFixed(1)}%</p>
+        <p><strong>Recall:</strong> ${(metrics.recall * 100).toFixed(1)}%</p>
+        <p><strong>F1 Score:</strong> ${(metrics.f1 * 100).toFixed(1)}%</p>
+      `;
+      
+      // Render chart for overall metrics
+      const ctx = document.getElementById('overallMetricsChart').getContext('2d');
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['Accuracy', 'Precision', 'Recall', 'F1 Score'],
+          datasets: [{
+            label: 'Score (%)',
+            data: [
+              metrics.accuracy * 100,
+              metrics.precision * 100,
+              metrics.recall * 100,
+              metrics.f1 * 100
+            ],
+            backgroundColor: [
+              'rgba(74, 111, 165, 0.7)',
+              'rgba(22, 96, 136, 0.7)',
+              'rgba(79, 193, 233, 0.7)',
+              'rgba(160, 212, 104, 0.7)'
+            ],
+            borderColor: [
+              'rgb(74, 111, 165)',
+              'rgb(22, 96, 136)',
+              'rgb(79, 193, 233)',
+              'rgb(160, 212, 104)'
+            ],
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            title: {
+              display: true,
+              text: 'Overall Performance Metrics'
+            },
+            legend: {
+              display: false
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              max: 100,
+              ticks: {
+                callback: function(value) {
+                  return value + '%';
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    function renderKeyInsights(insights) {
+      const insightsContainer = document.getElementById('keyInsights');
+      if (!insights || insights.length === 0) {
+        insightsContainer.innerHTML = '<p>No key insights available.</p>';
+        return;
+      }
+      
+      insightsContainer.innerHTML = '<h5>Key Insights</h5>';
+      insights.forEach(insight => {
+        const div = document.createElement('div');
+        div.className = 'key-insight';
+        div.textContent = insight;
+        insightsContainer.appendChild(div);
+      });
+    }
+
+    function renderQuestionAccuracyChart(questionMetrics) {
+      // Create an array of [question, accuracy] pairs for sorting
+      const questionData = [];
+      for (const question in questionMetrics) {
+        questionData.push([
+          question, 
+          questionMetrics[question].accuracy * 100
+        ]);
+      }
+      
+      // Sort by accuracy in descending order
+      questionData.sort((a, b) => b[1] - a[1]);
+      
+      // Extract sorted questions and accuracy values
+      const questions = questionData.map(item => item[0]);
+      const accuracies = questionData.map(item => item[1]);
+      
+      // Shorten questions for display
+      const shortQuestions = questions.map(q => {
+        const words = q.split(' ');
+        return words.length > 5 ? words.slice(0, 5).join(' ') + '...' : q;
+      });
+      
+      // Create color array based on accuracy values
+      const backgroundColors = accuracies.map(accuracy => {
+        if (accuracy >= 80) return 'rgba(40, 167, 69, 0.7)'; // High - green
+        if (accuracy >= 50) return 'rgba(255, 193, 7, 0.7)'; // Medium - yellow
+        return 'rgba(220, 53, 69, 0.7)'; // Low - red
+      });
+      
+      const ctx = document.getElementById('questionAccuracyChart').getContext('2d');
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: shortQuestions,
+          datasets: [{
+            label: 'Accuracy (%)',
+            data: accuracies,
+            backgroundColor: backgroundColors,
+            borderWidth: 1
+          }]
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            title: {
+              display: true,
+              text: 'Question Accuracy (Highest to Lowest)'
+            },
+            legend: {
+              display: false
+            },
+            tooltip: {
+              callbacks: {
+                title: function(tooltipItems) {
+                  // Return full question text in tooltip
+                  return questions[tooltipItems[0].dataIndex];
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              beginAtZero: true,
+              max: 100,
+              ticks: {
+                callback: function(value) {
+                  return value + '%';
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    function renderQuestionMetricsTable(questionMetrics) {
+      const tableBody = document.getElementById('questionMetricsTable');
+      tableBody.innerHTML = '';
+      
+      // Create an array of [question, metrics] pairs for sorting
+      const questionPairs = Object.entries(questionMetrics)
+        .map(([question, metrics]) => [question, metrics]);
+      
+      // Sort by accuracy in descending order
+      questionPairs.sort((a, b) => b[1].accuracy - a[1].accuracy);
+      
+      questionPairs.forEach(([question, metrics]) => {
+        const row = document.createElement('tr');
+        
+        // Determine row background class based on accuracy
+        if (metrics.accuracy >= 0.8) {
+          row.classList.add('accuracy-high');
+        } else if (metrics.accuracy >= 0.5) {
+          row.classList.add('accuracy-medium');
+        } else {
+          row.classList.add('accuracy-low');
+        }
+        
+        row.innerHTML = `
+          <td>${question}</td>
+          <td>${(metrics.accuracy * 100).toFixed(1)}%</td>
+          <td>${metrics.count}</td>
+        `;
+        
+        tableBody.appendChild(row);
+      });
+    }
+
+    function renderDetailedResults(results) {
+      const container = document.getElementById('detailedResults');
+      container.innerHTML = '';
+      
+      results.forEach((result, index) => {
+        const card = document.createElement('div');
+        card.className = `card result-card ${result.is_correct ? 'correct' : 'incorrect'}`;
+        card.setAttribute('data-is-correct', result.is_correct);
+        card.setAttribute('data-question', result.question);
+        
+        // First item expanded by default, others collapsed
+        const isExpanded = index === 0;
+        
+        let percentageBarClass = 'bg-danger';
+        if (result.percentage_correct >= 0.8) {
+          percentageBarClass = 'bg-success';
+        } else if (result.percentage_correct >= 0.5) {
+          percentageBarClass = 'bg-warning';
+        }
+        
+        card.innerHTML = `
+          <div class="card-header">
+            <h5 class="mb-0">
+              <button class="btn btn-link text-decoration-none text-reset collapse-toggle ${!isExpanded ? 'collapsed' : ''}" 
+                      data-bs-toggle="collapse" 
+                      data-bs-target="#collapseResult${index}" 
+                      aria-expanded="${isExpanded ? 'true' : 'false'}" 
+                      aria-controls="collapseResult${index}">
+                <span class="${result.is_correct ? 'correct' : 'incorrect'}">${result.is_correct ? '✓' : '✗'}</span>
+                ${result.resume}: ${result.question}
+              </button>
+            </h5>
+          </div>
+          <div id="collapseResult${index}" class="collapse ${isExpanded ? 'show' : ''}">
+            <div class="card-body">
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <div class="field">
+                    <div class="field-label">Gold Answer:</div>
+                    <div class="field-value">${result.gold_answer}</div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="field">
+                    <div class="field-label">Predicted Answer:</div>
+                    <div class="field-value">${result.predicted_answer}</div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="percentage-correct mb-3">
+                <div class="field-label">Percentage Correct: ${Math.round(result.percentage_correct * 100)}%</div>
+                <div class="progress-bar-container">
+                  <div class="progress-bar ${percentageBarClass}" style="width: ${result.percentage_correct * 100}%">
+                    ${Math.round(result.percentage_correct * 100)}%
+                  </div>
+                </div>
+              </div>
+              
+              <div class="field">
+                <div class="field-label">Reasoning:</div>
+                <div class="field-value">${result.reasoning}</div>
+              </div>
+              
+              ${result.missing_info ? `
+              <div class="field mt-3">
+                <div class="field-label">Missing Information:</div>
+                <ul class="field-value">
+                  ${result.missing_info.map(info => `<li>${info}</li>`).join('')}
+                </ul>
+              </div>
+              ` : ''}
+              
+              ${result.incorrect_info ? `
+              <div class="field mt-3">
+                <div class="field-label">Incorrect Information:</div>
+                <ul class="field-value">
+                  ${result.incorrect_info.map(info => `<li>${info}</li>`).join('')}
+                </ul>
+              </div>
+              ` : ''}
+            </div>
+          </div>
+        `;
+        
+        container.appendChild(card);
+      });
+    }
+
+    function populateFilterDropdowns(data) {
+      // Populate questions dropdown
+      const questions = [...new Set(data.detailed_results.map(r => r.question))];
+      const questionSelect = document.getElementById('resultFilterQuestion');
+      
+      questions.forEach(question => {
+        const option = document.createElement('option');
+        option.value = question;
+        option.textContent = question;
+        questionSelect.appendChild(option);
+      });
+    }
+
+    function setupFilterListeners(data) {
+      const questionFilter = document.getElementById('resultFilterQuestion');
+      const correctnessFilter = document.getElementById('resultFilterCorrect');
+      
+      function applyFilters() {
+        const selectedQuestion = questionFilter.value;
+        const selectedCorrectness = correctnessFilter.value;
+        
+        const filteredResults = data.detailed_results.filter(result => {
+          const questionMatch = selectedQuestion === 'all' || result.question === selectedQuestion;
+          const correctnessMatch = selectedCorrectness === 'all' || 
+            (selectedCorrectness === 'true' && result.is_correct) || 
+            (selectedCorrectness === 'false' && !result.is_correct);
+          
+          return questionMatch && correctnessMatch;
+        });
+        
+        renderDetailedResults(filteredResults);
+      }
+      
+      questionFilter.addEventListener('change', applyFilters);
+      correctnessFilter.addEventListener('change', applyFilters);
+    }
+  </script>
+
+  <!-- Bootstrap JS for accordion functionality -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

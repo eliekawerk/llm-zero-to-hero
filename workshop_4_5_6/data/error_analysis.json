@@ -1,171 +1,202 @@
 {
   "error_summary": {
-    "error_count": 10,
+    "total_samples": 60,
+    "error_count": 12,
     "by_type": {
-      "missing_information": 1,
       "incorrect_information": 8,
+      "missing_information": 3,
       "hallucination": 1
     },
     "by_severity": {
-      "major": 7,
+      "major": 9,
       "minor": 3
     },
     "by_cause": {
-      "retrieval_failure": 3,
-      "llm_reasoning_error": 7
+      "llm_reasoning_error": 7,
+      "retrieval_failure": 5
     },
     "by_question": {
+      "What industries has the candidate worked in?": 4,
       "List the programming languages mentioned in the resume.": 1,
-      "What is the total number of years of professional experience?": 5,
-      "What industries has the candidate worked in?": 3,
-      "Does the candidate have any leadership or management experience?": 1
+      "What is the total number of years of professional experience?": 4,
+      "What degrees or academic qualifications does the candidate hold?": 1,
+      "Does the candidate have any leadership or management experience?": 1,
+      "Has the candidate worked in any Fortune 500 companies?": 1
     },
     "key_insights": [
       "Most common error type: incorrect_information (8 occurrences)",
       "Most common cause: llm_reasoning_error (7 occurrences)",
-      "Most problematic question: 'What is the total number of years of professional experience?' (5 failures)"
+      "Most problematic question: 'What industries has the candidate worked in?' (4 failures)"
     ]
   },
   "detailed_error_analyses": [
     {
+      "error_type": "incorrect_information",
+      "severity": "major",
+      "details": "The incorrect prediction introduces information not present in the gold standard. While it correctly identifies the technology industry, it adds \"volunteer work mentoring aspiring platform developers\", which is not supported by the provided context. This is a factual inaccuracy and misrepresentation of the candidate's work history.",
+      "likely_cause": "llm_reasoning_error",
+      "fix_recommendation": "Improve the LLM's ability to discriminate between relevant and irrelevant information during generation.  This might involve better prompt engineering to specifically request only information directly stated in the source, retraining the LLM on a dataset emphasizing factual accuracy and source fidelity, or using a different LLM altogether which exhibits better performance on factual tasks.  Furthermore, implement stronger verification steps before presenting information as fact. For example, the system could check if information is directly supported by the retrieved source documents.  Add a confidence score to the output, allowing for filtering of low-confidence predictions.",
+      "resume": "emma-roberts.pdf",
+      "question": "What industries has the candidate worked in?",
+      "gold_answer": "The candidate has worked in the technology industry, specifically at Tech Solutions Inc. and Innovative Platforms Ltd.",
+      "predicted_answer": "The candidate has worked in the following industries: technology (specifically platform development), and volunteer work mentoring aspiring platform developers.",
+      "is_correct": false,
+      "percentage_correct": 0.25,
+      "reasoning": "The predicted answer mentions technology and platform development, which is partially correct as the gold standard mentions the technology industry. However, it also introduces irrelevant information about volunteer work mentoring aspiring platform developers and omits crucial information about the specific companies where the candidate worked (Tech Solutions Inc. and Innovative Platforms Ltd.).  The inclusion of incorrect information and omission of key details significantly reduces the accuracy."
+    },
+    {
       "error_type": "missing_information",
       "severity": "major",
-      "details": "The RAG system failed to retrieve and include all the programming languages listed in the resume.  While it correctly identified some languages, it omitted several (HTML5, CSS3, Sass, SQL, NoSQL). This omission constitutes a significant portion of the requested information and renders the response incomplete.",
+      "details": "The RAG system failed to extract all the programming languages listed in the resume.  Several languages (HTML5, CSS3, Sass, SQL, NoSQL, MongoDB, PostgreSQL) were omitted from the response. While the included languages are correct, the incompleteness renders the answer significantly less useful.",
       "likely_cause": "retrieval_failure",
-      "fix_recommendation": "Improve the retrieval mechanism used by the RAG system. This could involve enhancing the embedding model for better similarity matching or optimizing the retrieval strategy to ensure all relevant chunks of information from the document are extracted.  Consider adjusting the prompt to explicitly request a comprehensive list,  and/or verifying that all relevant parts of the resume are included in the indexed document for retrieval.",
+      "fix_recommendation": "Improve the retrieval process to ensure that all relevant information is extracted from the document. This may involve refining the query, adjusting the retrieval parameters (e.g., increasing the number of top retrieved documents, adjusting similarity thresholds), or using more sophisticated retrieval techniques such as dense passage retrieval.  Additionally, checking for and handling potential formatting issues within the resume (e.g., inconsistent capitalization, unusual spacing) could also help improve the completeness of the extraction.",
       "resume": "jane-smith.pdf",
       "question": "List the programming languages mentioned in the resume.",
-      "gold_answer": "JavaScript, TypeScript, Python, Java, HTML5, CSS3, Sass, SQL, NoSQL, and more.",
-      "predicted_answer": "JavaScript, TypeScript, Python, Java",
+      "gold_answer": "JavaScript, TypeScript, Python, Java, HTML5, CSS3, Sass, SQL, NoSQL (MongoDB, PostgreSQL)",
+      "predicted_answer": "Python, Java, JavaScript, TypeScript",
       "is_correct": false,
       "percentage_correct": 0.4,
-      "reasoning": "The predicted answer only includes a subset of the programming languages listed in the gold standard answer. While the predicted answer is partially correct, it omits key languages like HTML5, CSS3, Sass, SQL, and NoSQL, which are significant omissions.  Therefore, the percentage correct is estimated to be around 40%, as it captures only approximately four out of ten items.  Because the percentage correct is below 0.5, is_correct is set to False."
+      "reasoning": "The predicted answer only includes a subset of the programming languages listed in the gold standard.  While the predicted answer correctly identifies Python, Java, Javascript, and TypeScript, it omits several key languages including HTML5, CSS3, Sass, SQL, and NoSQL databases (MongoDB, PostgreSQL). The omission of these languages significantly reduces the overall correctness of the prediction. Therefore, the percentage correct is approximately 40%, falling below the 50% threshold for is_correct to be true."
     },
     {
       "error_type": "incorrect_information",
       "severity": "major",
-      "details": "The model predicted \"10\" years of experience, while the gold standard answer is \"Over 7 years\".  This is a significant numerical discrepancy and misrepresents the actual experience. The answer is factually incorrect.",
+      "details": "The model predicted \"11\" years of experience, while the gold standard answer is \"Over 7 years\".  This is a significant numerical discrepancy, potentially misleading the user about the candidate's qualifications. The prediction is not just slightly off; it's a substantial overestimation.",
       "likely_cause": "llm_reasoning_error",
-      "fix_recommendation": "Improve the model's ability to handle numerical ranges and imprecise information.  Consider incorporating techniques that allow for uncertainty and range estimations in the model's output.  Retraining with more data containing varied expressions of experience (e.g., \"7+ years\", \"between 7 and 10 years\") might help.  Additionally, enhancing the retrieval system to ensure it captures the nuances of the information source relating to experience is recommended.",
+      "fix_recommendation": "The model should be trained to handle imprecise numerical information in the source documents better.  Instead of extracting a precise number, it should aim to extract and summarize the relevant information in its original form (e.g., \"Over 7 years\"). This might involve enhancing the model's ability to recognize and process ranges or qualitative descriptions of experience rather than strictly numerical data.  Additionally, improving the model's ability to handle ambiguous or vague information regarding professional experience would help avoid such errors.  More robust fact-checking mechanisms that cross-reference numerical data with contextual cues could also be beneficial.",
       "resume": "jane-smith.pdf",
       "question": "What is the total number of years of professional experience?",
       "gold_answer": "Over 7 years",
-      "predicted_answer": "10",
+      "predicted_answer": "11",
       "is_correct": false,
-      "percentage_correct": 0.2,
-      "reasoning": "The predicted answer '10' is not semantically equivalent to the gold standard 'Over 7 years'. The gold standard specifies a duration of more than 7 years, while the prediction provides a specific numerical value of 10 without specifying the unit (years, months, etc.).  Therefore, there is only partial overlap in the information. The prediction lacks the crucial \"years\" information. "
+      "percentage_correct": 0.0,
+      "reasoning": "The predicted answer '11' is completely unrelated to the gold standard answer 'Over 7 years'.  The prediction lacks the key information of the duration, and therefore there is no semantic equivalence. The prediction is factually incorrect and provides no relevant information regarding the duration."
     },
     {
       "error_type": "hallucination",
       "severity": "major",
-      "details": "The RAG system hallucinates industries and roles that the candidate has not actually worked in.  The gold standard answer only mentions technology-related work at three specific companies, while the incorrect answer adds several unrelated industries (e-commerce, real-time analytics, inventory management, CRM, social networking, online learning) with no evidence from the source text. This is a significant misrepresentation of the candidate's work history.",
+      "details": "The RAG system hallucinates details about the candidate's work experience that are not present in the provided context.  The gold standard answer states that the candidate worked in the technology industry at three specific companies, but the system fabricates details about e-commerce, real-time analytics, inventory management, CRM, social networking, and online learning platforms. This is a significant factual inaccuracy.",
       "likely_cause": "llm_reasoning_error",
-      "fix_recommendation": "Improve the LLM's ability to discern factual information from speculative or implied information.  Implement stricter constraints on the model's generation, preventing it from fabricating details.  Fine-tune the model on a dataset specifically designed to reduce hallucinations and improve factual accuracy in information extraction tasks. Consider incorporating techniques to identify and flag potential hallucinated information in the generated response.",
+      "fix_recommendation": "Improve the LLM's ability to restrict its response to information explicitly present in the retrieved context.  Implement stricter constraints and fact-checking mechanisms to prevent the generation of fabricated details.  Potentially use a larger context window or more effective retrieval techniques to ensure relevant information is included, but hallucinations often stem from internal LLM processing and not a data paucity.",
       "resume": "jane-smith.pdf",
       "question": "What industries has the candidate worked in?",
-      "gold_answer": "The candidate has worked in the technology industry, specifically at Tech Innovators Inc., Innovative Solutions Ltd., and Web Solutions Co.  The specific industry sectors of these companies are not specified.",
-      "predicted_answer": "Based on the provided text, the candidate has worked in e-commerce, real-time analytics, inventory management, and customer relationship management (CRM).  They also mention work on social networking and online learning platforms.",
+      "gold_answer": "The candidate has worked in the technology industry, specifically at Tech Innovators Inc., Innovative Solutions Ltd., and Web Solutions Co.  The exact nature of these companies' industries is not specified.",
+      "predicted_answer": "Based on the provided text, the candidate has worked in e-commerce, real-time analytics, inventory management, and customer relationship management (CRM).  Their experience also spans social networking and online learning platforms.",
       "is_correct": false,
       "percentage_correct": 0.0,
-      "reasoning": "The predicted answer is completely different from the gold standard answer. The gold standard mentions three companies where the candidate worked, while the predicted answer mentions different areas of expertise (e-commerce, real-time analytics, etc.).  There is no overlap in the key information. The predicted answer is a hallucination, inventing information not present in the original text."
+      "reasoning": "The predicted answer is completely different from the gold standard. The gold standard mentions three companies where the candidate worked, while the predicted answer mentions specific technological areas of expertise.  These are not equivalent. The prediction is a hallucination, inventing information not present in the source text. There is no overlap between the gold standard and the predicted answer."
+    },
+    {
+      "error_type": "missing_information",
+      "severity": "major",
+      "details": "The RAG system failed to extract all relevant information regarding the candidate's academic qualifications. While it correctly identified the Bachelor of Science degree, it omitted the additional Nanodegree and certification, which are also important pieces of information for a comprehensive understanding of the candidate's qualifications.",
+      "likely_cause": "retrieval_failure",
+      "fix_recommendation": "Improve the retrieval process to ensure that all relevant information about the candidate's qualifications is extracted from the source document. This might involve refining the query, optimizing the document embedding, or using a more sophisticated retrieval technique.  Additionally, consider using a larger context window if the information is spread across different parts of the source document.",
+      "resume": "john-doe.pdf",
+      "question": "What degrees or academic qualifications does the candidate hold?",
+      "gold_answer": "The candidate holds a Bachelor of Science in Computer Science from the University of Technology, graduating in May 2022.  They also have a Front-End Web Developer Nanodegree from Udacity and a JavaScript Algorithms and Data Structures certification from freeCodeCamp.",
+      "predicted_answer": "Bachelor of Science in Computer Science from University of Technology",
+      "is_correct": false,
+      "percentage_correct": 0.25,
+      "reasoning": "The predicted answer only captures a small portion of the information present in the gold standard answer. While it correctly identifies the candidate's Bachelor of Science degree, it omits crucial details such as the university's full name, graduation date, and other relevant certifications (Udacity Nanodegree and freeCodeCamp certification).  Therefore, a significant amount of information is missing. The prediction's correctness is approximately 25% because it only covers one of the four key pieces of information. "
     },
     {
       "error_type": "incorrect_information",
       "severity": "major",
-      "details": "The model incorrectly predicted 1.5 years of professional experience when the gold standard answer is 2.5 years.  This represents a significant numerical inaccuracy, misrepresenting the candidate's experience by a full year.",
+      "details": "The RAG system incorrectly predicted 1.5 years of professional experience when the gold standard answer is 2.5 years. This represents a significant numerical inaccuracy, potentially leading to misinterpretations of the candidate's qualifications.",
       "likely_cause": "retrieval_failure",
-      "fix_recommendation": "Improve the retrieval system to ensure all relevant information about professional experience is accurately extracted and incorporated into the model's context.  Consider using more sophisticated methods for information extraction and validation, and potentially enriching the knowledge base with additional data sources or more robust verification techniques.",
+      "fix_recommendation": "Improve the retrieval mechanism to ensure that all relevant information related to professional experience is accurately extracted and considered.  This might involve refining keyword search terms, improving document embeddings, or exploring alternative retrieval methods such as semantic search.  Verify data source accuracy and explore methods to handle potential inconsistencies or missing data in the source documents.",
       "resume": "john-doe.pdf",
       "question": "What is the total number of years of professional experience?",
       "gold_answer": "2.5 years",
-      "predicted_answer": "1.5",
-      "is_correct": false,
-      "percentage_correct": 0.25,
-      "reasoning": "The predicted answer, \"1.5\", is numerically different from the gold standard answer, \"2.5 years\". While the unit of measurement (years) is not explicitly present in the predicted answer, we can infer it from the context.  However, the numerical difference is substantial, representing a significant deviation.  Therefore, the prediction is only partially correct, receiving a low percentage score based on the significant difference in the numerical value. The prediction lacks the necessary precision needed to be considered correct. "
-    },
-    {
-      "error_type": "incorrect_information",
-      "severity": "major",
-      "details": "The predicted answer hallucinates several industries and work experiences that are not mentioned in the gold standard.  While the gold standard specifies only work in the tech industry, the prediction incorrectly lists e-commerce, employee portal development, marketing, and event management. The mention of \"general web development for various clients at an agency\" is too vague and lacks the specificity of the gold standard which provides concrete company names. This level of inaccuracy misrepresents the candidate's experience.",
-      "likely_cause": "llm_reasoning_error",
-      "fix_recommendation": "Improve the LLM's ability to extract and synthesize information from the source documents.  This might involve refining the prompts to explicitly request only verified information and to avoid making assumptions.  Better techniques for entity recognition and relationship extraction could also improve accuracy.  Furthermore, training data should include examples emphasizing the importance of factual accuracy and precision in reporting professional experience.",
-      "resume": "john-doe.pdf",
-      "question": "What industries has the candidate worked in?",
-      "gold_answer": "The candidate has worked in the tech industry, specifically at XYZ Tech Solutions and ABC Digital Agency.",
-      "predicted_answer": "The candidate has worked in the e-commerce, employee portal development, marketing, and event management systems industries.  They also have experience with general web development for various clients at an agency.",
-      "is_correct": false,
-      "percentage_correct": 0.2,
-      "reasoning": "The predicted answer mentions several industries (e-commerce, employee portal development, marketing, event management) and general web development, which are not present in the gold standard answer. While the gold standard focuses on the candidate's experience at specific tech companies (XYZ Tech Solutions and ABC Digital Agency), the predicted answer lacks this crucial information.  The predicted answer contains some relevant information, such as experience in web development and at an agency, but this is insufficient to make it semantically equivalent to the gold standard. Therefore, a low percentage of correctness is assigned."
-    },
-    {
-      "error_type": "incorrect_information",
-      "severity": "major",
-      "details": "The model incorrectly inferred leadership and management experience from the candidate's collaboration with cross-functional teams and mentoring activities.  While these activities suggest *some* leadership qualities, they don't definitively demonstrate formal leadership or management roles. The gold standard explicitly states the absence of explicitly stated leadership/management roles, which the model failed to acknowledge.  The model hallucinated the level of experience; it went beyond what the provided text supported.",
-      "likely_cause": "llm_reasoning_error",
-      "fix_recommendation": "Improve the model's ability to distinguish between implied skills and explicitly stated experiences.  Retrain with data that emphasizes the difference between collaborative work and formal leadership/management roles.  Consider adding a verification step to the RAG pipeline where the model's response is checked against the source text to ensure accuracy and avoid unsupported inferences.",
-      "resume": "alex-thompson.pdf",
-      "question": "Does the candidate have any leadership or management experience?",
-      "gold_answer": "The resume indicates collaboration with cross-functional teams, but does not explicitly state any leadership or management roles.",
-      "predicted_answer": "Based on the provided text, the candidate has experience mentoring aspiring backend developers and conducting workshops, suggesting some leadership and management skills.  The candidate also collaborated with cross-functional teams in multiple roles.",
-      "is_correct": false,
-      "percentage_correct": 0.3,
-      "reasoning": "The predicted answer partially aligns with the gold standard by acknowledging the candidate's collaboration with cross-functional teams. However, it contradicts the gold standard by asserting the candidate possesses leadership and management skills, which are explicitly stated as absent in the gold standard.  The prediction introduces information ('mentoring aspiring backend developers and conducting workshops') not supported by the provided gold standard answer. Therefore, while some information is correct, the inclusion of unsupported claims lowers the overall accuracy."
-    },
-    {
-      "error_type": "incorrect_information",
-      "severity": "minor",
-      "details": "The predicted answer \"1.5 years\" is incorrect because it states a precise number while the gold standard answer indicates \"More than 1.5 years\".  The difference is small but represents an inaccuracy in the conveyed information.  The model failed to capture the nuance of \"more than\" in the gold standard response.",
-      "likely_cause": "llm_reasoning_error",
-      "fix_recommendation": "Improve the model's ability to handle comparative statements and uncertainties.  The training data should include more examples with phrasing such as \"more than,\" \"less than,\" \"approximately,\" etc.  Additionally, techniques that allow the model to express uncertainty in its predictions, such as probability distributions or confidence intervals, could help mitigate this type of error.",
-      "resume": "alex-thompson.pdf",
-      "question": "What is the total number of years of professional experience?",
-      "gold_answer": "More than 1.5 years",
       "predicted_answer": "1.5 years",
       "is_correct": false,
       "percentage_correct": 0.25,
-      "reasoning": "The predicted answer, \"1.5 years\", is partially correct but lacks the crucial detail of \"More than\" from the gold standard.  While the numerical value is present, the qualifier is missing, altering the overall meaning. The gold standard implies a duration exceeding 1.5 years, while the prediction states precisely 1.5 years. This difference is significant enough to lower the percentage correct and, consequently, to classify it as incorrect according to the defined threshold."
+      "reasoning": "The predicted answer, \"1.5 years\", differs significantly from the gold standard answer, \"2.5 years\".  While both answers provide a duration, the numerical values are substantially different. This suggests a lack of precision in the prediction. Therefore, the prediction is only partially correct."
     },
     {
       "error_type": "incorrect_information",
       "severity": "major",
-      "details": "The RAG system hallucinated industries that the candidate has not worked in.  The prediction is completely different from the gold standard and contains no overlapping information. The model fabricated information about the candidate's work experience.",
+      "details": "The model incorrectly infers leadership and management experience from the candidate's involvement in mentoring, workshops, and hackathons. While these activities suggest some leadership qualities, they do not constitute formal leadership or management roles.  The answer should have acknowledged the activities but clearly stated the absence of explicitly mentioned formal experience, aligning with the gold standard.  The model's inference goes beyond the provided text.",
+      "likely_cause": "llm_reasoning_error",
+      "fix_recommendation": "Improve the LLM's ability to distinguish between implied skills and explicitly stated experience.  The model should be trained to avoid making inferences that are not directly supported by the text.  The prompt could be revised to explicitly ask for verifiable evidence of formal leadership roles, and the model should be penalized for inferential answers not directly supported by evidence.",
+      "resume": "alex-thompson.pdf",
+      "question": "Does the candidate have any leadership or management experience?",
+      "gold_answer": "Not mentioned in the resume.",
+      "predicted_answer": "Based on the provided text, the candidate has mentored aspiring backend developers, conducted workshops and coding sessions, assisted in organizing hackathons, and collaborated with cross-functional teams.  These activities demonstrate leadership and management skills, although the provided text does not explicitly state formal leadership or management roles.",
+      "is_correct": false,
+      "percentage_correct": 0.2,
+      "reasoning": "The predicted answer is largely irrelevant to the gold standard. While it describes the candidate's skills and experience, it fails to directly address the gold standard's assertion that the information is not mentioned in the resume.  The prediction provides a summary of the resume content instead of acknowledging the absence of the specific information."
+    },
+    {
+      "error_type": "incorrect_information",
+      "severity": "major",
+      "details": "The RAG system hallucinates industries that the candidate has not worked in.  The gold standard answer clearly states that the candidate's experience is limited to the technology sector, with named companies. The incorrect prediction presents unrelated industries (e-commerce, CRM, inventory management) which are not supported by the facts.",
       "likely_cause": "retrieval_failure",
-      "fix_recommendation": "Improve the retrieval component of the RAG system. This likely involves enhancing the embedding model used for similarity search, ensuring that the candidate's resume or relevant documents are properly indexed and searchable, and potentially adjusting the retrieval parameters to return more relevant documents.  More thorough quality control checks should be implemented to identify and remove fabricated information.",
+      "fix_recommendation": "Improve the retrieval process to ensure that only relevant and accurate information about the candidate's work history is retrieved.  This might involve refining the query used to search the knowledge base or improving the knowledge base's organization and quality to better match the specific question.  Consider adding techniques like reranking to prioritize more relevant documents.  Verify the accuracy of the data source itself.",
       "resume": "alex-thompson.pdf",
       "question": "What industries has the candidate worked in?",
       "gold_answer": "The candidate has worked in the technology industry, specifically at Tech Innovations Ltd. and Innovative Solutions Inc.",
       "predicted_answer": "e-commerce, customer relationship management (CRM), inventory management",
       "is_correct": false,
       "percentage_correct": 0.0,
-      "reasoning": "The predicted answer is completely irrelevant to the gold standard.  The gold standard describes the candidate's work experience, while the prediction lists technologies or business functions (e-commerce, CRM, inventory management). There is no overlap in information."
+      "reasoning": "The predicted answer is completely unrelated to the gold standard answer. The gold standard specifies the candidate's work experience at two technology companies, while the prediction lists unrelated technical skills (e-commerce, CRM, inventory management).  There is no overlap in information, and the prediction is factually incorrect with respect to the gold standard."
     },
     {
       "error_type": "incorrect_information",
       "severity": "minor",
-      "details": "The model predicted \"12\" years of experience, while the gold standard answer specifies \"Over 12 years\". The difference is minor, but the model failed to capture the nuance of \"over\" 12 years, providing an imprecise answer.  The answer is not factually wrong, but lacks the precision present in the gold standard.",
+      "details": "The model predicted \"12\" years of experience, while the gold standard answer specified \"Over 12 years\".  The model extracted a numerical value but failed to capture the qualifier (\"Over\"). This is a minor error because the core information (12 years) is present, although not entirely accurate. The missing qualifier slightly underrepresents the actual experience.",
       "likely_cause": "llm_reasoning_error",
-      "fix_recommendation": "Improve the model's ability to handle nuanced language by training it on more examples that contain similar expressions of ranges and imprecise quantities.  Consider adding techniques to encourage the model to reflect uncertainty when it is not absolutely certain about the precise value.  The output could also be improved by providing a confidence score alongside the numerical response.",
+      "fix_recommendation": "Improve the LLM's ability to handle nuanced expressions and qualifiers. Fine-tune the model with more examples that include such qualifiers alongside numerical data.  Consider incorporating post-processing techniques that identify and correct for missing qualifiers by analyzing the context and comparing against similar data points in the retrieved documents.",
       "resume": "michael-johnson.pdf",
       "question": "What is the total number of years of professional experience?",
       "gold_answer": "Over 12 years",
       "predicted_answer": "12",
       "is_correct": false,
       "percentage_correct": 0.25,
-      "reasoning": "The predicted answer '12' is partially correct but lacks the crucial \"Over\" qualifier from the gold standard \"Over 12 years\".  While it captures the numerical part, it omits the important contextual information that specifies a duration exceeding 12 years.  This omission significantly alters the meaning. Therefore, it only gets a low percentage_correct score."
+      "reasoning": "The predicted answer, \"12\", is only partially correct. While it contains the numerical part of the gold standard answer (\"Over 12 years\"), it omits the crucial \"Over\" qualifier.  This omission significantly alters the meaning. The prediction lacks the essential context of the gold standard, making it less than 50% correct. "
     },
     {
       "error_type": "incorrect_information",
       "severity": "minor",
-      "details": "The model produced a precise numerical answer (11 years) instead of the more appropriate and accurate response (\"Over 10 years\"). While factually close, the lack of uncertainty or range in the response is a misrepresentation of the underlying information.",
+      "details": "The model's prediction of \"11\" years is numerically precise but contradicts the gold standard's more qualitative answer of \"Over 10 years\".  While factually close, it lacks the nuance of the gold standard, suggesting an over-reliance on extracting precise numbers rather than understanding the context and range.",
       "likely_cause": "llm_reasoning_error",
-      "fix_recommendation": "Fine-tune the model on examples that emphasize the importance of expressing uncertainty when the exact figure is unknown or the information provided is vague. Train it to provide responses that reflect the precision of the source data. For this case, encourage responses like \"Over 10 years\" or \"More than a decade\" instead of a definite number.",
+      "fix_recommendation": "Improve the model's ability to handle nuanced language and qualitative expressions.  Fine-tuning with data that includes a mix of precise and qualitative expressions of quantities could be beneficial. The model may also benefit from training that focuses on identifying and handling uncertainty or ranges of values.",
       "resume": "JO Reyes CV April 2025.pdf",
       "question": "What is the total number of years of professional experience?",
       "gold_answer": "Over 10 years",
       "predicted_answer": "11",
       "is_correct": false,
       "percentage_correct": 0.25,
-      "reasoning": "The predicted answer \"11\" is numerically close to the gold standard \"Over 10 years\", but it lacks the crucial contextual information of the \"years\" unit.  While it contains some related information, it is missing the time unit. Therefore, it is not fully correct and receives a low percentage score."
+      "reasoning": "The predicted answer \"11\" only provides a numerical value, lacking the crucial context of \"years\" present in the gold standard \"Over 10 years\". While \"11\" might be considered within the range implied by \"Over 10 years\", the missing unit and imprecise nature significantly reduce its accuracy.  Therefore, it only partially conveys the correct information, resulting in a low percentage correct."
+    },
+    {
+      "error_type": "incorrect_information",
+      "severity": "minor",
+      "details": "The answer incorrectly infers that the lack of explicit Fortune 500 status in the provided text means the candidate *has* worked for those companies.  The resume may not list Fortune 500 status for various reasons (e.g., it's not relevant to the job description, the candidate doesn't know, etc.).  The correct answer is simply that it is not mentioned.",
+      "likely_cause": "llm_reasoning_error",
+      "fix_recommendation": "Improve LLM reasoning capabilities. Retrain the model on examples that explicitly distinguish between absence of evidence and evidence of absence.  The model should be explicitly trained on cases where information is missing to avoid making inferences based on lack of information.",
+      "resume": "JO Reyes CV April 2025.pdf",
+      "question": "Has the candidate worked in any Fortune 500 companies?",
+      "gold_answer": "Not mentioned in the resume.",
+      "predicted_answer": "Based on the provided text, the candidate has worked for Inchcape Australia, a multinational automotive company, and Readify (Telstra), an Australian IT consultancy.  Whether either company is a Fortune 500 company is not specified.",
+      "is_correct": false,
+      "percentage_correct": 0.25,
+      "reasoning": "The predicted answer mentions the candidate's work experience but doesn't directly address whether the information is mentioned in the resume.  The gold standard explicitly states the information is \"Not mentioned in the resume.\" While the prediction provides relevant information from the resume, it misses the key point of the gold standard. Therefore, it is only partially correct."
+    },
+    {
+      "error_type": "missing_information",
+      "severity": "major",
+      "details": "The predicted answer omits several industries the candidate has worked in, including digital twins, industrial automation, e-commerce, mergers and acquisitions (M&A), and strata management.  While some industries are correctly identified, the missing information significantly reduces the completeness and accuracy of the answer. This could lead to inaccurate conclusions about the candidate's experience and expertise.",
+      "likely_cause": "retrieval_failure",
+      "fix_recommendation": "Improve the retrieval process to ensure all relevant information about the candidate's work experience is extracted and included in the context provided to the LLM. This might involve refining the search queries, expanding the sources used for information retrieval, or employing more sophisticated techniques such as semantic search to capture related concepts.  Additionally, a more comprehensive prompt could guide the LLM to more explicitly enumerate all identified industries.",
+      "resume": "JO Reyes CV April 2025.pdf",
+      "question": "What industries has the candidate worked in?",
+      "gold_answer": "The candidate has worked in the following industries: digital twins, industrial automation, e-commerce, mergers and acquisitions (M&A), strata management, mining, and automotive distribution and retail.",
+      "predicted_answer": "The candidate has worked in the mining, automotive distribution and retail, and IT consulting industries.",
+      "is_correct": false,
+      "percentage_correct": 0.25,
+      "reasoning": "The predicted answer only captures three of the seven industries mentioned in the gold standard answer. While the mentioned industries are correct, the omission of several key industries significantly reduces the answer's completeness and accuracy.  The overlap is too small to consider it a good approximation of the gold standard."
     }
   ]
 }
