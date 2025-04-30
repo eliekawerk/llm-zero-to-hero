@@ -32,6 +32,45 @@ data_volume = modal.Volume.from_name("data-viewer-volume", create_if_missing=Tru
 # Create a FastAPI app
 api = FastAPI(title="Data Viewer")
 
+@api.get("/")
+async def root():
+    """Serve the main index.html file"""
+    return FileResponse("/assets" / "index.html")
+
+@api.get("/error_analysis")
+async def error_analysis():
+    """Serve the error analysis HTML file"""
+    return FileResponse("/assets" / "error_analysis.html")
+
+@api.get("/evaluation_report")
+async def evaluation_report():
+    """Serve the evaluation_report HTML file"""
+    return FileResponse("/assets" / "evaluation_report.html")
+
+@api.get("/api/list-json-files")
+async def list_json_files():
+    """API endpoint to list available JSON files"""
+    print("Listing JSON files")
+    json_files = []
+    return JSONResponse({"files": json_files})
+#     try:
+#         if DATA_DIR.exists():
+#             json_files = [
+#                 f"./data/{f}" for f in os.listdir(DATA_DIR) 
+#                 if f.endswith('.json') or f.endswith('.jsonl')
+#             ]
+        
+#         # Default file should always be available
+#         if "./data/evaluation_report.json" not in json_files and (DATA_DIR / "evaluation_report.json").exists():
+#             json_files.append("./data/evaluation_report.json")
+        
+#         # Sort alphabetically
+#         json_files.sort()
+#     except Exception as e:
+#         print(f"Error listing JSON files: {e}")
+    
+#     return JSONResponse({"files": json_files})
+
 @app.function(
     image=image,
     volumes={"/data": data_volume},
@@ -42,44 +81,7 @@ def serve_app() -> FastAPI:
     # Mount the static files from data_viewers directory
     api.mount("/", StaticFiles(directory="/assets", html=True))
     
-    @api.get("/")
-    async def root():
-        """Serve the main index.html file"""
-        return FileResponse("/assets" / "index.html")
-    
-    # @api.get("/error_analysis")
-    # async def error_analysis():
-    #     """Serve the error analysis HTML file"""
-    #     return FileResponse("/assets" / "error_analysis.html")
-    
-    # @api.get("/evaluation_report")
-    # async def evaluation_report():
-    #     """Serve the evaluation_report HTML file"""
-    #     return FileResponse("/assets" / "evaluation_report.html")
-    
-    @api.get("/api/list-json-files")
-    async def list_json_files():
-        """API endpoint to list available JSON files"""
-        print("Listing JSON files")
-        json_files = []
-        return JSONResponse({"files": json_files})
-    #     try:
-    #         if DATA_DIR.exists():
-    #             json_files = [
-    #                 f"./data/{f}" for f in os.listdir(DATA_DIR) 
-    #                 if f.endswith('.json') or f.endswith('.jsonl')
-    #             ]
-            
-    #         # Default file should always be available
-    #         if "./data/evaluation_report.json" not in json_files and (DATA_DIR / "evaluation_report.json").exists():
-    #             json_files.append("./data/evaluation_report.json")
-            
-    #         # Sort alphabetically
-    #         json_files.sort()
-    #     except Exception as e:
-    #         print(f"Error listing JSON files: {e}")
-        
-    #     return JSONResponse({"files": json_files})
+
     
     # @api.get("/data/{filename:path}")
     # async def get_data_file(filename: str):
