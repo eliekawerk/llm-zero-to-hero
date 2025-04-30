@@ -105,100 +105,100 @@ def serve_app() -> FastAPI:
     
     return api
 
-@app.local_entrypoint()
-def main():
-    """Local entrypoint for testing"""
-    print("Starting local development server")
-    print("Note: This won't use Modal volumes when run locally")
-    app.serve()
+# @app.local_entrypoint()
+# def main():
+#     """Local entrypoint for testing"""
+#     print("Starting local development server")
+#     print("Note: This won't use Modal volumes when run locally")
+#     app.serve()
 
-# Create a FastAPI app for direct local execution
-def create_local_app():
-    """Create a local FastAPI app for direct execution with uvicorn"""
-    api = FastAPI(title="Data Viewer")
+# # Create a FastAPI app for direct local execution
+# def create_local_app():
+#     """Create a local FastAPI app for direct execution with uvicorn"""
+#     api = FastAPI(title="Data Viewer")
     
-    # Mount the static files from data_viewers directory
-    api.mount("/static", StaticFiles(directory=str(VIEWERS_DIR)), name="static")
+#     # Mount the static files from data_viewers directory
+#     api.mount("/static", StaticFiles(directory=str(VIEWERS_DIR)), name="static")
     
-    @api.get("/")
-    async def root():
-        """Serve the main index.html file"""
-        return FileResponse(VIEWERS_DIR / "index.html")
+#     @api.get("/")
+#     async def root():
+#         """Serve the main index.html file"""
+#         return FileResponse(VIEWERS_DIR / "index.html")
     
-    @api.get("/error_analysis")
-    async def error_analysis():
-        """Serve the error analysis HTML file"""
-        return FileResponse(VIEWERS_DIR / "error_analysis.html")
+#     @api.get("/error_analysis")
+#     async def error_analysis():
+#         """Serve the error analysis HTML file"""
+#         return FileResponse(VIEWERS_DIR / "error_analysis.html")
     
-    @api.get("/api/list-json-files")
-    async def list_json_files():
-        """API endpoint to list available JSON files"""
-        json_files = []
-        try:
-            if DATA_DIR.exists():
-                json_files = [
-                    f"./data/{f}" for f in os.listdir(DATA_DIR) 
-                    if f.endswith('.json') or f.endswith('.jsonl')
-                ]
+#     @api.get("/api/list-json-files")
+#     async def list_json_files():
+#         """API endpoint to list available JSON files"""
+#         json_files = []
+#         try:
+#             if DATA_DIR.exists():
+#                 json_files = [
+#                     f"./data/{f}" for f in os.listdir(DATA_DIR) 
+#                     if f.endswith('.json') or f.endswith('.jsonl')
+#                 ]
             
-            # Default file should always be available
-            if "./data/evaluation_report.json" not in json_files and (DATA_DIR / "evaluation_report.json").exists():
-                json_files.append("./data/evaluation_report.json")
+#             # Default file should always be available
+#             if "./data/evaluation_report.json" not in json_files and (DATA_DIR / "evaluation_report.json").exists():
+#                 json_files.append("./data/evaluation_report.json")
             
-            # Sort alphabetically
-            json_files.sort()
-        except Exception as e:
-            print(f"Error listing JSON files: {e}")
+#             # Sort alphabetically
+#             json_files.sort()
+#         except Exception as e:
+#             print(f"Error listing JSON files: {e}")
         
-        return JSONResponse({"files": json_files})
+#         return JSONResponse({"files": json_files})
     
-    @api.get("/data/{filename:path}")
-    async def get_data_file(filename: str):
-        """Serve files from the data directory"""
-        file_path = DATA_DIR / filename.split("?")[0]
-        if not file_path.exists():
-            raise HTTPException(status_code=404, detail=f"File {filename} not found")
+#     @api.get("/data/{filename:path}")
+#     async def get_data_file(filename: str):
+#         """Serve files from the data directory"""
+#         file_path = DATA_DIR / filename.split("?")[0]
+#         if not file_path.exists():
+#             raise HTTPException(status_code=404, detail=f"File {filename} not found")
         
-        content_type = "application/json" if file_path.suffix in [".json", ".jsonl"] else None
-        return FileResponse(file_path, media_type=content_type)
+#         content_type = "application/json" if file_path.suffix in [".json", ".jsonl"] else None
+#         return FileResponse(file_path, media_type=content_type)
     
-    @api.get("/resumes/{filename:path}")
-    async def get_resume_file(filename: str):
-        """Serve PDF files from the resumes directory"""
-        file_path = RESUMES_DIR / filename.split("?")[0]
+#     @api.get("/resumes/{filename:path}")
+#     async def get_resume_file(filename: str):
+#         """Serve PDF files from the resumes directory"""
+#         file_path = RESUMES_DIR / filename.split("?")[0]
         
-        # If not found in main resumes dir, try resume_archive
-        if not file_path.exists() and ARCHIVE_DIR.exists():
-            file_path = ARCHIVE_DIR / filename.split("?")[0]
+#         # If not found in main resumes dir, try resume_archive
+#         if not file_path.exists() and ARCHIVE_DIR.exists():
+#             file_path = ARCHIVE_DIR / filename.split("?")[0]
         
-        if not file_path.exists():
-            raise HTTPException(status_code=404, detail=f"File {filename} not found")
+#         if not file_path.exists():
+#             raise HTTPException(status_code=404, detail=f"File {filename} not found")
         
-        return FileResponse(file_path, media_type="application/pdf")
+#         return FileResponse(file_path, media_type="application/pdf")
     
-    # Map app.js, styles.css to their proper paths
-    @api.get("/app.js")
-    async def get_app_js():
-        return FileResponse(VIEWERS_DIR / "app.js", media_type="application/javascript")
+#     # Map app.js, styles.css to their proper paths
+#     @api.get("/app.js")
+#     async def get_app_js():
+#         return FileResponse(VIEWERS_DIR / "app.js", media_type="application/javascript")
     
-    @api.get("/styles.css")
-    async def get_styles_css():
-        return FileResponse(VIEWERS_DIR / "styles.css", media_type="text/css")
+#     @api.get("/styles.css")
+#     async def get_styles_css():
+#         return FileResponse(VIEWERS_DIR / "styles.css", media_type="text/css")
     
-    return api
+#     return api
 
-# Create the local app
-local_app = create_local_app()
+# # Create the local app
+# local_app = create_local_app()
 
-if __name__ == "__main__":
-    try:
-        # Try to use Modal's local entrypoint first
-        main()
-    except Exception as e:
-        # Fall back to direct uvicorn execution
-        print(f"Modal execution failed: {e}")
-        print("Falling back to direct uvicorn execution...")
-        import uvicorn
-        uvicorn.run(local_app, host="0.0.0.0", port=8000)
+# if __name__ == "__main__":
+#     try:
+#         # Try to use Modal's local entrypoint first
+#         main()
+#     except Exception as e:
+#         # Fall back to direct uvicorn execution
+#         print(f"Modal execution failed: {e}")
+#         print("Falling back to direct uvicorn execution...")
+#         import uvicorn
+#         uvicorn.run(local_app, host="0.0.0.0", port=8000)
 
 
