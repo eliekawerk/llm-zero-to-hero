@@ -57,10 +57,12 @@ def serve_app() -> FastAPI:
     #     """Serve the evaluation_report HTML file"""
     #     return FileResponse("/assets" / "evaluation_report.html")
     
-    # @api.get("/api/list-json-files")
-    # async def list_json_files():
-    #     """API endpoint to list available JSON files"""
-    #     json_files = []
+    @api.get("/api/list-json-files")
+    async def list_json_files():
+        """API endpoint to list available JSON files"""
+        print("Listing JSON files")
+        json_files = []
+        return JSONResponse({"files": json_files})
     #     try:
     #         if DATA_DIR.exists():
     #             json_files = [
