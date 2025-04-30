@@ -98,6 +98,18 @@ class CustomHandler(SimpleHTTPRequestHandler):
                     self.wfile.write(f.read())
                 return
                 
+        # Handle request for evaluation_report.html specifically
+        elif self.path == "/evaluation_report" or self.path == "/evaluation_report.html":
+            file_path = Path(__file__).parent / "evaluation_report.html"
+            if file_path.exists():
+                self.send_response(200)
+                self.send_header("Content-type", "text/html")
+                self.end_headers()
+                
+                with open(file_path, "rb") as f:
+                    self.wfile.write(f.read())
+                return
+                
         # For all other paths, use the default handler
         return super().do_GET()
 
@@ -106,6 +118,7 @@ def run(server_class=HTTPServer, handler_class=CustomHandler, port=8000):
     httpd = server_class(server_address, handler_class)
     print(f"Starting server at http://localhost:{port}")
     print(f"Error Analysis Dashboard available at http://localhost:{port}/error_analysis")
+    print(f"Evaluation Report available at http://localhost:{port}/evaluation_report")
     httpd.serve_forever()
 
 if __name__ == "__main__":
