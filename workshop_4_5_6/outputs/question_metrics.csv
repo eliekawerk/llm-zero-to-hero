@@ -1,11 +1,11 @@
 Question,Accuracy,Count
 What is the candidate's most recent job title?,1.0,6
-What degrees or academic qualifications does the candidate hold?,1.0,6
-Has the candidate worked in any Fortune 500 companies?,1.0,6
 Does the candidate have experience working with cloud technologies?,1.0,6
 List any certifications or professional training mentioned.,1.0,6
 What projects or achievements are highlighted in the resume?,1.0,6
 List the programming languages mentioned in the resume.,0.8333333333333334,6
 Does the candidate have any leadership or management experience?,0.8333333333333334,6
-What industries has the candidate worked in?,0.5,6
-What is the total number of years of professional experience?,0.16666666666666666,6
+What degrees or academic qualifications does the candidate hold?,0.8333333333333334,6
+Has the candidate worked in any Fortune 500 companies?,0.8333333333333334,6
+What is the total number of years of professional experience?,0.3333333333333333,6
+What industries has the candidate worked in?,0.3333333333333333,6

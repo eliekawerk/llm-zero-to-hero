@@ -151,7 +151,6 @@ def analyze_error(gold_answer, predicted_answer, question):
     """
     
     analysis = client.chat.completions.create(
-      # model="gpt-4o",
       response_model=ErrorAnalysis,
       messages=[
         {"role": "system", "content": "You are an expert evaluator of RAG systems who specializes in error analysis."},
@@ -201,7 +200,7 @@ def analyze_errors(results, merged_df):
   
   return error_analyses
 
-def generate_error_summary(error_analyses):
+def generate_error_summary(error_analyses, results):
   """Generate summary statistics from error analyses."""
   if not error_analyses:
     return {"message": "No errors to analyze"}
@@ -243,6 +242,7 @@ def generate_error_summary(error_analyses):
     key_insights.append(f"Critical errors: {critical_count} ({critical_pct:.1f}% of all errors)")
   
   return {
+    "total_samples": len(results),
     "error_count": len(error_analyses),
     "by_type": dict(error_types),
     "by_severity": dict(error_severity),
@@ -348,6 +348,7 @@ def main():
   
   # Calculate metrics
   metrics = {
+    'total_samples': len(results),
     'accuracy': accuracy_score(y_true, y_pred),
     'precision': precision_score(y_true, y_pred),
     'recall': recall_score(y_true, y_pred),
@@ -368,7 +369,7 @@ def main():
   error_analyses = analyze_errors(results, merged_df)
   
   # Generate error summary
-  error_summary = generate_error_summary(error_analyses)
+  error_summary = generate_error_summary(error_analyses, results)
   
   # Plot error analysis visualizations
   plot_error_analysis(error_summary, OUTPUT_DIR)
