@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>reveal.js</title>
+
+		<link rel="stylesheet" href="dist/reset.css">
+		<link rel="stylesheet" href="dist/reveal.css">
+		<link rel="stylesheet" href="dist/theme/black.css">
+
+		<!-- Theme used for syntax highlighted code -->
+		<link rel="stylesheet" href="plugin/highlight/monokai.css">
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<section>
+					<h3>Vibing our way through Evals</h3>
+					<p>7 Steps to Effective LLM Evaluations</p>
+					<p>
+						<small>Created by <a href="https://www.linkedin.com/in/joreyes">Jose 'JO' Reyes</a></small>
+					</p>
+				</section>
+				<section>	
+					<section>
+						<h2>Project: LinkedIn Q&A RAG</h2>
+						<p>
+							We're using the RAG project introduced at the beginning of this course and attempt to build an evaluation system heavily assisted by AI.
+						</p>
+					</section>
+					<section>
+						<h3>LinkedIn Q&A RAG deployed on Modal</h3>
+						<img class="r-frame" style="background: rgba(255,255,255,0.1);" data-src="./assets/rag-on-modal.png" alt="Down arrow">
+					</section>
+				</section>
+				<section>
+					<section>
+						<h3>Step 1: Generate Synthetic Data using LLM</h3>
+						<p>1) Generate synthetic resume of 5 made-up persons + my own resume -> 6 resume samples</p>
+						<p>2) Generate a list of 10 questions</p>
+					</section>
+					<section>
+						<h4>Synthetic resumes of the following personas:</h4>
+						<p>- Alex Thompson - Junior Backend Developer</p>
+						<p>- Emma Roberts - Junior Platform Developer</p>
+						<p>- Jane Smith - Mid Range Fullstack Developer</p>
+						<p>- John Doe - Junior Frontend Developer</p>
+						<p>- Michael Johnson - Expert Fullstack Developer</p>
+						<p>- JO Reyes - AI/ML Extraordinaire</p>
+					</section>
+					<section data-auto-animate>
+						<h3 data-id="code-title">List of Generated Questions</h3>
+						<pre data-id="code-animation"><code class="hljs python" data-trim data-line-numbers>
+							[
+							{
+							  "question": "What is the candidate's most recent job title?"
+							},
+							{
+							  "question": "List the programming languages mentioned in the resume."
+							},
+							{
+							  "question": "Does the candidate have any leadership or management experience?"
+							},
+							{
+							  "question": "What degrees or academic qualifications does the candidate hold?"
+							},
+							{
+							  "question": "What is the total number of years of professional experience?"
+							},
+							{
+							  "question": "Has the candidate worked in any Fortune 500 companies?"
+							},
+							{
+							  "question": "What industries has the candidate worked in?"
+							},
+							{
+							  "question": "Does the candidate have experience working with cloud technologies?"
+							},
+							{
+							  "question": "List any certifications or professional training mentioned."
+							},
+							{
+							  "question": "What projects or achievements are highlighted in the resume?"
+							}
+						  ]
+						</code></pre>
+					</section>
+				</section>
+				<section>
+					<section>
+						<h3>Step 2: Generate our GOLD SET using LLM (EXPECTED ANSWERS)</h3>
+						<p>- From each of the questions in Step 1, generate answers for all 6 sample resumes</p>
+						<p>- Used Gemini 1.5 Flash</p>
+						<p>- Used Instructor to get structured outputs</p>
+					</section>
+					<section>
+						<p data-id="code-title">Out prompt for generating Gold Set (using Instructor)</p>
+						<pre data-id="code-animation"><code class="hljs python" data-trim data-line-numbers>
+							class ResumeAnswer(BaseModel):
+								"""Answer to a question about a resume"""
+
+								answer: str = Field(..., description="The answer to the question based on the resume content")
+								reasoning: Optional[str] = Field(None, description="Brief reasoning for the answer")
+						</code></pre>
+					</section>
+					<section>
+						<h3 data-id="code-title">The GOLD SET</h3>
+						<p>We now get 60 question-answer pairs as our Gold set</p>
+						<pre data-id="code-animation"><code class="hljs python" data-trim data-line-numbers>
+							[
+							{"resume": "emma-roberts.pdf", "question": "What is the candidate's most recent job title?", "expected_answer": "Platform Developer"},
+							{"resume": "emma-roberts.pdf", "question": "List the programming languages mentioned in the resume.", "expected_answer": "Python, Java, JavaScript, SQL, NoSQL (PostgreSQL, MongoDB)"},
+							{"resume": "jane-smith.pdf", "question": "What is the candidate's most recent job title?", "expected_answer": "Senior Full Stack Developer"},
+							{"resume": "jane-smith.pdf", "question": "List the programming languages mentioned in the resume.", "expected_answer": "JavaScript, TypeScript, Python, Java, HTML5, CSS3, Sass, SQL, NoSQL (MongoDB, PostgreSQL)"},
+							{"resume": "john-doe.pdf", "question": "What is the candidate's most recent job title?", "expected_answer": "Frontend Developer"},
+							{"resume": "john-doe.pdf", "question": "List the programming languages mentioned in the resume.", "expected_answer": "HTML, CSS, JavaScript (ES6+), TypeScript"},
+							{"resume": "alex-thompson.pdf", "question": "What is the candidate's most recent job title?", "expected_answer": "Backend Developer"},
+							{"resume": "alex-thompson.pdf", "question": "List the programming languages mentioned in the resume.", "expected_answer": "Python, Java, JavaScript, SQL, NoSQL, JSON, XML"},
+							{"resume": "michael-johnson.pdf", "question": "What is the candidate's most recent job title?", "expected_answer": "Principal Full Stack Developer"},
+							{"resume": "michael-johnson.pdf", "question": "List the programming languages mentioned in the resume.", "expected_answer": "JavaScript, TypeScript, Python, Java, HTML5, CSS3, Sass, SQL, NoSQL, Ruby on Rails"},
+							{"resume": "JO Reyes.pdf", "question": "What is the candidate's most recent job title?", "expected_answer": "AI/ML Technical Specialist"},
+							{"resume": "JO Reyes.pdf", "question": "List the programming languages mentioned in the resume.", "expected_answer": "Python, SQL, TypeScript, .Net Core,  ReactJS,  NextJS,  Java"}
+							...
+							]
+						</code></pre>
+					</section>
+				</section>
+				<section>
+					<section>
+						<h3>Step 3: Run predictions against our RAG algorithm (ACTUAL ANSWERS)</h3>
+						<p>- From each of the questions in Step 1, for each of the 6 resumes</p>
+						<p>- Pass each question to our RAG</p>
+						<p>- Get the generated answer from our RAG</p>
+						<p>- This process generates Actual 60 question-answer pairs output from our RAG system</p>
+					</section>
+				</section>
+				<section>
+					<section>
+						<h3>Step 4: Run Evals using our LLM Judge (Expected vs Actual)</h3>
+						<p>- We have a script that compares our Actuals vs Expecteds</p>
+						<p>- We use Gemini 1.5 Flash and Instructor</p>
+						<p>- We will annotate these output later</p>
+						<p>- The Eval output is not easy to digest (JSON) so we have vibe coded tools</p>
+					</section>
+					<section>
+						<h3 data-id="code-title">Our Eval Prompt</h3>
+						<p>How our Eval prompt looks like</p>
+						<pre data-id="code-animation"><code class="hljs python" data-trim data-line-numbers>
+							def evaluate_answer(gold_answer, predicted_answer):
+								"""Evaluate a predicted answer against a gold standard using Instructor."""
+								try:
+								prompt = f"""
+								Gold standard answer: "{gold_answer}"
+								Predicted answer: "{predicted_answer}"
+								
+								Evaluate if the predicted answer is semantically equivalent to the gold standard answer,
+								and base your evaluation on the following criteria:
+								1. The predicted answer must contain the same key information as the gold standard
+								2. Minor differences in wording are acceptable as long as the meaning is preserved
+								3. The percentage correct conveys the estimate of correctness for the prediction. It is a float
+								between 0.0 and 1.0, and the following explains the scale:
+								- 0.76 to 1.0 means the prediction is 76% to 100% correct
+								- 0.51 to 0.75 means the prediction is 51% to 75% correct
+								- 0.26 to 0.5 means the prediction is 26% to 50% correct
+								- 0.01 to 0.25 means the prediction is 1% to 25% correct
+								- 0.0 means the prediction is completely incorrect
+								4. **Set is_correct to True if the percentage correct is 0.5 to 1.0**, else set it to False. This is the threshold for correctness.
+								5. The predicted answer should not contain significant incorrect information
+								6. If the gold standard states "Not mentioned in the resume", the prediction should indicate the information is not available
+								7. The predicted answer should not contain hallucinations or irrelevant information
+								8. Lastly, remeber that value in is_correct will depend on the value of the threshold for correctness.
+								
+								Provide your evaluation with clear reasoning.
+								"""
+								
+								evaluation = client.chat.completions.create(
+									response_model=AnswerEvaluation,
+									messages=[
+									{"role": "system", "content": "You are an expert evaluator of question answering systems."},
+									{"role": "user", "content": prompt}
+									]
+								)
+								return evaluation
+						</code></pre>
+					</section>
+					<section>
+						<p>How our Eval prompt looks like</p>
+						<pre data-id="code-animation"><code class="hljs python" data-trim data-line-numbers>
+							class AnswerEvaluation(BaseModel):
+								"""Evaluation of an answer against a gold standard."""
+
+								is_correct: bool = Field(..., description="Whether the predicted answer is correct based on the gold standard")
+								percentage_correct: float = Field(..., ge=0, le=1, description="Percentage of correctness in the prediction")
+								reasoning: str = Field(..., description="Reasoning behind the evaluation decision")
+								missing_info: Optional[List[str]] = Field(None, description="Important information missing from the prediction")
+								incorrect_info: Optional[List[str]] = Field(None, description="Incorrect information in the prediction")
+						</code></pre>
+					</section>
+				</section>
+				<section>
+					<section>
+						<h3>Step 5: Vibe-coded Annotation tool</h3>
+						<p>- Ask domain expert to annotate the predictions</p>
+						<p>- Fill with detailed critique regardless of PASS or FAIL</p>
+						<p>- These critiques will be used later for iterating out RAG prompts</p>
+						<p>- For example, using them in few-shot examples</p>
+					</section>
+					<section>
+						<img class="r-frame" style="background: rgba(255,255,255,0.1);" data-src="./assets/annotator-on-modal.png" alt="Down arrow">
+					</section>
+				</section>
+				<section>
+					<section>
+						<h3>Step 6: Vibe-coded Error Analysis Report</h3>
+						<p>- Used VSCode + Github Copilot </p>
+						<p>- Took me 2 hours, using the toolset the first time</p>
+						<p>- Alternative to the spreadhseet pivot table</p>
+						<p>- More user friendly</p>
+					</section>
+					<section>
+						<img class="r-frame" style="background: rgba(255,255,255,0.1);" data-src="./assets/error-analysis.png" alt="Down arrow">
+					</section>
+				</section>
+				<section>
+					<section>
+						<h3>Step 7: Vibe-coded Evaluation Report </h3>
+						<p>- Another JSON data viewer vibe coded with same toolset</p>
+						<p>- Shows the calculated metrics that we're interested in - eg. F1 metric</p>
+						<p>- Easier to see where our RAG failure modes</p>
+						<p>- Easier to convey message to stakeholders</p>
+					</section>
+					<section>
+						<img class="r-frame" style="background: rgba(255,255,255,0.1);" data-src="./assets/evaluation-report.png" alt="Down arrow">
+					</section>
+				</section>
+				<section>
+					<section>
+						<h2>THE END</h2>
+						<p>Now we can start prompt iteration!</p>
+						<small>Github: <a href="https://github.com/jaeyow/llm-zero-to-hero">https://github.com/jaeyow/llm-zero-to-hero</a></small>
+						<p></p>
+					</section>
+				</section>					
+			</div>
+		</div>
+
+		<script src="dist/reveal.js"></script>
+		<script src="plugin/notes/notes.js"></script>
+		<script src="plugin/markdown/markdown.js"></script>
+		<script src="plugin/highlight/highlight.js"></script>
+		<script>
+			// More info about initialization & config:
+			// - https://revealjs.com/initialization/
+			// - https://revealjs.com/config/
+			Reveal.initialize({
+				hash: true,
+
+				// Learn about plugins: https://revealjs.com/plugins/
+				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
+			});
+		</script>
+	</body>
+</html>
