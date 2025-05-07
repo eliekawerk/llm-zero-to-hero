@@ -22,7 +22,7 @@
 {"resume": "john-doe.pdf", "question": "List the programming languages mentioned in the resume.", "expected_answer": "HTML, CSS, JavaScript (ES6+), TypeScript"}
 {"resume": "john-doe.pdf", "question": "Does the candidate have any leadership or management experience?", "expected_answer": "Yes, the candidate led the frontend development of an e-commerce platform and mentored aspiring web developers."}
 {"resume": "john-doe.pdf", "question": "What degrees or academic qualifications does the candidate hold?", "expected_answer": "The candidate holds a Bachelor of Science in Computer Science from the University of Technology, graduating in May 2022.  They also have a Front-End Web Developer Nanodegree from Udacity and a JavaScript Algorithms and Data Structures certification from freeCodeCamp."}
-{"resume": "john-doe.pdf", "question": "What is the total number of years of professional experience?", "expected_answer": "2.5 years"}
+{"resume": "john-doe.pdf", "question": "What is the total number of years of professional experience?", "expected_answer": "1.5 years"}
 {"resume": "john-doe.pdf", "question": "Has the candidate worked in any Fortune 500 companies?", "expected_answer": "Not mentioned in the resume."}
 {"resume": "john-doe.pdf", "question": "What industries has the candidate worked in?", "expected_answer": "The candidate has worked in the tech and digital agency industries.  Specifically, XYZ Tech Solutions and ABC Digital Agency are mentioned."}
 {"resume": "john-doe.pdf", "question": "Does the candidate have experience working with cloud technologies?", "expected_answer": "Not mentioned in the resume."}
