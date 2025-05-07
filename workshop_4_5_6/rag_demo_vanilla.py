@@ -20,7 +20,7 @@ else:
 sys.path.append(str(Path(__file__).parent.parent))
 from utils import hybrid_search, lanceDBConnection, semantic_search, text_chunker
 
-CHUNK_SIZE = 300
+CHUNK_SIZE = 0
 PDF_STORAGE_DIR = "pdfs" # Directory inside volume for storing PDFs
 
 # Extract text from PDF

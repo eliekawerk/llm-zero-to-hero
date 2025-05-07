@@ -7,6 +7,10 @@ def text_chunker(text, max_chunk_length=1000, overlap=100):
     """
     Helper function for chunking text
     """
+    # If max_chunk_length is 0, return the entire text as one chunk
+    if max_chunk_length == 0:
+        return [text]
+
     # Initialize result
     result = []
 
