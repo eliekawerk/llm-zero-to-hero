@@ -186,6 +186,53 @@ The evaluation process provided insights into the model's performance:
     - Refine prompts based on error patterns and critiques.
     - Experiment with alternative phrasing to improve clarity and specificity.
 
+**My Notes on prompt iteration**
+In [evaluation_report.json](./workshop_4_5_6/data/evaluation_report.json) before we started improving and iterating on our RAG application, we captured the baseline metrics, and for this exercise, we use **F1**, which is defined as the harmonic mean of precision and recall. It is a measure of a model's accuracy that considers both false positives and false negatives.
+
+Baseline F1 Score: **86.79%**
+
+**Iteration #1:**
+Went back and revisited the System Prompt, and realised that it was not clear enough, so I updated to just add a bit of clarity.
+
+Original System Prompt:
+
+> You are a helpful assistant. Only answer questions based on the context provided. Be concise, factual, and avoid speculation.
+
+New System Prompt:
+> You are a helpful and expert resume reviewer. You can remember all the details of a presented resume and answer any questions about it. Do not hallucinate and ensure your answers are backed by factual responses based on the resume provided.
+
+New F1 Score: **90.91%**
+
+**Iteration #2:**
+This application processes resumes which are typically only a few pages long and usually about 1000 words or so. With this in mind, I decided to try not chunking at all, and just passing the entire document to the LLM. This will surely be within the context window of the LLM, and this should help improve the app's metrics.
+
+New F1 Score: **92.86%**
+
+**Iteration #3:**
+After inspecting the error analysis report, I noticed that for John Doe's resume, the question ""What is the total number of years of professional experience?" was always wrong. The Gold Set says 2.5 years, however, our RAG says 1.5 years. 
+
+Reviewing the resume, John Doe actually has 1.5 years of professional experience, so I simply updated the Gold Set to reflect this.
+
+Another failure mode is that the RAG system often misses the qualifiers in the answer, for example, if the answer is "over 3 years", it only says "3 years". To address this, I added a few-shot example to the system prompt to help the LLM understand that it should include qualifiers in its answers.
+
+Added examples to the prompt:
+> - Question: What is the total number of years of professional experience?
+    Context: The candidate has over 3 years of experience in software development.
+    Answer: Over 3 years.
+
+New F1 Score: **94.74%**
+
+Prompt Iteration Summary:
+- **Iteration #1**: Improved system prompt clarity.
+- **Iteration #2**: Removed chunking to pass the entire document to the LLM.
+- **Iteration #3**: Updated Gold Set to reflect accurate professional experience. Also, added few-shot examples to the system prompt to include qualifiers in answers.
+
+Because we had our evals set up, we were able to quickly iterate on the prompts and see the results. This is a great example of how to use evals to improve your LLM applications.
+
+**Just these quick iterations improved the F1 score from 86.79% to 94.74%!**
+
+We can continue to iterate on the prompts and improve the system, but this is a great start.
+
 2. **Model Fine-Tuning**:
     - Use annotated data to fine-tune the model or adjust hyperparameters for better performance.
 
