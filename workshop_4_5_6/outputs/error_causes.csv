@@ -1,3 +1,4 @@
 Likely Cause,Count
-llm_reasoning_error,7
-retrieval_failure,5
+llm_reasoning_error,9
+retrieval_failure,4
+context_window_limitation,1

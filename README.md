@@ -100,13 +100,23 @@ Workshop 2 focuses on **LLM APIs and Prompt Engineering**, exploring parameters 
 
 ---
 
-## **Workshop 3**
+## **Workshop 3,4,5,6**
 
-Workshop 3 introduces **evaluations** for the application, now free from LlamaIndex. The goal is to perform error analysis and improve the system.
+Workshop 3 to 6 introduces **evaluations** for the application, now free from LlamaIndex. The goal is to perform error analysis and improve the system.
 
 ### **Synthetic Data for Evaluation**
 
 #### **Exercise**
+0. **RAG Demo App** 
+We still have our Gradio Resume Q&A app, and how we can run it:
+```bash
+cd workshop_4_5_6
+python rag_demo_vanilla.py
+```
+The app is running at [http://localhost:7860](http://localhost:7860). You can ask questions about the resume, and it will use the RAG pipeline to answer them.
+
+To start running our evaluation workflows, follows steps 1 to 5 below:
+
 1. **Create a Gold Set**:
     - Use `data/questions.json` as the list of questions for this exercise.
     - Run [01_generate_gold_set.py](./workshop_3/01_generate_gold_set.py) to create `data/gold_set.jsonl`. This script asks the LLM to generate answers to the questions in `data/questions.json`.
@@ -125,15 +135,16 @@ Workshop 3 introduces **evaluations** for the application, now free from LlamaIn
 
 4. **Review and Annotate**:
     - Review the evaluation report and annotate the results.
+    - Note that in the real world, this is the time to hand this annotation tool to the **domain expert** to review the results and add critiques. It is important to add critiques for both the correct and incorrect answers.
+    - This will help you understand the model's performance and identify areas for improvement. And this is strategic because these critiques are what will be used to iterate on the prompts, **eg. to add few-shot examples to the prompt** to cater for this specific failure mode.
     - An annotation app is available that allows you to review the evaluation report and annotate the results. 
+    - This allows you to go through the evaluation report and annotate the results. Take special care in adding some critique, for both the correct and incorrect answers. This will help you understand the model's performance and identify areas for improvement. Here: [http://localhost:8000](http://localhost:8000)
+    - Also, this will help us with the [critique shadowing method](https://hamel.dev/blog/posts/llm-judge/#step-3-direct-the-domain-expert-to-make-passfail-judgments-with-critiques) as explained by Hamel, to help improve the model's performance when we start iterating on the prompts.
+    - This will also return the error analysis report for more detailed analysis.
     ```bash
     cd data_viewers
     python serve.py
     ```
-    - This allows you to go through the evaluation report and annotate the results. Take special care in adding some critique, for both the correct and incorrect answers. This will help you understand the model's performance and identify areas for improvement. Here: [http://localhost:8000](http://localhost:8000)
-    - Also, this will help us with the [critique shadowing method](https://hamel.dev/blog/posts/llm-judge/#step-3-direct-the-domain-expert-to-make-passfail-judgments-with-critiques) as explained by Hamel, to help improve the model's performance when we start iterating on the prompts.
-    - This will also return the error analysis report for more detailed analysis.
-
 ![alt text](image.png)
 
 ![alt text](image-1.png)

@@ -264,13 +264,13 @@ const Header = ({ exportToJSON, exportToCSV, jsonFile, availableFiles, onFileCha
         <button className="btn" onClick={exportToJSON}>Export to JSON</button>
         <button className="btn btn-secondary" onClick={exportToCSV}>Export to CSV</button>
       </div>
-      <div className="file-selector">
+      {/* <div className="file-selector">
         <select value={jsonFile} onChange={onFileChange}>
           {availableFiles.map(file => (
             <option key={file} value={file}>{file}</option>
           ))}
         </select>
-      </div>
+      </div> */}
     </header>
   );
 };
