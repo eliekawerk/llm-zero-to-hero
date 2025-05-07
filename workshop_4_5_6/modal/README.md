@@ -29,20 +29,8 @@ modal token new
 # Deploy the application
 cd workshop_4_5_6/modal
 modal deploy -m rag_demo_vanilla_wrapper
+
+# Deploy the eval tools (static site)
+modal deploy -m static_site
 ```
-
-## How PDF Persistence Works
-
-1. **PDF Uploads**: When a user uploads a PDF, the original file is stored in a Modal volume
-2. **Unique Identifiers**: Each PDF gets a unique filename (using UUID) to prevent conflicts
-3. **Metadata Linking**: The PDF's storage path is saved as metadata in the document records
-4. **Volume Mounting**: Both volumes are mounted to specific paths in the container:
-   - LanceDB mounts to `/lancedb_workspace`
-   - PDFs mount to `/pdfs`
-
-## Benefits
-
-- **Persistence Between Sessions**: PDFs remain available even after container restart
-- **Document Recovery**: Original documents can be retrieved using the stored path
-- **Multiple File Support**: The system can handle multiple PDF uploads with unique IDs
-- **Metadata Tracking**: Document metadata keeps track of original file location
+## Running the Application

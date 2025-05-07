@@ -20,7 +20,7 @@ client = instructor.from_gemini(
 )
 
 # Update pipeline to use Gemini
-from rag_vanilla import ingest_file, rag_pipeline_vector_db
+from rag_demo_vanilla import ingest_file, rag_pipeline_vector_db
 
 # Ensure GEMINI_API_KEY is set in your environment
 

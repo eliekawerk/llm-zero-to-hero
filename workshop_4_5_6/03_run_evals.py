@@ -322,7 +322,7 @@ def main():
     pred_answer = row['predicted_answer']
     
     # Evaluate using Instructor and adjust by threshold
-    evaluation = adjust_by_threshold(evaluate_answer(gold_answer, pred_answer))
+    evaluation = adjust_by_threshold(evaluate_answer(gold_answer, pred_answer), threshold=0.75)
     # print(f"Evaluation: {evaluation}")
     
     # Store results

@@ -19,7 +19,8 @@ image = modal.Image.debian_slim().pip_install(
     "lancedb",
     "pydantic",
     "tantivy",
-    "pylance"
+    "pylance",
+    "load_dotenv"
 )
 
 app = modal.App("rag_demo_vanilla", image=image)

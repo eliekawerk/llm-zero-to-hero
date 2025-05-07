@@ -1,10 +1,8 @@
-from pathlib import Path
 import lancedb
 from lancedb.embeddings import get_registry
 from lancedb.pydantic import LanceModel, Vector
 import re
 
-import modal
 
 def text_chunker(text, max_chunk_length=1000, overlap=100):
     """
@@ -36,18 +34,6 @@ def text_chunker(text, max_chunk_length=1000, overlap=100):
 
     return result
   
-
-# embeddings_mdl = (
-#     get_registry()
-#       .get("sentence-transformers")
-#       .create(name="BAAI/bge-small-en-v1.5")
-# )
-# embeddings_mdl = (
-#   get_registry()
-#     .get("openai")
-#     .create(model="text-embedding-ada-002")
-#   )
-
 # Initialize Gemini embedding model
 embeddings_mdl = get_registry().get("gemini-text").create()
 

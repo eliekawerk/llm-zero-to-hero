@@ -1,7 +1,5 @@
-import os
-import json
 from pathlib import Path
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, JSONResponse
 import modal
@@ -52,24 +50,20 @@ async def list_json_files():
     """API endpoint to list available JSON files"""
     print("Listing JSON files")
     json_files = []
-    return JSONResponse({"files": json_files})
-#     try:
-#         if DATA_DIR.exists():
-#             json_files = [
-#                 f"./data/{f}" for f in os.listdir(DATA_DIR) 
-#                 if f.endswith('.json') or f.endswith('.jsonl')
-#             ]
-        
-#         # Default file should always be available
-#         if "./data/evaluation_report.json" not in json_files and (DATA_DIR / "evaluation_report.json").exists():
-#             json_files.append("./data/evaluation_report.json")
-        
-#         # Sort alphabetically
-#         json_files.sort()
-#     except Exception as e:
-#         print(f"Error listing JSON files: {e}")
     
-#     return JSONResponse({"files": json_files})
+    # In Modal environment, files are in /assets/data
+    data_path = Path("/assets/data")
+    
+    try:
+        # List all JSON files in the data directory
+        for file_path in data_path.glob("*.json"):
+            json_files.append(file_path.name)
+        
+        print(f"Found {len(json_files)} JSON files: {json_files}")
+    except Exception as e:
+        print(f"Error listing JSON files: {e}")
+    
+    return JSONResponse({"files": json_files})
 
 @app.function(
     image=image,
@@ -78,55 +72,7 @@ async def list_json_files():
 @modal.concurrent(max_inputs=100)
 @modal.asgi_app()
 def serve_app() -> FastAPI:
-    # Mount the static files from data_viewers directory
-    api.mount("/", StaticFiles(directory="/assets", html=True))
-    
-
-    
-    # @api.get("/data/{filename:path}")
-    # async def get_data_file(filename: str):
-    #     """Serve files from the data directory"""
-    #     file_path = DATA_DIR / filename.split("?")[0]
-    #     if not file_path.exists():
-    #         raise HTTPException(status_code=404, detail=f"File {filename} not found")
-        
-    #     content_type = "application/json" if file_path.suffix in [".json", ".jsonl"] else None
-    #     return FileResponse(file_path, media_type=content_type)
-    
-    # @api.get("/resumes/{filename:path}")
-    # async def get_resume_file(filename: str):
-    #     """Serve PDF files from the resumes directory"""
-    #     file_path = RESUMES_DIR / filename.split("?")[0]
-        
-    #     # If not found in main resumes dir, try resume_archive
-    #     if not file_path.exists() and ARCHIVE_DIR.exists():
-    #         file_path = ARCHIVE_DIR / filename.split("?")[0]
-        
-    #     if not file_path.exists():
-    #         raise HTTPException(status_code=404, detail=f"File {filename} not found")
-        
-    #     return FileResponse(file_path, media_type="application/pdf")
-    
-    # # Map app.js, styles.css to their proper paths
-    # @api.get("/app.js")
-    # async def get_app_js():
-    #     return FileResponse(VIEWERS_DIR / "app.js", media_type="application/javascript")
-    
-    # @api.get("/styles.css")
-    # async def get_styles_css():
-    #     return FileResponse(VIEWERS_DIR / "styles.css", media_type="text/css")
-    
+    api.mount("/", StaticFiles(directory="/assets", html=True))    
     return api
-
-@app.local_entrypoint()
-def main():
-    """Local entrypoint for testing"""
-    print("Starting local development server")
-    print("Note: This won't use Modal volumes when run locally")
-    app.serve()
-
-if __name__ == "__main__":
-    # Try to use Modal's local entrypoint first
-    main()
 
 
