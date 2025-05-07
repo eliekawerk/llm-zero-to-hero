@@ -1,144 +1,114 @@
 {
   "error_summary": {
     "total_samples": 60,
-    "error_count": 8,
+    "error_count": 6,
     "by_type": {
-      "incorrect_information": 5,
+      "incorrect_information": 3,
       "missing_information": 3
     },
     "by_severity": {
-      "minor": 2,
-      "major": 6
+      "minor": 1,
+      "major": 5
     },
     "by_cause": {
       "llm_reasoning_error": 3,
-      "retrieval_failure": 5
+      "retrieval_failure": 3
     },
     "by_question": {
-      "What is the total number of years of professional experience?": 3,
-      "What degrees or academic qualifications does the candidate hold?": 1,
-      "List the programming languages mentioned in the resume.": 2,
-      "Does the candidate have any leadership or management experience?": 1,
-      "Has the candidate worked in any Fortune 500 companies?": 1
+      "Does the candidate have any leadership or management experience?": 2,
+      "What industries has the candidate worked in?": 1,
+      "List the programming languages mentioned in the resume.": 3
     },
     "key_insights": [
-      "Most common error type: incorrect_information (5 occurrences)",
-      "Most common cause: retrieval_failure (5 occurrences)",
-      "Most problematic question: 'What is the total number of years of professional experience?' (3 failures)"
+      "Most common error type: incorrect_information (3 occurrences)",
+      "Most common cause: llm_reasoning_error (3 occurrences)",
+      "Most problematic question: 'List the programming languages mentioned in the resume.' (3 failures)"
     ]
   },
   "detailed_error_analyses": [
     {
       "error_type": "incorrect_information",
       "severity": "minor",
-      "details": "The model's prediction of \"7\" is numerically incorrect, as the gold standard answer specifies \"Over 7 years\".  The model correctly identified a numerical answer relating to years of experience but failed to capture the nuance of \"over\" 7 years, losing precision.",
+      "details": "The incorrect prediction states that Emma Roberts worked collaboratively with various teams. While this might be true, it is not evidence of leadership or management experience.  The answer should have mirrored the gold standard by stating that such experience was not mentioned.  The model incorrectly inferred leadership qualities from collaborative work, showcasing a weakness in nuanced interpretation.",
       "likely_cause": "llm_reasoning_error",
-      "fix_recommendation": "Improve the model's ability to handle comparative phrases like \"over\" and \"more than.\" This could involve incorporating more sophisticated numerical reasoning capabilities and training on datasets with a diverse range of comparative expressions within numerical contexts.  Additionally, training examples should include instances emphasizing the importance of retaining qualifying words in the response.  During post-processing, add a check to see if the response is a number and the gold standard contains qualifiers (e.g., \"over\", \"approximately\", \"more than\", etc.). If so, output a warning indicating potential precision loss.",
-      "resume": "jane-smith.pdf",
-      "question": "What is the total number of years of professional experience?",
-      "gold_answer": "Over 7 years",
-      "predicted_answer": "7",
+      "fix_recommendation": "Improve the LLM's ability to distinguish between collaborative work and leadership/management roles.  This might involve fine-tuning the model with more examples differentiating these concepts or employing a more sophisticated prompt that explicitly clarifies the desired level of experience.",
+      "resume": "emma-roberts.pdf",
+      "question": "Does the candidate have any leadership or management experience?",
+      "gold_answer": "Not mentioned in the resume.",
+      "predicted_answer": "Based on the provided resume, Emma Roberts has experience working collaboratively with various teams, including frontend developers, product managers, and QA engineers.  However, there is no explicit mention of leadership or management roles.",
       "is_correct": false,
-      "percentage_correct": 0.25,
-      "reasoning": "The predicted answer '7' is partially correct but lacks crucial information present in the gold standard answer, 'Over 7 years'. While the number 7 is present in both, the gold standard specifies 'Over 7 years', indicating a duration exceeding 7 years.  The predicted answer misses the 'Over' qualifier, which changes the meaning and context. Therefore, only a fraction of the information is correctly extracted, resulting in a low percentage score."
+      "percentage_correct": 0.2,
+      "reasoning": "The predicted answer contradicts the gold standard. While it correctly states that leadership roles are not explicitly mentioned, it adds extra information about Emma Roberts' collaborative experience.  This extra information is not relevant to the gold standard, which only focuses on the absence of information. The prediction should have mirrored the gold standard more closely by simply stating that the requested information is not present in the resume. Therefore, it is only partially correct."
     },
     {
       "error_type": "missing_information",
       "severity": "major",
-      "details": "The RAG system failed to retrieve and include all relevant information about the candidate's academic qualifications. While it correctly identified the Bachelor of Science degree, it omitted the additional certifications from Udacity and freeCodeCamp. This omission presents an incomplete picture of the candidate's qualifications.",
+      "details": "The prediction omits key information present in the gold standard. While it correctly identifies the technology industry, it fails to mention two of the three companies the candidate worked for (Innovative Solutions Ltd. and Web Solutions Co.) and it incorrectly adds the detail of \"specifically software development\", for which there is no evidence in the original text. This omission significantly diminishes the answer's completeness and accuracy.",
       "likely_cause": "retrieval_failure",
-      "fix_recommendation": "Improve the retrieval process by ensuring that all relevant sections of the document containing the candidate's qualifications are indexed and retrieved.  Consider techniques like query expansion, reranking retrieved documents based on relevance to the specific question, and implementing more robust search strategies to ensure comprehensive information extraction.",
-      "resume": "john-doe.pdf",
-      "question": "What degrees or academic qualifications does the candidate hold?",
-      "gold_answer": "The candidate holds a Bachelor of Science in Computer Science from the University of Technology, graduating in May 2022.  They also have a Front-End Web Developer Nanodegree from Udacity and a JavaScript Algorithms and Data Structures certification from freeCodeCamp.",
-      "predicted_answer": "The candidate holds a Bachelor of Science in Computer Science from the University of Technology, graduating in May 2022.",
+      "fix_recommendation": "Improve the retrieval process to ensure all relevant information about the candidate's work experience, including company names, is extracted and included in the response. Implement more robust methods for identifying and incorporating all relevant details from the source document(s).  Consider using techniques that identify and extract entities such as company names and then cross-referencing them with knowledge bases to ascertain their industry. This would then allow the system to provide a more thorough and accurate answer.",
+      "resume": "jane-smith.pdf",
+      "question": "What industries has the candidate worked in?",
+      "gold_answer": "The candidate has worked in the technology industry, specifically at Tech Innovators Inc., Innovative Solutions Ltd., and Web Solutions Co.  The exact nature of these companies' industries is not specified.",
+      "predicted_answer": "The candidate has worked in the following industries: technology (specifically software development)",
       "is_correct": false,
-      "percentage_correct": 0.6,
-      "reasoning": "The predicted answer captures the main information about the candidate's Bachelor of Science degree, which is the most significant piece of information in the gold standard.  However, it omits the candidate's Udacity nanodegree and freeCodeCamp certification.  These represent additional qualifications and represent about 40% of the information in the gold standard. Therefore, the prediction is approximately 60% correct."
+      "percentage_correct": 0.2,
+      "reasoning": "The predicted answer is partially correct but omits crucial details present in the gold standard. While it correctly identifies that the candidate worked in the technology industry, it fails to mention the specific companies: Tech Innovators Inc., Innovative Solutions Ltd., and Web Solutions Co.  The prediction also incorrectly specifies \"specifically software development\", which is not supported by the gold standard.  The gold standard explicitly states that the exact nature of the companies' industries is unspecified, a detail missing from the prediction.  Therefore, a low percentage_correct reflects the significant omission of key information."
     },
     {
       "error_type": "incorrect_information",
       "severity": "major",
-      "details": "The RAG system predicted 1.5 years of professional experience when the gold standard answer is 2.5 years. This is a significant numerical discrepancy, misrepresenting the candidate's experience.",
-      "likely_cause": "retrieval_failure",
-      "fix_recommendation": "Improve the retrieval mechanism to ensure all relevant information is extracted from the source documents.  Consider using more sophisticated embedding models or query strategies to ensure better matching and retrieval of the information related to professional experience. Double-check the data sources for accuracy and completeness.",
+      "details": "The predicted answer includes several technologies that are not programming languages, such as RESTful APIs, JSON, React.js, Redux, Vue.js, Vuex, Bootstrap, Tailwind CSS, and jQuery.  While some of these (React, Vue, etc.) use programming languages, they are frameworks and libraries, not languages themselves.  The inclusion of these items makes the answer inaccurate and misleading.",
+      "likely_cause": "llm_reasoning_error",
+      "fix_recommendation": "Improve the LLM's ability to distinguish between programming languages and related technologies. This might involve fine-tuning the model on a dataset that explicitly categorizes these concepts or employing techniques to constrain the response to only include items from a predefined list of programming languages.",
       "resume": "john-doe.pdf",
-      "question": "What is the total number of years of professional experience?",
-      "gold_answer": "2.5 years",
-      "predicted_answer": "1.5 years",
+      "question": "List the programming languages mentioned in the resume.",
+      "gold_answer": "HTML, CSS, JavaScript (ES6+), TypeScript",
+      "predicted_answer": "HTML5, CSS3, JavaScript (ES6+), TypeScript, RESTful APIs, JSON, React.js, Redux, Vue.js, Vuex, Bootstrap, Tailwind CSS, jQuery",
       "is_correct": false,
-      "percentage_correct": 0.25,
-      "reasoning": "The predicted answer (1.5 years) and the gold standard answer (2.5 years) differ significantly in their numerical values. While both answers provide a duration in years, the difference of one year represents a substantial discrepancy.  This suggests a lack of precision in the prediction and a deviation from the correct information. Therefore, a lower percentage of correctness is assigned."
+      "percentage_correct": 0.6,
+      "reasoning": "The predicted answer contains all the core technologies listed in the gold standard (HTML, CSS, JavaScript, TypeScript).  However, it includes many additional technologies (RESTful APIs, JSON, React.js, Redux, Vue.js, Vuex, Bootstrap, Tailwind CSS, jQuery) that are not part of the gold standard. While the additional technologies might be relevant in a broader web development context, they are not directly requested by the gold standard.  The core technologies represent roughly 60% of the prediction, hence the percentage_correct is set to 0.6. Because this is below the threshold of 0.75 for is_correct, it's set to false."
     },
     {
       "error_type": "missing_information",
-      "severity": "minor",
-      "details": "The predicted answer omits JSON and XML, which are explicitly mentioned in the gold standard answer.  While Node.js is technically related to JavaScript, it's not a direct equivalent and its inclusion does not compensate for the missing languages.",
+      "severity": "major",
+      "details": "The RAG system failed to extract all the programming languages from the resume.  The prediction is partially correct, listing Python, Java, and JavaScript, but omits SQL, NoSQL, JSON, and XML, which are also mentioned in the gold standard answer. This omission significantly reduces the usefulness of the response for the user.",
       "likely_cause": "retrieval_failure",
-      "fix_recommendation": "Improve the retrieval process to ensure all relevant information is extracted from the resume. This might involve refining the retrieval query, adjusting the ranking algorithm to prioritize more comprehensive matches, or using a more robust embedding model.  A more thorough post-processing check could also identify missing or incomplete lists.",
+      "fix_recommendation": "Improve the retrieval process to ensure all relevant information is extracted from the resume. This might involve using more sophisticated techniques for information extraction, such as Named Entity Recognition (NER) specifically trained on programming languages. It is also essential to check the quality and completeness of the resume's content used for retrieval.  Consider increasing the context window size or using techniques to better handle long documents, and potentially employing reranking strategies to better surface relevant results.",
       "resume": "alex-thompson.pdf",
       "question": "List the programming languages mentioned in the resume.",
       "gold_answer": "Python, Java, JavaScript, SQL, NoSQL, JSON, XML",
-      "predicted_answer": "Python, Java, JavaScript, SQL, NoSQL, Node.js",
+      "predicted_answer": "Python, Java, JavaScript",
       "is_correct": false,
-      "percentage_correct": 0.7,
-      "reasoning": "The predicted answer covers most of the key programming languages from the gold standard. However, it omits JSON and XML, which are important data formats.  Node.js is included, which is a JavaScript runtime environment, not a language in the same category as the others. Given the omissions, a 70% correctness score seems appropriate.  The threshold for is_correct is 50%, so it is set to false."
+      "percentage_correct": 0.375,
+      "reasoning": "The predicted answer only contains three of the programming languages listed in the gold standard answer.  While the predicted answer is partially correct, it omits several key programming languages from the gold standard, such as SQL, NoSQL, JSON, and XML. Therefore, it's not semantically equivalent and receives a low percentage correct score."
     },
     {
       "error_type": "incorrect_information",
       "severity": "major",
-      "details": "The model incorrectly infers leadership and management experience from collaborative work and mentoring activities. While the description of Alex Thompson's roles mentions collaboration and mentoring, these do not constitute formal leadership or management experience, which typically involves direct reports and/or budgetary responsibilities.  The gold standard answer correctly identifies that the resume lacks mention of such experience. The model's answer is a misinterpretation of the provided context and introduces false information.",
+      "details": "The prediction states that Alex Thompson has leadership and management experience based on activities such as leading workshops and managing database schemas.  While these activities demonstrate some leadership qualities, they do not constitute formal leadership or management roles. The gold standard answer correctly points out the absence of explicit mention of such roles in the resume. The prediction incorrectly infers leadership experience from related tasks, misinterpreting the information provided.",
       "likely_cause": "llm_reasoning_error",
-      "fix_recommendation": "Improve the model's ability to distinguish between collaborative work and formal leadership/management roles.  This could involve fine-tuning the model on a dataset that explicitly contrasts these concepts, or incorporating stricter rules into the response generation process to ensure that claims of leadership/management are only made if explicitly supported by the provided text.  The model should be trained to accurately reflect the absence of information when it is not present in the source document.",
+      "fix_recommendation": "Improve the LLM's ability to differentiate between evidence of leadership qualities and actual formal leadership/management roles.  This might involve fine-tuning the model on examples that clearly distinguish between these two categories, or incorporating stricter constraints on the generation to ensure it only extracts explicit mentions of formal roles when responding to the question. The system should be trained to avoid inferring information and to only state what is explicitly mentioned or not mentioned in the text.",
       "resume": "alex-thompson.pdf",
       "question": "Does the candidate have any leadership or management experience?",
       "gold_answer": "Not mentioned in the resume.",
-      "predicted_answer": "Based on the provided resume, Alex Thompson has some experience that could be considered leadership or management, though not explicitly labeled as such.  In their role as Backend Developer at Tech Innovations Ltd., they collaborated with frontend developers, product managers, and QA engineers to define requirements, establish timelines, and deliver features.  Additionally, they conducted code reviews and provided feedback to ensure code quality.  As a Coding Mentor at Code4Good, they mentored aspiring backend developers, conducted workshops, and assisted in organizing hackathons.  However, the resume doesn't describe formal leadership or management roles with direct reports or budgetary responsibilities.",
+      "predicted_answer": "Based on the provided resume, Alex Thompson has experience collaborating with cross-functional teams, leading workshops and coding sessions as a coding mentor, and managing and optimizing database schemas. However, there is no explicit mention of formal leadership or management roles.",
       "is_correct": false,
-      "percentage_correct": 0.2,
-      "reasoning": "The predicted answer contradicts the gold standard. While it acknowledges the absence of explicitly labeled leadership roles, it then proceeds to describe experiences that could be interpreted as leadership or management.  This is not semantically equivalent to \"Not mentioned in the resume.\"  The prediction provides details that are not supported by a claim of absence.  Therefore, a low percentage correct is assigned."
-    },
-    {
-      "error_type": "incorrect_information",
-      "severity": "major",
-      "details": "The model predicted \"17\" years of experience, while the gold standard answer is \"Over 12 years\".  This is a significant numerical discrepancy, misrepresenting the candidate's experience level.",
-      "likely_cause": "llm_reasoning_error",
-      "fix_recommendation": "Improve the model's ability to handle nuanced phrasing like \"Over 12 years.\" This might involve training on more diverse examples with similar phrasing, incorporating better numerical reasoning capabilities, or employing techniques to manage uncertainty and provide a range of possible answers instead of a single precise number when appropriate.  Furthermore, ensuring the retrieval system returns relevant and precise information about experience is crucial.  A post-processing step to verify the reasonableness of numerical answers against the source text can also help.",
-      "resume": "michael-johnson.pdf",
-      "question": "What is the total number of years of professional experience?",
-      "gold_answer": "Over 12 years",
-      "predicted_answer": "17",
-      "is_correct": false,
-      "percentage_correct": 0.2,
-      "reasoning": "The predicted answer, \"17\", is numerically different from the gold standard, \"Over 12 years\". While \"17\" might refer to a period of time (perhaps 17 years), it lacks the necessary information of the gold standard indicating that the time period is 'over 12 years'.  Therefore, there is only partial semantic overlap. The key information about exceeding 12 years is missing. Based on the level of mismatch, a percentage_correct of 0.2 is assigned."
+      "percentage_correct": 0.25,
+      "reasoning": "The predicted answer provides a summary of Alex Thompson's resume, which is not what the gold standard answer is looking for. While the prediction correctly points out the lack of explicit mention of formal leadership roles, it doesn't directly state that the information is not mentioned in the resume like the gold standard.  The prediction also adds extra information about the candidate's skills and experiences. Therefore, although the prediction contains some correct information, it deviates significantly from the gold standard, which focuses solely on the absence of specific information."
     },
     {
       "error_type": "missing_information",
       "severity": "major",
-      "details": "The RAG system failed to retrieve and/or process all the programming languages listed in the resume.  The predicted answer is missing SQL, ReactJS, NextJS, and Java, which are all present in the gold standard answer. This omission significantly reduces the completeness and accuracy of the response.",
+      "details": "The RAG system failed to identify several programming languages mentioned in the resume.  The predicted answer only included Python and SQL, which are present in the gold standard, but omitted TypeScript, .Net Core, ReactJS, NextJS, and Java. This omission represents a significant portion of the relevant information.",
       "likely_cause": "retrieval_failure",
-      "fix_recommendation": "Improve the retrieval component of the RAG system. This may involve techniques such as query expansion to enhance recall, optimization of the retrieval model to better match the question with relevant document sections containing programming language information, or using a different retrieval method entirely. Ensure that the entire relevant section of the resume is processed, and consider techniques to handle potential information fragmentation.",
+      "fix_recommendation": "Improve the retrieval process by exploring several strategies: 1. Enhance the resume's embedding. 2. Use a more robust keyword extraction technique. 3. Try different retrieval methods, such as dense passage retrieval (DPR) or BM25, which would potentially retrieve more relevant chunks of the resume. 4.  Increase the number of top-k retrieved documents to ensure that more relevant information is considered.",
       "resume": "JO Reyes CV April 2025.pdf",
       "question": "List the programming languages mentioned in the resume.",
       "gold_answer": "Python, SQL, TypeScript, .Net Core,  ReactJS,  NextJS,  Java",
-      "predicted_answer": "Python, TypeScript, .Net Core",
+      "predicted_answer": "Python, TensorFlow, PyTorch, SQL",
       "is_correct": false,
-      "percentage_correct": 0.333,
-      "reasoning": "The predicted answer only contains three out of seven programming languages listed in the gold standard.  While the predicted answer is partially correct and does not include any incorrect information, it is missing a significant portion of the information, resulting in a low percentage correct score. The missing languages are SQL, ReactJS, NextJS, and Java."
-    },
-    {
-      "error_type": "incorrect_information",
-      "severity": "major",
-      "details": "The prediction states that the candidate worked at Inchcape Australia and then questions whether it is a Fortune 500 company.  The gold standard answer is that the resume does not mention this information.  The prediction introduces information not present in the resume.  While the uncertainty about Inchcape's Fortune 500 status is accurate, the assertion that the candidate worked there is unsupported and incorrect.",
-      "likely_cause": "retrieval_failure",
-      "fix_recommendation": "Improve the retrieval process to ensure that the system only returns information explicitly stated in the resume. Implement stricter checks to prevent the system from making assertions based on incomplete or inferred information.  Consider adding a 'no information found' response option when no relevant data is retrieved.",
-      "resume": "JO Reyes CV April 2025.pdf",
-      "question": "Has the candidate worked in any Fortune 500 companies?",
-      "gold_answer": "Not mentioned in the resume.",
-      "predicted_answer": "Based on the provided resume, the candidate has worked at Inchcape Australia, a multinational automotive distribution company.  Whether or not Inchcape is a Fortune 500 company is not specified in the context.",
-      "is_correct": false,
-      "percentage_correct": 0.2,
-      "reasoning": "The predicted answer is partially correct in that it acknowledges the information is not explicitly stated in the resume. However, it also adds extra, irrelevant information about the candidate's work experience at Inchcape Australia. This additional information is not relevant to whether the information is mentioned in the resume, making the answer only partially correct and below the threshold for correctness (0.5)."
+      "percentage_correct": 0.2857142857142857,
+      "reasoning": "The predicted answer only contains two of the programming languages listed in the gold standard answer.  While both Python and SQL are present in both, the predicted answer omits several key languages from the gold standard (TypeScript, .Net Core, ReactJS, NextJS, Java).  The addition of TensorFlow and PyTorch are not incorrect, but they are not part of the gold standard and therefore are not relevant to the evaluation. The percentage correct is calculated as 2/7, representing the two correct languages out of the seven in the gold standard."
     }
   ]
 }

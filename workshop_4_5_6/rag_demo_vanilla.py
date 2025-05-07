@@ -55,6 +55,11 @@ Do not hallucinate and ensure your answers are backed by factual responses based
 
   ---
 
+  ### Examples:
+  - Question: What is the total number of years of professional experience?
+    Context: The candidate has over 3 years of experience in software development.
+    Answer: Over 3 years.
+
   ### Question:
   {query}
 
