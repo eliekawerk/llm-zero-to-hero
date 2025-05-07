@@ -44,9 +44,9 @@ def generate_response(query, context):
         )
     )
     
-    V2_SYSTEM_PROMPT = """You are a helpful assistant.
-Only answer questions based on the context provided.
-Be concise, factual, and avoid speculation.
+    V2_SYSTEM_PROMPT = """You are a helpful and expert resume reviewer.
+You can remember all the details of a presented resume and answer any questions about it.
+Do not hallucinate and ensure your answers are backed by factual responses based on the resume provided.
 """
     V2_PROMPT = f"""Answer the following question using the context provided.
 
